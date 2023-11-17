@@ -1,0 +1,22 @@
+*{box-sizing: border-box;}
+
+.course_builder_container{
+    display: flex;
+}
+
+.sidebar_container{
+    width: 15%;
+    border-right: 1px solid black ;
+    height: 95vh;
+}
+
+.course_creator_container{
+    width: 85%;
+}
+
+.title{
+    height: 5vh;
+    font-size: 1.5em;
+    text-align: center;
+    border-bottom: 1px solid black;
+}

@@ -1,0 +1,46 @@
+*{box-sizing: border-box;}
+
+.course_creator_container{
+    display: flex;
+}
+
+.slides_container{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+}
+.widgets{
+    border-bottom: 1px solid black;
+    margin:0;
+    padding: 1em;
+}
+
+.draggables_container{
+    width: 20%;
+    /* padding: 1em; */
+    border-left: 1px solid black;
+    
+}
+
+.draggables{
+    display: flex;
+    gap:20px;
+    padding: 0.5em;
+    flex-direction: column;
+    align-items: center;
+}
+
+.single_slide_container{
+    display: flex;
+    width:80%;
+}
+
+.slide{
+    height: 550px;
+    overflow: scroll;
+}
+
+.pagination_container{
+    padding: 0.3em;
+}
