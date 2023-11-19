@@ -1,10 +1,10 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-const SideBar = () => {
+const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourseData , setMainCourseData }) => {
 
     const [semesterName, setSemesterName] = useState('');
     const [chapterName, setChapterName] = useState('');
@@ -45,7 +45,7 @@ const SideBar = () => {
                                 id: "sec1",
                                 name: 'section 1',
 
-                                content: []
+                                content: [ { slides:[]}]
                             }
                         ],
                         quiz: [
@@ -62,6 +62,10 @@ const SideBar = () => {
         ]
     }
     const [semesters, setSemesters] = useState(testSideBar.semesters);
+
+    useEffect(()=>{
+        setMainCourseData(semesters);
+    },[semesters])
 
     const addSemester = () => {
 
@@ -140,7 +144,7 @@ const SideBar = () => {
                                                                     <Accordion >
 
                                                                         {
-                                                                            <li>{section.name}</li>
+                                                                            <li onClick={() => handleSelectedSection(semester.id,chapter.id,section.id)}>{section.name}</li>
                                                                         }
                                                                     </Accordion>
 
@@ -197,7 +201,7 @@ const SideBar = () => {
                     }
                     <Accordion.Item eventKey={0}>
                         <input id={"semName"} value={semesterName} onChange={(event) => setSemesterName(event.target.value)}></input>
-                        <Button variant="primary" onClick={addSemester}>
+                        <Button variant="primary" onClick={addSemester}> 
                             Add Semester
                         </Button>
                     </Accordion.Item>

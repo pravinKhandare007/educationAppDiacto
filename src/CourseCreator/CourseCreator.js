@@ -2,26 +2,43 @@ import React, { useEffect, useState } from 'react';
 import './CourseCreator.css'
 import Heading from './DraggableItems/Heading';
 import Text from './DraggableItems/Text';
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Droppable } from './Droppable';
-import Pagination from './Pagination';
+import Pagination from '../Pagination/Pagination';
 import Image from './DraggableItems/Image';
 import Video from './DraggableItems/Video';
+import { SortableItem } from './SortableItem/SortableItem';
+import { Item } from './SortableItem/Item';
+import Editor from './Editor_Component/Editor';
 
-const CourseCreator = () => {
+
+let contentId = 4;
+let slideId = 5;
+const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId, selectedSemId }) => {
 
     const [activeId, setActiveId] = useState(null);
-    const [currentSlide, setCurrentSlide] = useState(1);
+    const [currentSlide, setCurrentSlide] = useState(1); // will contain the id of the current slide
     const [finalCourseData, setFinalCourseData] = useState({
-        slides: [{ id: 1, content: [{ contentId: 1, type: "Heading", data: "" }, { contentId: 2, type: "Text", data: '' }] },
+        slides: [{ id: 1, content: [{ id: 1, type: "Text", data: "" },] },
         { id: 2, content: [] },
-        { id: 3, content: [{ contentId: 1, type: "Heading", data: "" }] },
-        { id: 4, content: [] }]
+        { id: 3, content: [] },
+        { id: 4, content: [] },
+        { id: 5, content: [] },
+        { id: 6, content: [] },
+        { id: 7, content: [] },
+        { id: 8, content: [] },
+        { id: 9, content: [] },
+        { id: 10, content: [] },
+        { id: 11, content: [] },
+        { id: 12, content: [] }]
     })
+
+    console.log(selectedSemId, selectedChapterId, selectedSectionId)
 
     useEffect(() => {
         console.log("useEffect finalCourseData", finalCourseData);
+        console.log("currentSlide: ", currentSlide)
     })
 
     // function handleDragEnd(event) {
@@ -71,44 +88,147 @@ const CourseCreator = () => {
 
     // }
 
-    function handleDradStart(event) {
-        console.log("drag started:", event);
+
+
+    function handleDragStart(event) {
+        console.log("drag start", event)
+    }
+
+    function handleSortEnd(event) {
+        console.log("sort start", event)
+        setActiveId(null);
+    }
+
+    function handleDragEnd(event) {
+        console.log("drag end", event)
+        if (event.over === null) return;
+
+        if (event.over && event.over.id !== null) {
+            const newSlides = finalCourseData.slides.map((slide) => {
+                console.log("event.over.id: ", event.over.id);
+                console.log("slide.id: ", slide.id);
+                if (event.over.id === slide.id) {
+                    //update the content of that slide 
+                    return {
+                        id: slide.id,
+                        content: [...slide.content, { id: contentId++, type: event.active.id, data: "" }]
+                    }
+                } else {
+                    return slide;
+                }
+            })
+
+            setFinalCourseData((finalCourseData) => {
+                const newFinalCourseData = { ...finalCourseData, slides: newSlides };
+                console.log(newFinalCourseData);
+                return newFinalCourseData;
+            });
+
+            console.log("dropped on ", event.over.id);
+        }
+    }
+
+    function addSlide(slideId) {
+        setFinalCourseData((finalCourseData) => {
+            const newFinalCourseData = { ...finalCourseData, slides: [...finalCourseData.slides, { id: slideId++, content: [] }] }
+            return newFinalCourseData;
+        })
+        console.log("add slide finalCourseData, ", finalCourseData);
+        //setCurrentSlide(slideId);
+    }
+
+
+    function handleSortStart(event) {
         const { active } = event;
 
-        setActiveId(active.id);
-    }
-
-    function handleDragStart() {
-
-    }
-
-    function sortEnd() {
-
+        setActiveId(active.id)
+        console.log("sort end", event)
     }
 
     function paginate(id) {
         setCurrentSlide(id);
     }
+    //takes slide id and content id ,adds e.target.value to the data property
+    function handleOnChange(e, contentId, id) {
+        console.log("handleOnChange called , its for heading");
+        setFinalCourseData((finalCourseData) => {
+            const newFinalCourseData = {
+                ...finalCourseData, slides: [...finalCourseData.slides.map((slide) => {
+                    if (slide.id === id) {
+                        console.log("slide.slideId: ", slide.id);
+                        return {
+                            id: slide.id,
+                            content: [...slide.content.map((contentObject) => {
+                                if (contentObject.id === contentId) {
+                                    return {
+                                        id: contentObject.id,
+                                        type: contentObject.type,
+                                        data: e.target.value
+                                    }
+                                }
+                                return {
+                                    ...contentObject
+                                }
+                            })]
+                        }
+                    } else {
+                        return { ...slide }
+                    }
+                })]
+            }
+            return newFinalCourseData;
+        })
+    }
+
+    function handleImageChange(){
+        
+    }
+
     return (<>
         <div className='course_creator_container'>
-            <DndContext>
+            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className='slides_container'>
                     <div className='slide'>
                         {
                             <Droppable id={currentSlide}>
-                                <DndContext onDragStart={handleDragStart} onDragEnd={sortEnd}>
+                                <span>{currentSlide}</span><br></br>
+                                <DndContext onDragStart={handleSortStart} onDragEnd={handleSortEnd}>
                                     <SortableContext items={finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content} strategy={verticalListSortingStrategy}>
                                         {
                                             finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.map((element, index) => {
-                                                if (element.type === 'Text') {
-                                                    return 'text';
-                                                }
                                                 if (element.type === 'Heading') {
-                                                    return "Heading";
+                                                    return <SortableItem id={element.id} key={index}>
+                                                        <div className='heading_form_top'>
+                                                            <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlide) }} placeholder='Heading...' className='heading_form_top_name'></input>
+                                                        </div>
+                                                    </SortableItem>;
+                                                }
+                                                if (element.type === 'Text') {
+                                                    return <SortableItem id={element.id} key={index}>
+                                                        <Editor finalCourseData={finalCourseData} setFinalCourseData={setFinalCourseData} content={element.data} slideId={currentSlide} contentId={element.id} />
+                                                    </SortableItem>;
+                                                }
+                                                if (element.type === 'Image') {
+                                                    return <SortableItem id={element.id} key={index}>
+                                                        {element.data ? (
+                                                            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                                                               
+                                                                    <div className="box">
+                                                                        <img id={"imgId"}  src={URL.createObjectURL(element.data)} ></img>
+                                                                    </div>
+                                                               
+                                                            </div>
+                                                        ) : null}
+                                                        {element.data ? null : <div><label htmlFor={`${element.id}`} style={{ width: "100%", height: "50px", textAlign: "center", display: "block", border: "1px dotted grey" }}>upload image</label></div>}
+                                                        <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlide , element.id)} style={{ display: "none" }}></input>
+                                                    </SortableItem>;
                                                 }
                                             })
                                         }
                                     </SortableContext>
+                                    <DragOverlay>
+                                        {activeId ? <Item id={activeId}><i className="fa-solid fa-sort" style={{ fontSize: "30px" }}></i></Item> : null}
+                                    </DragOverlay>
                                 </DndContext>
                             </Droppable>
                         }
@@ -117,7 +237,7 @@ const CourseCreator = () => {
                         <div className='pagination_container'>
                             <Pagination slides={finalCourseData.slides} paginate={paginate} currentSlideId={currentSlide}></Pagination>
                         </div>
-                        <div>add button</div>
+                        <div><button className='btn btn-primary' onClick={() => addSlide(slideId)}>Add Slide</button></div>
                     </div>
                 </div>
                 <div className='draggables_container'>

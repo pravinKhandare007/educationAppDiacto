@@ -20,7 +20,7 @@ export function SortableItem(props) {
   return (
     <Item ref={setNodeRef} style={style} >
       <div className='drag_activator' {...attributes} {...listeners}><i class="fa-solid fa-grip-lines-vertical"></i></div>
-      <div className='slide' style={{ width:"100%", height:"600px" , border:"2px solid black" , margin:"4px"}}>{props.id}{props.children}</div>
+      <div  style={{ width:"100%"}}>{props.children}</div>
     </Item>
   );
 }

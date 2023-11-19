@@ -9,6 +9,6 @@ export const Item = forwardRef(({id, ...props}, ref) => {
 
 
   return (
-    <div className='single_slide_container' {...props} ref={ref}>{id ? <i class="fa-solid fa-sort"></i> : null}{props.children}</div>
+    <div className='single_slide_container' {...props} ref={ref}>{props.children}</div>
   )
 });
