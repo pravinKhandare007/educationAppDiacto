@@ -131,7 +131,6 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                                 <Accordion.Header>{semester.name}</Accordion.Header>
                                 <Accordion.Body style={{ padding: "0", backgroundColor: "black" }}>
                                     <Accordion style={{opacity:"0.9"}} >
-
                                         {
                                             semester.chapters.map((chapter, chapIndex) => (
                                                 <Accordion.Item eventKey={chapIndex + 1}>
@@ -168,7 +167,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                                                                 )
                                                             }
                                                             <Accordion.Item eventKey={0}>
-                                                                <input onChange={(event) => setSectionName(event.target.value)}></input>
+                                                                <input value={sectionName} onChange={(event) => setSectionName(event.target.value)}></input>
                                                                 <Button variant="primary" onClick={() => addSection(semIndex, chapIndex)}>
                                                                     Add section
                                                                 </Button>
@@ -186,7 +185,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                                             )
                                         }
                                         <Accordion.Item eventKey={0}>
-                                            <input onChange={(event)=>setChapterName(event.target.value)}></input>
+                                            <input value={chapterName} onChange={(event)=>setChapterName(event.target.value)}></input>
                                             <Button variant="primary" onClick={()=>addChapter(semIndex)}>
                                                 Add Chapter
                                             </Button>

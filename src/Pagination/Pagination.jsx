@@ -5,7 +5,7 @@ const Pagination = ({slides , paginate , currentSlideId }) => {
     const paginationRange = usePagination({
         slidesArray : slides ,
         currentSlideId : currentSlideId ,
-        siblingCount : 2
+        siblingCount : 1
     })
 
     console.log("paginationRange" , paginationRange);

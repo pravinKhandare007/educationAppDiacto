@@ -3,8 +3,6 @@ import SideBar from "../SideBar/SideBar";
 import CourseCreator from "../CourseCreator/CourseCreator";
 import './CourseBuilder.css'
 
-
-
 const CourseBuilder = () => {
 
     const [courseTree , setCourseTree ] = useState([])
@@ -25,15 +23,16 @@ const CourseBuilder = () => {
         <div className="course_builder_container">
             <div className="sidebar_container">
                 <SideBar  handleSelectedSection={handleSelectedSection}
-                setSelectedChapterId={setSelectedChapterId} setSelectedSectionId={setSelectedSectionId} 
-                setSelectedSemId={setSelectedSemId} courseTree={courseTree} setCourseTree={setCourseTree} 
+                 courseTree={courseTree} setCourseTree={setCourseTree} 
                 mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}/>
             </div>
             {/* below component will change with routing */}
             <CourseCreator courseTree={courseTree} setCourseTree={setCourseTree}
             selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId} selectedSemId={selectedSemId}
-            setSelectedChapterId={setSelectedChapterId} setSelectedSectionId={setSelectedSectionId} setSelectedSemId={setSelectedSemId}
+            setSelectedChapterId={setSelectedChapterId} setSelectedSectionId={setSelectedSectionId} 
+            setSelectedSemId={setSelectedSemId}
             />
+            
             
         </div>
     </> 

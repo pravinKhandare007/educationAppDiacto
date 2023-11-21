@@ -3,7 +3,7 @@ import './CourseCreator.css'
 import Heading from './DraggableItems/Heading';
 import Text from './DraggableItems/Text';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Droppable } from './Droppable';
 import Pagination from '../Pagination/Pagination';
 import Image from './DraggableItems/Image';
@@ -11,6 +11,9 @@ import Video from './DraggableItems/Video';
 import { SortableItem } from './SortableItem/SortableItem';
 import { Item } from './SortableItem/Item';
 import Editor from './Editor_Component/Editor';
+import YouTubeVideo from './Video_Component/Video';
+import Quiz from './Quiz_Component/Quiz';
+import QuizDraggable from './DraggableItems/QuizDraggable';
 
 
 let contentId = 4;
@@ -19,8 +22,12 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
 
     const [activeId, setActiveId] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(1); // will contain the id of the current slide
+    //rename slidesData
+    //api we need to send sectionID and body -- sildesData.
+    //sample api endpoint = /api/section/:sectionId 
+    //api body = slidesData
     const [finalCourseData, setFinalCourseData] = useState({
-        slides: [{ id: 1, content: [{ id: 1, type: "Text", data: "" },] },
+        slides: [{ id: 1, content: [{ id: 1, type: "Text", data: "" }] },
         { id: 2, content: [] },
         { id: 3, content: [] },
         { id: 4, content: [] },
@@ -38,7 +45,8 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
 
     useEffect(() => {
         console.log("useEffect finalCourseData", finalCourseData);
-        console.log("currentSlide: ", currentSlide)
+        console.log("currentSlide: ", currentSlide);
+        
     })
 
     // function handleDragEnd(event) {
@@ -94,8 +102,19 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         console.log("drag start", event)
     }
 
-    function handleSortEnd(event) {
-        console.log("sort start", event)
+    function handleSortEnd(event , currentSlide) {
+        console.log("sort start", event);
+        if(event.over === null ) return ;
+        const {active , over } = event;
+        setFinalCourseData((finalCourseData)=>{
+            const newFinalCourseData = {...finalCourseData};
+
+           // const oldIndex = finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.findIndex(contentObject => contentObject.id === active.id);
+            //const newIndex = finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.findIndex(contentObject => contentObject.id === over.id);
+
+            // const newContent = arrayMove(finalCourseData.slides)
+            return newFinalCourseData;
+        })
         setActiveId(null);
     }
 
@@ -180,8 +199,35 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         })
     }
 
-    function handleImageChange(){
-        
+    function handleImageChange(event , slideId , contentId){
+        const image = event.target.files[0];
+        setFinalCourseData((finalCourseData)=>{
+            const newFinalCourseData = {
+                ...finalCourseData, slides: [...finalCourseData.slides.map((slide) => {
+                    if (slide.id === slideId) {
+                        console.log("slide.slideId: ", slide.id);
+                        return {
+                            id: slide.id,
+                            content: [...slide.content.map((contentObject) => {
+                                if (contentObject.id === contentId) {
+                                    return {
+                                        id: contentObject.id,
+                                        type: contentObject.type,
+                                        data: image
+                                    }
+                                }
+                                return {
+                                    ...contentObject
+                                }
+                            })]
+                        }
+                    } else {
+                        return { ...slide }
+                    }
+                })]
+            }
+            return newFinalCourseData;
+        })
     }
 
     return (<>
@@ -191,8 +237,8 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                     <div className='slide'>
                         {
                             <Droppable id={currentSlide}>
-                                <span>{currentSlide}</span><br></br>
-                                <DndContext onDragStart={handleSortStart} onDragEnd={handleSortEnd}>
+                                <span>{currentSlide}</span>
+                                <DndContext onDragStart={handleSortStart} onDragEnd={(event)=>handleSortEnd(event ,currentSlide)}>
                                     <SortableContext items={finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content} strategy={verticalListSortingStrategy}>
                                         {
                                             finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.map((element, index) => {
@@ -223,6 +269,20 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                                                         <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlide , element.id)} style={{ display: "none" }}></input>
                                                     </SortableItem>;
                                                 }
+                                                if(element.type === 'Video'){
+                                                    return (
+                                                        <SortableItem id={element.id} key={index}>
+                                                            <YouTubeVideo/>
+                                                        </SortableItem>
+                                                    )
+                                                }
+                                                if(element.type === 'Quiz'){
+                                                    return (
+                                                        <SortableItem id={element.id} key={index}>
+                                                            <Quiz setFinalCourseData={setFinalCourseData} slideId={currentSlide} contentId={element.id}/>
+                                                        </SortableItem>
+                                                    )
+                                                }
                                             })
                                         }
                                     </SortableContext>
@@ -247,6 +307,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                         <Text />
                         <Image />
                         <Video />
+                        <QuizDraggable />
                     </div>
                 </div>
             </DndContext>
