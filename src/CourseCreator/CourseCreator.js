@@ -17,7 +17,10 @@ import Video_Component from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
 
 
-const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId, selectedSemId, setShowPreview, setParentsCopyOfSlidesData, parentsCopyOfSlidesData }) => {
+const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId,
+     selectedSemId, setShowPreview, setParentsCopyOfSlidesData, 
+    parentsCopyOfSlidesData ,
+    mainCourseData , setMainCourseData}) => {
 
     let initialId;
     let initialSlidesData;
@@ -32,7 +35,15 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         }
     }
 
-
+    useEffect(()=>{
+        // mainCourseData.semesters.map((semester , semIndex)=>{
+        //     if(semester.id === selectedSemId){
+        //         semester.chapters.map((chapter)=>{
+        //             if(chap)
+        //         })
+        //     }
+        // })
+    })
 
     const [activeId, setActiveId] = useState(null);
     const [currentSlideId, setCurrentSlideId] = useState(initialId); // will contain the id of the current slide
@@ -62,10 +73,10 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     //         if (active.id !== over.id) {
     //             //over.id is same as  slide id
     //             setSlidesData((slidesData) => {
-    //                 const newFinalCourseData = {
+    //                 const newSlidesData = {
     //                     ...slidesData
     //                 }
-    //                 const newSlides = newFinalCourseData.slides.map((slide) => {
+    //                 const newSlides = newSlidesData.slides.map((slide) => {
     //                     if (slide.id === over.id) {
     //                         return {
     //                             ...slide, content: [...slide.content, { contentId: 4, type: "Heading", data: "" }]
@@ -75,8 +86,8 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     //                     }
     //                 })
 
-    //                 newFinalCourseData.slides = newSlides;
-    //                 return newFinalCourseData;
+    //                 newSlidesData.slides = newSlides;
+    //                 return newSlidesData;
     //             })
     //         }
     //         return
@@ -85,14 +96,14 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
 
 
     //     if (active.id !== over.id) {
-    //         const newFinalCourseData = { ...slidesData };
+    //         const newSlidesData = { ...slidesData };
 
-    //         const oldIndex = newFinalCourseData.slides.findIndex(slide => slide.id === active.id);
-    //         const newIndex = newFinalCourseData.slides.findIndex(slide => slide.id === over.id);
+    //         const oldIndex = newSlidesData.slides.findIndex(slide => slide.id === active.id);
+    //         const newIndex = newSlidesData.slides.findIndex(slide => slide.id === over.id);
 
-    //         const newSlides = arrayMove(newFinalCourseData.slides, oldIndex, newIndex);
-    //         newFinalCourseData.slides = newSlides;
-    //         setSlidesData(newFinalCourseData);
+    //         const newSlides = arrayMove(newSlidesData.slides, oldIndex, newIndex);
+    //         newSlidesData.slides = newSlides;
+    //         setSlidesData(newSlidesData);
     //     }
 
     // }
@@ -108,13 +119,25 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         if (event.over === null) return;
         const { active, over } = event;
         setSlidesData((slidesData) => {
-            const newFinalCourseData = { ...slidesData };
+            const newSlidesData = { ...slidesData };
 
-            // const oldIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === active.id);
-            //const newIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === over.id);
+            const oldIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === active.id);
+            const newIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === over.id);
 
-            // const newContent = arrayMove(slidesData.slides)
-            return newFinalCourseData;
+            const newContent = arrayMove(slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content , oldIndex , newIndex);
+
+            newSlidesData.slides = newSlidesData.slides.map((slide)=>{
+                if(slide.id === currentSlideId){
+                    return {
+                        id:slide.id ,
+                        content:newContent
+                    }
+                }else{
+                    return {...slide}
+                }
+            })
+            console.log("after sort end: " , newSlidesData);
+            return newSlidesData;
         })
         setActiveId(null);
     }
@@ -139,9 +162,9 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
             })
 
             setSlidesData((slidesData) => {
-                const newFinalCourseData = { ...slidesData, slides: newSlides };
-                console.log(newFinalCourseData);
-                return newFinalCourseData;
+                const newSlidesData = { ...slidesData, slides: newSlides };
+                console.log(newSlidesData);
+                return newSlidesData;
             });
 
             console.log("dropped on ", event.over.id);
@@ -152,8 +175,8 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         
         const newSlideId = uuidv4();
         setSlidesData((slidesData) => {
-            const newFinalCourseData = { ...slidesData, slides: [...slidesData.slides, { id: newSlideId, content: [] }] }
-            return newFinalCourseData;
+            const newSlidesData = { ...slidesData, slides: [...slidesData.slides, { id: newSlideId, content: [] }] }
+            return newSlidesData;
         })
         setCurrentSlideId(newSlideId);
         console.log("add slide slidesData, ", slidesData);
@@ -175,7 +198,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     function handleOnChange(e, contentId, id) {
         console.log("handleOnChange called , its for heading");
         setSlidesData((slidesData) => {
-            const newFinalCourseData = {
+            const newSlidesData = {
                 ...slidesData, slides: [...slidesData.slides.map((slide) => {
                     if (slide.id === id) {
                         console.log("slide.slideId: ", slide.id);
@@ -199,14 +222,14 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                     }
                 })]
             }
-            return newFinalCourseData;
+            return newSlidesData;
         })
     }
 
     function handleImageChange(event, slideId, contentId) {
         const image = event.target.files[0];
         setSlidesData((slidesData) => {
-            const newFinalCourseData = {
+            const newSlidesData = {
                 ...slidesData, slides: [...slidesData.slides.map((slide) => {
                     if (slide.id === slideId) {
                         console.log("slide.slideId: ", slide.id);
@@ -230,7 +253,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                     }
                 })]
             }
-            return newFinalCourseData;
+            return newSlidesData;
         })
     }
 

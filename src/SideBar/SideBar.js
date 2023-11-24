@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {v4 as uuidv4} from "uuid";
 
 const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourseData , setMainCourseData }) => {
-
+    console.log("maincourseData : " , mainCourseData);
     const [semesterName, setSemesterName] = useState('');
     const [chapterName, setChapterName] = useState('');
     const [sectionName, setSectionName] = useState('');
@@ -61,14 +61,16 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
             }
         ]
     }
-    const [semesters, setSemesters] = useState([]);
 
+    console.log("maincourseData that is passed to sidebar : " ,mainCourseData); 
+    const [semesters, setSemesters] = useState(mainCourseData.semesters);
+    
     useEffect(()=>{
-        setMainCourseData(semesters);
-    },[semesters])
+        setSemesters(mainCourseData.semesters);
+    })
+
 
     const addSemester = () => {
-
         const newSemesterObj = {
             id: uuidv4(),
             name: semesterName,
@@ -110,7 +112,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
 
     function addQuiz(semIndex, chapIndex) {
         const newQuiz = {
-            id: `qq`,
+            id: `qq`,   
             name: sectionName,
             content: []
         }
@@ -120,7 +122,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
         setSemesters(newSemesters);
     }
 
-    console.log("semesters: ", semesters);
+    console.log("semesters: ", semesters , "mainCourseData.semesters: " , mainCourseData.semesters);
     return (
         <>
             
@@ -128,7 +130,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                     {
                         semesters.map((semester, semIndex) => (
                             <Accordion.Item eventKey={semIndex + 1}>
-                                <Accordion.Header>{semester.name} </Accordion.Header><button>delete</button>
+                                <Accordion.Header>{semester.name} </Accordion.Header>
                                 <Accordion.Body style={{ padding: "0"}}>
                                     <Accordion style={{opacity:"0.9"}} >
                                         {
