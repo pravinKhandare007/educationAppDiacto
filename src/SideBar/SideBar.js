@@ -2,7 +2,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import {v4 as uuidv4} from "uuid";
 
 const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourseData , setMainCourseData }) => {
 
@@ -12,7 +12,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
 
     let testSideBar = {
         semesters: [
-            {
+            {   
                 id: "s1",
                 name: 'sem 1',
                 chapters: [
@@ -61,7 +61,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
             }
         ]
     }
-    const [semesters, setSemesters] = useState(testSideBar.semesters);
+    const [semesters, setSemesters] = useState([]);
 
     useEffect(()=>{
         setMainCourseData(semesters);
@@ -70,7 +70,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
     const addSemester = () => {
 
         const newSemesterObj = {
-            id: "xyz",
+            id: uuidv4(),
             name: semesterName,
             chapters: []
         }
@@ -83,7 +83,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
     function addChapter(semIndex) {
         console.log("semIndex: ", semIndex);
         const newChapter = {
-            id: `c${semesters[semIndex].chapters.length + 1}`,
+            id: uuidv4(),
             name: chapterName,
             sections: [],
             quiz: []
@@ -97,7 +97,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
 
     function addSection(semIndex, chapIndex) {
         const newSection = {
-            id: `sec${semesters[semIndex].chapters[chapIndex].sections.length + 1}`,
+            id: uuidv4(),
             name: sectionName,
             content: []
         }
@@ -128,8 +128,8 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                     {
                         semesters.map((semester, semIndex) => (
                             <Accordion.Item eventKey={semIndex + 1}>
-                                <Accordion.Header>{semester.name}</Accordion.Header>
-                                <Accordion.Body style={{ padding: "0", backgroundColor: "black" }}>
+                                <Accordion.Header>{semester.name} </Accordion.Header><button>delete</button>
+                                <Accordion.Body style={{ padding: "0"}}>
                                     <Accordion style={{opacity:"0.9"}} >
                                         {
                                             semester.chapters.map((chapter, chapIndex) => (
@@ -167,7 +167,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                                                                 )
                                                             }
                                                             <Accordion.Item eventKey={0}>
-                                                                <input value={sectionName} onChange={(event) => setSectionName(event.target.value)}></input>
+                                                                <input style={{marginBottom:'5px' , marginTop:"5px"}} value={sectionName} onChange={(event) => setSectionName(event.target.value)}></input>
                                                                 <Button variant="primary" onClick={() => addSection(semIndex, chapIndex)}>
                                                                     Add section
                                                                 </Button>
@@ -185,7 +185,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
                                             )
                                         }
                                         <Accordion.Item eventKey={0}>
-                                            <input value={chapterName} onChange={(event)=>setChapterName(event.target.value)}></input>
+                                            <input style={{marginBottom:'5px' , marginTop:"5px"}} value={chapterName} onChange={(event)=>setChapterName(event.target.value)}></input>
                                             <Button variant="primary" onClick={()=>addChapter(semIndex)}>
                                                 Add Chapter
                                             </Button>
@@ -199,7 +199,7 @@ const SideBar = ({courseTree , setCourseTree ,handleSelectedSection , mainCourse
 
                     }
                     <Accordion.Item eventKey={0}>
-                        <input id={"semName"} value={semesterName} onChange={(event) => setSemesterName(event.target.value)}></input>
+                        <input id={"semName"} style={{marginBottom:'5px' , marginTop:"5px"}} value={semesterName} onChange={(event) => setSemesterName(event.target.value)}></input>
                         <Button variant="primary" onClick={addSemester}> 
                             Add Semester
                         </Button>

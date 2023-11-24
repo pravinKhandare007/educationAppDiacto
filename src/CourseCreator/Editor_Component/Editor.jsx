@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill"; // Import Quill from react-quill
-import "react-quill/dist/quill.snow.css";
+// import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
 import quill from "quill";
 
@@ -9,7 +9,7 @@ console.log("window.Quill = quill executed");
 Quill.register("modules/imageResize", ImageResize);
 console.log("outside editor Quill.register executed");
 
-const Editor = ({ finalCourseData, setFinalCourseData, slideId, placeholder, content , contentId }) => {
+const Editor = ({ slidesData, setSlidesData, slideId, placeholder, content , contentId }) => {
   console.log("Editor component called");
 
   useEffect(() => {
@@ -18,8 +18,8 @@ const Editor = ({ finalCourseData, setFinalCourseData, slideId, placeholder, con
 
   const handleChange = (html) => {
     console.log("Editors onChange funcion called");
-    setFinalCourseData((finalCourseData)=>{
-      const newFinalCourseData = {...finalCourseData , slides:[...finalCourseData.slides.map((slide)=>{
+    setSlidesData((slidesData)=>{
+      const newFinalCourseData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
         if(slide.id === slideId ){
           console.log("slide.slideId: " , slide.slideId);
           return {

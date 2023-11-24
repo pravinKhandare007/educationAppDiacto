@@ -1,6 +1,6 @@
 import { usePagination } from "./usePagination";
 
-const Pagination = ({slides , paginate , currentSlideId }) => {
+const Pagination = ({slides , paginate , currentSlideId , setCurrentSlideId}) => {
 
     const paginationRange = usePagination({
         slidesArray : slides ,
@@ -15,11 +15,36 @@ const Pagination = ({slides , paginate , currentSlideId }) => {
     //         number:++index
     //     }
     // })
+    function nextSlide(){
+        //[{id}{id}{id}]
+        const currentSlideIndex = slides.findIndex((slide)=> slide.id === currentSlideId);
+        setCurrentSlideId(slides[currentSlideIndex + 1].id);
+    }
+
+    function previousSlide(){
+        const currentSlideIndex = slides.findIndex(slide => slide.id === currentSlideId);
+        setCurrentSlideId(slides[currentSlideIndex - 1].id);
+    }
+
+    const disableStyle = {
+        pointerEvents:"none",
+        color:"grey"
+    }
+
+    function disableNext(){
+        if(currentSlideId === slides[slides.length -1].id) return disableStyle;
+        return {}
+    }
     
+    function disablePrevious(){
+        if(currentSlideId === slides[0].id) return disableStyle;
+        return {}
+    }
     
     return ( <>
-        <nav>
+        <nav className="d-flex justify-content-center">
             <ul className="pagination">
+            <li className={`page-item`} style={disablePrevious()}><a onClick={previousSlide} className="page-link">{"<"}</a></li>
                 {
                     paginationRange.map((element)=>{
                         if(element === "DOTS"){
@@ -34,6 +59,7 @@ const Pagination = ({slides , paginate , currentSlideId }) => {
                         )
                     })
                 }
+                <li className={`page-item`} style={disableNext()}><a onClick={nextSlide} className="page-link">{">"}</a></li>
             </ul>
         </nav>
     </> );

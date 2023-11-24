@@ -8,7 +8,7 @@
     width: 80%;
     display: flex;
     flex-direction: column;
-    padding: 1em;
+    /* padding: 1em; */
 }
 .widgets{
     border-bottom: 1px solid black;
@@ -20,7 +20,7 @@
     width: 20%;
     /* padding: 1em; */
     border-left: 1px solid black;
-    
+    height:95vh;
 }
 
 .draggables{
@@ -40,6 +40,9 @@
 .slide{
     height: 550px;
     overflow: scroll;
+    background-color:#c8c7c7;
+    /* color:whitesmoke */
+    padding: 1em;   
 }
 
 .pagination_container{
@@ -48,7 +51,7 @@
 }
 
 .pagination_container nav{
-    text-align: center;
+   align-items: right;
 } 
 
 .heading_form_top{
@@ -69,3 +72,13 @@
   color: black;
   width: 100%;
 }
+
+.box{
+    width: 100%;
+    padding: 0.5em;
+}
+
+.box img{
+    width: 100%;
+}
+

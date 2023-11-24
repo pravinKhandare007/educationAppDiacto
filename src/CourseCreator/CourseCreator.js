@@ -7,46 +7,47 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { Droppable } from './Droppable';
 import Pagination from '../Pagination/Pagination';
 import Image from './DraggableItems/Image';
-import Video from './DraggableItems/Video';
+import Video from './DraggableItems/VideoDraggable';
 import { SortableItem } from './SortableItem/SortableItem';
 import { Item } from './SortableItem/Item';
 import Editor from './Editor_Component/Editor';
-import YouTubeVideo from './Video_Component/Video';
 import Quiz from './Quiz_Component/Quiz';
 import QuizDraggable from './DraggableItems/QuizDraggable';
+import Video_Component from './Video_Component/VideoComponent';
+import { v4 as uuidv4 } from 'uuid';
 
 
-let contentId = 4;
-let slideId = 5;
-const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId, selectedSemId }) => {
+const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId, selectedSemId, setShowPreview, setParentsCopyOfSlidesData, parentsCopyOfSlidesData }) => {
+
+    let initialId;
+    let initialSlidesData;
+    if (parentsCopyOfSlidesData) {
+        console.log("setting initial using parents data: ")
+        initialId = parentsCopyOfSlidesData.slides[0].id;
+        initialSlidesData = parentsCopyOfSlidesData;
+    } else {
+        initialId = uuidv4();
+        initialSlidesData = {
+            slides: [{ id: initialId, content: [] },]
+        }
+    }
+
+
 
     const [activeId, setActiveId] = useState(null);
-    const [currentSlide, setCurrentSlide] = useState(1); // will contain the id of the current slide
+    const [currentSlideId, setCurrentSlideId] = useState(initialId); // will contain the id of the current slide
     //rename slidesData
     //api we need to send sectionID and body -- sildesData.
     //sample api endpoint = /api/section/:sectionId 
     //api body = slidesData
-    const [finalCourseData, setFinalCourseData] = useState({
-        slides: [{ id: 1, content: [{ id: 1, type: "Text", data: "" }] },
-        { id: 2, content: [] },
-        { id: 3, content: [] },
-        { id: 4, content: [] },
-        { id: 5, content: [] },
-        { id: 6, content: [] },
-        { id: 7, content: [] },
-        { id: 8, content: [] },
-        { id: 9, content: [] },
-        { id: 10, content: [] },
-        { id: 11, content: [] },
-        { id: 12, content: [] }]
-    })
+    const [slidesData, setSlidesData] = useState(initialSlidesData);
 
-    console.log(selectedSemId, selectedChapterId, selectedSectionId)
+    console.log(selectedSemId, selectedChapterId, selectedSectionId);
 
     useEffect(() => {
-        console.log("useEffect finalCourseData", finalCourseData);
-        console.log("currentSlide: ", currentSlide);
-        
+        console.log("useEffect slidesData", slidesData);
+        console.log("currentSlideId: ", currentSlideId);
+        setParentsCopyOfSlidesData(slidesData);
     })
 
     // function handleDragEnd(event) {
@@ -60,9 +61,9 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     //     if (active.id === "Heading") {
     //         if (active.id !== over.id) {
     //             //over.id is same as  slide id
-    //             setFinalCourseData((finalCourseData) => {
+    //             setSlidesData((slidesData) => {
     //                 const newFinalCourseData = {
-    //                     ...finalCourseData
+    //                     ...slidesData
     //                 }
     //                 const newSlides = newFinalCourseData.slides.map((slide) => {
     //                     if (slide.id === over.id) {
@@ -84,14 +85,14 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
 
 
     //     if (active.id !== over.id) {
-    //         const newFinalCourseData = { ...finalCourseData };
+    //         const newFinalCourseData = { ...slidesData };
 
     //         const oldIndex = newFinalCourseData.slides.findIndex(slide => slide.id === active.id);
     //         const newIndex = newFinalCourseData.slides.findIndex(slide => slide.id === over.id);
 
     //         const newSlides = arrayMove(newFinalCourseData.slides, oldIndex, newIndex);
     //         newFinalCourseData.slides = newSlides;
-    //         setFinalCourseData(newFinalCourseData);
+    //         setSlidesData(newFinalCourseData);
     //     }
 
     // }
@@ -102,17 +103,17 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         console.log("drag start", event)
     }
 
-    function handleSortEnd(event , currentSlide) {
+    function handleSortEnd(event, currentSlideId) {
         console.log("sort start", event);
-        if(event.over === null ) return ;
-        const {active , over } = event;
-        setFinalCourseData((finalCourseData)=>{
-            const newFinalCourseData = {...finalCourseData};
+        if (event.over === null) return;
+        const { active, over } = event;
+        setSlidesData((slidesData) => {
+            const newFinalCourseData = { ...slidesData };
 
-           // const oldIndex = finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.findIndex(contentObject => contentObject.id === active.id);
-            //const newIndex = finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.findIndex(contentObject => contentObject.id === over.id);
+            // const oldIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === active.id);
+            //const newIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === over.id);
 
-            // const newContent = arrayMove(finalCourseData.slides)
+            // const newContent = arrayMove(slidesData.slides)
             return newFinalCourseData;
         })
         setActiveId(null);
@@ -123,22 +124,22 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         if (event.over === null) return;
 
         if (event.over && event.over.id !== null) {
-            const newSlides = finalCourseData.slides.map((slide) => {
+            const newSlides = slidesData.slides.map((slide) => {
                 console.log("event.over.id: ", event.over.id);
                 console.log("slide.id: ", slide.id);
                 if (event.over.id === slide.id) {
                     //update the content of that slide 
                     return {
                         id: slide.id,
-                        content: [...slide.content, { id: contentId++, type: event.active.id, data: "" }]
+                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: "" }]
                     }
                 } else {
                     return slide;
                 }
             })
 
-            setFinalCourseData((finalCourseData) => {
-                const newFinalCourseData = { ...finalCourseData, slides: newSlides };
+            setSlidesData((slidesData) => {
+                const newFinalCourseData = { ...slidesData, slides: newSlides };
                 console.log(newFinalCourseData);
                 return newFinalCourseData;
             });
@@ -147,13 +148,16 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         }
     }
 
-    function addSlide(slideId) {
-        setFinalCourseData((finalCourseData) => {
-            const newFinalCourseData = { ...finalCourseData, slides: [...finalCourseData.slides, { id: slideId++, content: [] }] }
+    function addSlide() {
+        
+        const newSlideId = uuidv4();
+        setSlidesData((slidesData) => {
+            const newFinalCourseData = { ...slidesData, slides: [...slidesData.slides, { id: newSlideId, content: [] }] }
             return newFinalCourseData;
         })
-        console.log("add slide finalCourseData, ", finalCourseData);
-        //setCurrentSlide(slideId);
+        setCurrentSlideId(newSlideId);
+        console.log("add slide slidesData, ", slidesData);
+        //setCurrentSlideId(slideId);
     }
 
 
@@ -165,14 +169,14 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     }
 
     function paginate(id) {
-        setCurrentSlide(id);
+        setCurrentSlideId(id);
     }
     //takes slide id and content id ,adds e.target.value to the data property
     function handleOnChange(e, contentId, id) {
         console.log("handleOnChange called , its for heading");
-        setFinalCourseData((finalCourseData) => {
+        setSlidesData((slidesData) => {
             const newFinalCourseData = {
-                ...finalCourseData, slides: [...finalCourseData.slides.map((slide) => {
+                ...slidesData, slides: [...slidesData.slides.map((slide) => {
                     if (slide.id === id) {
                         console.log("slide.slideId: ", slide.id);
                         return {
@@ -199,11 +203,11 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         })
     }
 
-    function handleImageChange(event , slideId , contentId){
+    function handleImageChange(event, slideId, contentId) {
         const image = event.target.files[0];
-        setFinalCourseData((finalCourseData)=>{
+        setSlidesData((slidesData) => {
             const newFinalCourseData = {
-                ...finalCourseData, slides: [...finalCourseData.slides.map((slide) => {
+                ...slidesData, slides: [...slidesData.slides.map((slide) => {
                     if (slide.id === slideId) {
                         console.log("slide.slideId: ", slide.id);
                         return {
@@ -234,52 +238,53 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
         <div className='course_creator_container'>
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className='slides_container'>
-                    <div className='slide'>
+                    <div className='slide' >
+                        <div style={{ textAlign: "right" , marginBottom:"10px" }}><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
                         {
-                            <Droppable id={currentSlide}>
-                                <span>{currentSlide}</span>
-                                <DndContext onDragStart={handleSortStart} onDragEnd={(event)=>handleSortEnd(event ,currentSlide)}>
-                                    <SortableContext items={finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content} strategy={verticalListSortingStrategy}>
+                            <Droppable id={currentSlideId}>
+                                <span style={{textAlign:"right"}}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
+                                <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
+                                    <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
                                         {
-                                            finalCourseData.slides.filter(slide => slide.id === currentSlide)[0].content.map((element, index) => {
+                                            slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((element, index) => {
                                                 if (element.type === 'Heading') {
-                                                    return <SortableItem id={element.id} key={index}>
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
                                                         <div className='heading_form_top'>
-                                                            <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlide) }} placeholder='Heading...' className='heading_form_top_name'></input>
+                                                            <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
                                                         </div>
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Text') {
-                                                    return <SortableItem id={element.id} key={index}>
-                                                        <Editor finalCourseData={finalCourseData} setFinalCourseData={setFinalCourseData} content={element.data} slideId={currentSlide} contentId={element.id} />
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
+                                                        <Editor slidesData={slidesData} setSlidesData={setSlidesData} content={element.data} slideId={currentSlideId} contentId={element.id} />
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Image') {
-                                                    return <SortableItem id={element.id} key={index}>
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
                                                         {element.data ? (
                                                             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                                                               
-                                                                    <div className="box">
-                                                                        <img id={"imgId"}  src={URL.createObjectURL(element.data)} ></img>
-                                                                    </div>
-                                                               
+
+                                                                <div className="box">
+                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} ></img>
+                                                                </div>
+
                                                             </div>
                                                         ) : null}
-                                                        {element.data ? null : <div><label htmlFor={`${element.id}`} style={{ width: "100%", height: "50px", textAlign: "center", display: "block", border: "1px dotted grey" }}>upload image</label></div>}
-                                                        <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlide , element.id)} style={{ display: "none" }}></input>
+                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent:"center" , alignContent:"center" }}><label htmlFor={`${element.id}`} style={{display:"flex" , justifyContent:"center"}} ><span>upload image</span></label></div>}
+                                                        <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
                                                     </SortableItem>;
                                                 }
-                                                if(element.type === 'Video'){
+                                                if (element.type === 'Video') {
                                                     return (
-                                                        <SortableItem id={element.id} key={index}>
-                                                            <YouTubeVideo/>
+                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
+                                                            <Video_Component />
                                                         </SortableItem>
                                                     )
                                                 }
-                                                if(element.type === 'Quiz'){
+                                                if (element.type === 'Quiz') {
                                                     return (
-                                                        <SortableItem id={element.id} key={index}>
-                                                            <Quiz setFinalCourseData={setFinalCourseData} slideId={currentSlide} contentId={element.id}/>
+                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
+                                                            <Quiz setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData}/>
                                                         </SortableItem>
                                                     )
                                                 }
@@ -295,9 +300,9 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                     </div>
                     <div>
                         <div className='pagination_container'>
-                            <Pagination slides={finalCourseData.slides} paginate={paginate} currentSlideId={currentSlide}></Pagination>
+                            <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                         </div>
-                        <div><button className='btn btn-primary' onClick={() => addSlide(slideId)}>Add Slide</button></div>
+                        <div style={{textAlign:"right" , marginRight:"26px"}}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>
                     </div>
                 </div>
                 <div className='draggables_container'>
