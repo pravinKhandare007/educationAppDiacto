@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const YouTubeVideo = () => {
+const YouTubeVideo = (props) => {
   const [videoUrl, setVideoUrl] = useState('');
   const [videoId, setVideoId] = useState('');
 
@@ -14,9 +14,13 @@ const YouTubeVideo = () => {
   const handleInputChange = (e) => {
     const inputUrl = e.target.value;
     setVideoUrl(inputUrl);
-    const id = getVideoId(inputUrl);
-    setVideoId(id);
+    
   };  
+
+  function handleYtURLUpload(){
+    const id = getVideoId(videoUrl);
+    setVideoId(id);
+  }
 
   useEffect(()=>{
     
@@ -33,7 +37,7 @@ const YouTubeVideo = () => {
           placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
         />
       </label>
-      <button >upload</button>
+      <button onClick={handleYtURLUpload}>upload</button>
       {videoId && (
         <div>
           <iframe

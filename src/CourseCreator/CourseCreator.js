@@ -17,49 +17,108 @@ import Video_Component from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
 
 
-const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedChapterId,
-     selectedSemId, setShowPreview, setParentsCopyOfSlidesData, 
-    parentsCopyOfSlidesData ,
-    mainCourseData , setMainCourseData}) => {
+const CourseCreator = ({ selectedSectionId, selectedChapterId,
 
-    let initialId;
-    let initialSlidesData;
-    if (parentsCopyOfSlidesData) {
-        console.log("setting initial using parents data: ")
-        initialId = parentsCopyOfSlidesData.slides[0].id;
-        initialSlidesData = parentsCopyOfSlidesData;
-    } else {
-        initialId = uuidv4();
-        initialSlidesData = {
-            slides: [{ id: initialId, content: [] },]
-        }
-    }
+    selectedSemId, setShowPreview, setParentsCopyOfSlidesData,
 
-    useEffect(()=>{
-        // mainCourseData.semesters.map((semester , semIndex)=>{
-        //     if(semester.id === selectedSemId){
-        //         semester.chapters.map((chapter)=>{
-        //             if(chap)
-        //         })
-        //     }
-        // })
-    })
+    mainCourseData, setMainCourseData }) => {
+    
 
+    console.log("rendering course creater");
+    const initialId = uuidv4();
     const [activeId, setActiveId] = useState(null);
     const [currentSlideId, setCurrentSlideId] = useState(initialId); // will contain the id of the current slide
     //rename slidesData
     //api we need to send sectionID and body -- sildesData.
     //sample api endpoint = /api/section/:sectionId 
     //api body = slidesData
+    let initialSlidesData = { slides: [{ id: initialId, content: [] }] }
     const [slidesData, setSlidesData] = useState(initialSlidesData);
 
-    console.log(selectedSemId, selectedChapterId, selectedSectionId);
+    useEffect(()=>{
+        console.log("maincourseData : " , mainCourseData, "semID : " , selectedSemId, "chapID : " , selectedChapterId);
+        
+    })
+
+    
 
     useEffect(() => {
-        console.log("useEffect slidesData", slidesData);
-        console.log("currentSlideId: ", currentSlideId);
-        setParentsCopyOfSlidesData(slidesData);
+        let initialId; //name change
+        initialId = uuidv4();
+        generateSlides(); //pass id 
+    }, [selectedSectionId])
+
+    useEffect(()=>{
+        console.log("slidesdata ; " , slidesData)
+        setMainCourseData((mainCourseData)=>{
+            return {
+                ...mainCourseData , semesters: [...mainCourseData.semesters.map((semester)=>{
+                    if(semester.id === selectedSemId){
+                        return {
+                            ...semester , chapters: [...semester.chapters.map((chapter)=>{
+                                if(chapter.id === selectedChapterId){
+                                    return {
+                                        ...chapter , sections:[...chapter.sections.map((section)=>{
+                                            if(section.id == selectedSectionId){
+                                                return {
+                                                    ...section , content: slidesData
+                                                }
+                                            }else {
+                                                return {...section}
+                                            }
+                                        })]
+                                    }
+                                }else{
+                                    return {...chapter}
+                                }
+                            })]
+                        }
+                    }else{
+                        return {...semester}
+                    }
+                })]
+            }
+        })
+    },[slidesData])
+
+    useEffect(()=>{
+        console.log("main couse data : " , mainCourseData);
     })
+
+
+
+    function generateSlides(){
+        const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+        const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+        const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId)?.content;
+
+
+       // const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+        if (sectionsSlidesData) {
+            console.log("sectttionsSlidesdata : ", sectionsSlidesData);
+            console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
+            setSlidesData(()=>{ 
+                return {...sectionsSlidesData}
+            });
+            setCurrentSlideId(sectionsSlidesData.slides[0].id);     
+
+        } else {
+            const firstSlide = {
+                id: uuidv4(), content: []
+            }
+            setSlidesData({
+                slides: [
+                    firstSlide 
+                ]
+            })
+            setCurrentSlideId(firstSlide.id);
+        }
+    }
+    // useEffect(() => {
+    //     console.log("useEffect slidesData", slidesData);
+    //     console.log("currentSlideId: ", currentSlideId);
+    //     setParentsCopyOfSlidesData(slidesData);
+    // })
 
     // function handleDragEnd(event) {
     //     setActiveId(null);
@@ -124,19 +183,19 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
             const oldIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === active.id);
             const newIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === over.id);
 
-            const newContent = arrayMove(slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content , oldIndex , newIndex);
+            const newContent = arrayMove(slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content, oldIndex, newIndex);
 
-            newSlidesData.slides = newSlidesData.slides.map((slide)=>{
-                if(slide.id === currentSlideId){
+            newSlidesData.slides = newSlidesData.slides.map((slide) => {
+                if (slide.id === currentSlideId) {
                     return {
-                        id:slide.id ,
-                        content:newContent
+                        id: slide.id,
+                        content: newContent
                     }
-                }else{
-                    return {...slide}
+                } else {
+                    return { ...slide }
                 }
             })
-            console.log("after sort end: " , newSlidesData);
+            console.log("after sort end: ", newSlidesData);
             return newSlidesData;
         })
         setActiveId(null);
@@ -154,7 +213,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                     //update the content of that slide 
                     return {
                         id: slide.id,
-                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: "" }]
+                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: null }]
                     }
                 } else {
                     return slide;
@@ -172,7 +231,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
     }
 
     function addSlide() {
-        
+
         const newSlideId = uuidv4();
         setSlidesData((slidesData) => {
             const newSlidesData = { ...slidesData, slides: [...slidesData.slides, { id: newSlideId, content: [] }] }
@@ -262,10 +321,10 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className='slides_container'>
                     <div className='slide' >
-                        <div style={{ textAlign: "right" , marginBottom:"10px" }}><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
+                        <div style={{ textAlign: "right", marginBottom: "10px" }}><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
                         {
-                            <Droppable id={currentSlideId}>
-                                <span style={{textAlign:"right"}}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
+                            currentSlideId && <Droppable id={currentSlideId}>
+                                <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
                                 <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
                                     <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
                                         {
@@ -293,21 +352,21 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
 
                                                             </div>
                                                         ) : null}
-                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent:"center" , alignContent:"center" }}><label htmlFor={`${element.id}`} style={{display:"flex" , justifyContent:"center"}} ><span>upload image</span></label></div>}
+                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}><label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label></div>}
                                                         <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Video') {
                                                     return (
                                                         <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
-                                                            <Video_Component />
+                                                            <Video_Component slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id}/>
                                                         </SortableItem>
                                                     )
                                                 }
                                                 if (element.type === 'Quiz') {
                                                     return (
                                                         <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
-                                                            <Quiz setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData}/>
+                                                            <Quiz setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} />
                                                         </SortableItem>
                                                     )
                                                 }
@@ -325,7 +384,7 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                         <div className='pagination_container'>
                             <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                         </div>
-                        <div style={{textAlign:"right" , marginRight:"26px"}}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>
+                        <div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>
                     </div>
                 </div>
                 <div className='draggables_container'>
@@ -340,7 +399,6 @@ const CourseCreator = ({ courseTree, setCourseTree, selectedSectionId, selectedC
                 </div>
             </DndContext>
         </div>
-
     </>);
 }
 

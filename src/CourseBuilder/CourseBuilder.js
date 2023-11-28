@@ -2,78 +2,90 @@ import { useEffect, useState } from "react";
 import SideBar from "../SideBar/SideBar";
 import CourseCreator from "../CourseCreator/CourseCreator";
 import './CourseBuilder.css'
-import Preview from "../Preview_Component/Preview";
+import Preview from "../Preview_Component/CourseCreatorPreview";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import SideBarPreview from "../Preview_Component/SideBarPreview";
+import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
 
 const CourseBuilder = () => {
-
+    console.log("rendering parent")
 
     const [selectedSemId, setSelectedSemId] = useState(null);
     const [selectedChapterId, setSelectedChapterId] = useState(null);
     const [selectedSectionId, setSelectedSectionId] = useState(null);
-    const [mainCourseData, setMainCourseData] = useState({ semesters: [] });
+    const [mainCourseData, setMainCourseData] = useState({semesters:[]});
     const [showPreview, setShowPreview] = useState(false);
-    const [parentsCopyOfSlidesData, setParentsCopyOfSlidesData] = useState(null);
-
+   
+    useEffect(()=>{
+        console.log("mainCourseData: " , mainCourseData);
+    })
     useEffect(() => {
-        setTimeout(() => {
-            setMainCourseData({
-                semesters: [
-                    {
-                        id: uuidv4(),
-                        name: 'Sem 1',
-                        chapters: [
 
-                            {
-                                id: uuidv4(),
-                                name: 'chapter 1',
-                                sections: [
-                                    {
-                                        id: uuidv4(),
-                                        name: 'section 1',
-                                        content: [{
-                                            slides: [{ id: uuidv4, content: [] },]
-                                        }]
-                                    }
-                                ],
-                                quiz: []
-                            }
-
-                        ]
+        setMainCourseData({
+            semesters: [
+                {
+                    id: uuidv4(),
+                    name: 'Sem 1',
+                    discription: {
+                        slides: []
                     },
-                    {
-                        id: uuidv4(),
-                        name: 'sem 2',
-                        chapters: [
+                    chapters: [
 
-                            {
-                                id: uuidv4(),
-                                name: 'chapter 1',
-                                sections: [
-                                    {
-                                        id: uuidv4(),
-                                        name: 'section 1',
-
-                                        content: [{ slides: [] }]
+                        {
+                            id: uuidv4(),
+                            name: 'chapter 1',
+                            discription: {
+                                slides: []
+                            },
+                            sections: [
+                                {
+                                    id: uuidv4(),
+                                    name: 'section 1',
+                                    content: {
+                                        slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'section 1 slide 1' }] },
+                                        { id: uuidv4(), content: [{ id: uuidv4(), type: 'Text', data: 'section 1 slide 2' }] },
+                                        ]
                                     }
-                                ],
-                                quiz: [
-                                    {
-                                        id: uuidv4(),
-                                        name: 'bioQuiz',
-                                        content: []
-                                    }
-                                ]
-                            }
+                                }
+                            ],
+                            quiz: []
+                        }
 
-                        ]
-                    }
-                ]
-            });
-        }, 1000);
+                    ]
+                },
+                {
+                    id: uuidv4(),
+                    name: 'sem 2',
+                    chapters: [
 
-    }, [])
+                        {
+                            id: uuidv4(),
+                            name: 'chapter 1',
+                            sections: [
+                                {
+                                    id: uuidv4(),
+                                    name: 'section 1',
+
+                                    content: null
+                                }
+                            ],
+                            quiz: [
+                                {
+                                    id: uuidv4(),
+                                    name: 'bioQuiz',
+                                    content: []
+                                }
+                            ]
+                        }
+
+                    ]
+                }
+            ]
+        });
+    },[]);
+
+
 
     const handleSelectedSection = (semesterId, chpId, secId) => {
         setSelectedChapterId(chpId)
@@ -84,34 +96,49 @@ const CourseBuilder = () => {
     function saveCourseData() {
         axios.post("/api/courses", mainCourseData);
     }
+
     return (<>
         <div className="title">Course Builder</div>
         <div className="course_builder_container">
-            <div className="sidebar_container">
-                <SideBar handleSelectedSection={handleSelectedSection}
-
-                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData} />
-            </div>
-            {/* below component will change with routing */}
-
             {
-                selectedSectionId ? showPreview ? (<Preview setShowPreview={setShowPreview} parentsCopyOfSlidesData={parentsCopyOfSlidesData} />) : (<CourseCreator
-                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
-                    selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId} selectedSemId={selectedSemId}
-                    setSelectedChapterId={setSelectedChapterId} setSelectedSectionId={setSelectedSectionId}
-                    setSelectedSemId={setSelectedSemId} setShowPreview={setShowPreview} setParentsCopyOfSlidesData={setParentsCopyOfSlidesData}
-                    parentsCopyOfSlidesData={parentsCopyOfSlidesData}
-                />
-                ) : <div> create component layout</div>
+                showPreview ? (
+                    <>
+                        <div className="sidebar_container">
+                            <SideBarPreview handleSelectedSection={handleSelectedSection}
+                                mainCourseData={mainCourseData} />
+                        </div>
+
+                        {
+                            selectedSectionId ? (
+                                <CourseCreatorPreview
+                                    mainCourseData={mainCourseData}
+                                    selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId} 
+                                    selectedSemId={selectedSemId}
+                                    setShowPreview={setShowPreview}
+                                />
+                            ) : <div></div>
+                        }
+                    </>
+                ) : (
+                    <>
+                        <div className="sidebar_container">
+                            <SideBar handleSelectedSection={handleSelectedSection}
+                                mainCourseData={mainCourseData} setMainCourseData={setMainCourseData} />
+                        </div>
+
+                        {
+                            selectedSectionId ? (
+                                <CourseCreator
+                                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                    selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
+                                     selectedSemId={selectedSemId}
+                                    setShowPreview={setShowPreview} 
+                                />
+                            ) : <div></div>
+                        }
+                    </>
+                )
             }
-
-            {/* preview component here 
-                showPreview = true ; 
-                course creator 
-                
-                */}
-
-
         </div>
     </>
     );

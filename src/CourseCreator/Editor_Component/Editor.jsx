@@ -5,9 +5,9 @@ import ImageResize from "quill-image-resize-module-react";
 import quill from "quill";
 
 window.Quill = quill;
-console.log("window.Quill = quill executed");
+
 Quill.register("modules/imageResize", ImageResize);
-console.log("outside editor Quill.register executed");
+
 
 const Editor = ({ slidesData, setSlidesData, slideId, placeholder, content , contentId }) => {
   console.log("Editor component called");
