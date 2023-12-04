@@ -17,12 +17,8 @@ import Video_Component from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
 
 
-const CourseCreator = ({ selectedSectionId, selectedChapterId,
+const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, setShowPreview, setParentsCopyOfSlidesData, mainCourseData, setMainCourseData }) => {
 
-    selectedSemId, setShowPreview, setParentsCopyOfSlidesData,
-
-    mainCourseData, setMainCourseData }) => {
-    
 
     console.log("rendering course creater");
     const initialId = uuidv4();
@@ -35,72 +31,168 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId,
     let initialSlidesData = { slides: [{ id: initialId, content: [] }] }
     const [slidesData, setSlidesData] = useState(initialSlidesData);
 
-    useEffect(()=>{
-        console.log("maincourseData : " , mainCourseData, "semID : " , selectedSemId, "chapID : " , selectedChapterId);
-        
+    useEffect(() => {
+        console.log("maincourseData : ", mainCourseData, "semID : ", selectedSemId, "chapID : ", selectedChapterId);
+
     })
 
-    
+
 
     useEffect(() => {
-        let initialId; //name change
-        initialId = uuidv4();
-        generateSlides(); //pass id 
-    }, [selectedSectionId])
 
-    useEffect(()=>{
-        console.log("slidesdata ; " , slidesData)
-        setMainCourseData((mainCourseData)=>{
-            return {
-                ...mainCourseData , semesters: [...mainCourseData.semesters.map((semester)=>{
+        console.log("setting slides data from main course data");
+        if (selectedSemId && !selectedChapterId && !selectedSectionId) {
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+            const selectedSemesterContent = mainCourseData.semesters[selectedSemIndex].content;
+            if (selectedSemesterContent) {
+                setSlidesData(mainCourseData.semesters[selectedSemIndex].content);
+                setCurrentSlideId(selectedSemesterContent.slides[0].id);
+            } else {
+                const firstSlide = {
+                    id: uuidv4(), content: []
+                }
+                setSlidesData({
+                    slides: [
+                        firstSlide
+                    ]
+                })
+                setCurrentSlideId(firstSlide.id);
+            }
+        }
+
+        if(selectedSemId && selectedChapterId && !selectedSectionId){
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+
+            const selectedChapterData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].content;
+
+            if(selectedChapterData){
+                setSlidesData(selectedChapterData);
+                setCurrentSlideId(selectedChapterData.slides[0].id);
+            }else{
+                const firstSlide = {
+                    id: uuidv4(), content: []
+                }
+                setSlidesData({
+                    slides: [
+                        firstSlide
+                    ]
+                })
+                setCurrentSlideId(firstSlide.id);
+            }
+        }
+
+
+        //generateSlides(); //pass id 
+        if (selectedSemId && selectedChapterId && selectedSectionId) {
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+            const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
+
+
+            const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+            if (sectionsSlidesData) {
+                console.log("sectttionsSlidesdata : ", sectionsSlidesData);
+                console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
+                setSlidesData(() => {
+                    return { ...sectionsSlidesData }
+                });
+                setCurrentSlideId(sectionsSlidesData.slides[0].id);
+
+            } else {
+                const firstSlide = {
+                    id: uuidv4(), content: []
+                }
+                setSlidesData({
+                    slides: [
+                        firstSlide
+                    ]
+                })
+                setCurrentSlideId(firstSlide.id);
+            }
+        }
+
+        
+    }, [selectedSectionId, selectedSemId, selectedChapterId])
+
+    useEffect(() => {
+        console.log("slidesdata ; ", slidesData)
+        //below if body is getting executed when section is clicked because we setted semId also when we set section id 
+        if(selectedSemId && !selectedChapterId && !selectedSectionId){
+            setMainCourseData((mainCourseData)=>{
+                const newMainCourseData = {...mainCourseData , semesters : mainCourseData.semesters.map((semester)=>{
                     if(semester.id === selectedSemId){
                         return {
-                            ...semester , chapters: [...semester.chapters.map((chapter)=>{
-                                if(chapter.id === selectedChapterId){
-                                    return {
-                                        ...chapter , sections:[...chapter.sections.map((section)=>{
-                                            if(section.id == selectedSectionId){
-                                                return {
-                                                    ...section , content: slidesData
-                                                }
-                                            }else {
-                                                return {...section}
-                                            }
-                                        })]
-                                    }
-                                }else{
-                                    return {...chapter}
-                                }
-                            })]
+                            ...semester , content: slidesData
                         }
                     }else{
-                        return {...semester}
+                        return {
+                            ...semester
+                        }
                     }
-                })]
-            }
-        })
-    },[slidesData])
+                })}
+                return newMainCourseData;
+            })
+        }
 
-    useEffect(()=>{
-        console.log("main couse data : " , mainCourseData);
+        if(selectedSemId && selectedChapterId && !selectedSectionId){
+
+        }
+
+        if(selectedSemId && selectedChapterId && selectedSectionId){
+            setMainCourseData((mainCourseData) => {
+                return {
+                    ...mainCourseData, semesters: [...mainCourseData.semesters.map((semester) => {
+                        if (semester.id === selectedSemId) {
+                            return {
+                                ...semester, chapters: [...semester.chapters.map((chapter) => {
+                                    if (chapter.id === selectedChapterId) {
+                                        return {
+                                            ...chapter, sections: [...chapter.sections.map((section) => {
+                                                if (section.id == selectedSectionId) {
+                                                    return {
+                                                        ...section, content: slidesData
+                                                    }
+                                                } else {
+                                                    return { ...section }
+                                                }
+                                            })]
+                                        }
+                                    } else {
+                                        return { ...chapter }
+                                    }
+                                })]
+                            }
+                        } else {
+                            return { ...semester }
+                        }
+                    })]
+                }
+            })
+        }
+        
+    }, [slidesData])
+
+    useEffect(() => {
+        console.log("main couse data : ", mainCourseData);
     })
 
 
 
-    function generateSlides(){
+    function generateSlides() {
         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
         const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
-        const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId)?.content;
+        const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
 
 
-       // const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+        const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
         if (sectionsSlidesData) {
             console.log("sectttionsSlidesdata : ", sectionsSlidesData);
             console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
-            setSlidesData(()=>{ 
-                return {...sectionsSlidesData}
+            setSlidesData(() => {
+                return { ...sectionsSlidesData }
             });
-            setCurrentSlideId(sectionsSlidesData.slides[0].id);     
+            setCurrentSlideId(sectionsSlidesData.slides[0].id);
 
         } else {
             const firstSlide = {
@@ -108,7 +200,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId,
             }
             setSlidesData({
                 slides: [
-                    firstSlide 
+                    firstSlide
                 ]
             })
             setCurrentSlideId(firstSlide.id);
@@ -321,9 +413,9 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId,
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className='slides_container'>
                     <div className='slide' >
-                        <div style={{ textAlign: "right", marginBottom: "10px" }}><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
+                        
                         {
-                            currentSlideId && <Droppable id={currentSlideId}>
+                            <Droppable id={currentSlideId}>
                                 <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
                                 <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
                                     <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
@@ -359,7 +451,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId,
                                                 if (element.type === 'Video') {
                                                     return (
                                                         <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
-                                                            <Video_Component slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id}/>
+                                                            <Video_Component slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} />
                                                         </SortableItem>
                                                     )
                                                 }

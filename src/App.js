@@ -4,9 +4,15 @@ import CourseBuilder from "./CourseBuilder/CourseBuilder";
 
 function App() {
   return (
-    <div className="App">
+    <>
+      <div className="App">
         <CourseBuilder/>
     </div>
+    <div className="portal">
+    
+    </div>
+    </>
+
     
   );
 }

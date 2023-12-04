@@ -8,17 +8,17 @@ import { v4 as uuidv4 } from "uuid";
 import SideBarPreview from "../Preview_Component/SideBarPreview";
 import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
 
-const CourseBuilder = () => {
+const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discription = "This course will teach about the fundamentals of trigonometry"}) => {
     console.log("rendering parent")
 
     const [selectedSemId, setSelectedSemId] = useState(null);
     const [selectedChapterId, setSelectedChapterId] = useState(null);
     const [selectedSectionId, setSelectedSectionId] = useState(null);
-    const [mainCourseData, setMainCourseData] = useState({semesters:[]});
+    const [mainCourseData, setMainCourseData] = useState({ semesters: [] });
     const [showPreview, setShowPreview] = useState(false);
-   
-    useEffect(()=>{
-        console.log("mainCourseData: " , mainCourseData);
+
+    useEffect(() => {
+        console.log("mainCourseData: ", mainCourseData);
     })
     useEffect(() => {
 
@@ -27,16 +27,16 @@ const CourseBuilder = () => {
                 {
                     id: uuidv4(),
                     name: 'Sem 1',
-                    discription: {
-                        slides: []
+                    content: {
+                        slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 discription or content' }] }]
                     },
                     chapters: [
 
                         {
                             id: uuidv4(),
                             name: 'chapter 1',
-                            discription: {
-                                slides: []
+                            content: {
+                                slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 chapter 1 content' }] }]
                             },
                             sections: [
                                 {
@@ -50,9 +50,11 @@ const CourseBuilder = () => {
                                 }
                             ],
                             quiz: []
-                        }
+                        },
 
-                    ]
+
+                    ],
+                    quiz: []
                 },
                 {
                     id: uuidv4(),
@@ -79,13 +81,31 @@ const CourseBuilder = () => {
                             ]
                         }
 
-                    ]
+                    ],
+                    quiz: []
                 }
             ]
         });
-    },[]);
+    }, []);
 
 
+    const handleSelectedSemester = (semesterId) => {
+        setSelectedSemId(semesterId);
+        setSelectedChapterId(null)
+        setSelectedSectionId(null)
+    }
+
+    const handleSelectedChapter = (semesterId, chapId) => {
+        setSelectedSemId(semesterId);
+        setSelectedChapterId(chapId);
+        setSelectedSectionId(null)
+    }
+
+    const resetSelectedIds = ()=>{
+        setSelectedSemId(null);
+        setSelectedChapterId(null);
+        setSelectedSectionId(null)
+    }
 
     const handleSelectedSection = (semesterId, chpId, secId) => {
         setSelectedChapterId(chpId)
@@ -98,47 +118,64 @@ const CourseBuilder = () => {
     }
 
     return (<>
-        <div className="title">Course Builder</div>
-        <div className="course_builder_container">
-            {
-                showPreview ? (
-                    <>
-                        <div className="sidebar_container">
-                            <SideBarPreview handleSelectedSection={handleSelectedSection}
-                                mainCourseData={mainCourseData} />
-                        </div>
+        <div className="builder_container">
+            <div className="title">
+                <div>
+                    <span><strong>Course Name:</strong> {name}</span><br></br>
+                    <span><strong>Subject:</strong> {subject}</span><br></br>
+                    <span><strong>Description:</strong> {discription}</span>
+                </div>
+                <div style={{ textAlign: "right", marginBottom: "10px" }}><button className="btn btn-primary" style={{marginRight:"5px"}}>Save Course</button><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
+            </div>
+            <div className="course_builder_container">
+                {
+                    showPreview ? (
+                        <>
+                            <div className="sidebar_container">
+                                <SideBarPreview handleSelectedSection={handleSelectedSection}
+                                    mainCourseData={mainCourseData} />
+                            </div>
 
-                        {
-                            selectedSectionId ? (
-                                <CourseCreatorPreview
-                                    mainCourseData={mainCourseData}
-                                    selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId} 
-                                    selectedSemId={selectedSemId}
-                                    setShowPreview={setShowPreview}
-                                />
-                            ) : <div></div>
-                        }
-                    </>
-                ) : (
-                    <>
-                        <div className="sidebar_container">
-                            <SideBar handleSelectedSection={handleSelectedSection}
-                                mainCourseData={mainCourseData} setMainCourseData={setMainCourseData} />
-                        </div>
+                            {
+                                selectedSectionId ? (
+                                    <CourseCreatorPreview
+                                        mainCourseData={mainCourseData}
+                                        selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
+                                        selectedSemId={selectedSemId}
+                                        setShowPreview={setShowPreview}
+                                    />
+                                ) : <div></div>
+                            }
+                        </>
+                    ) : (
+                        <>
+                            <div className="sidebar_container">
+                                {
+                                    mainCourseData.semesters.length > 0 && <SideBar handleSelectedSection={handleSelectedSection}
+                                        mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                        handleSelectedSemester={handleSelectedSemester}
+                                        handleSelectedChapter={handleSelectedChapter} 
+                                        resetSelectedIds={resetSelectedIds}    
+                                    />
+                                        
+                                }
+                            </div>
 
-                        {
-                            selectedSectionId ? (
-                                <CourseCreator
-                                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
-                                    selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
-                                     selectedSemId={selectedSemId}
-                                    setShowPreview={setShowPreview} 
-                                />
-                            ) : <div></div>
-                        }
-                    </>
-                )
-            }
+                            {
+                                selectedSectionId || selectedSemId || selectedChapterId ? (
+                                    <CourseCreator
+                                        mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                        selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
+                                        selectedSemId={selectedSemId}
+                                        setShowPreview={setShowPreview}
+                                        resetSelectedIds={resetSelectedIds}
+                                    />
+                                ) : <div></div>
+                            }
+                        </>
+                    )
+                }
+            </div>
         </div>
     </>
     );
@@ -148,58 +185,3 @@ export default CourseBuilder;
 
 
 
-{
-    let testSideBar = {
-        semesters: [
-            {
-                id: uuidv4(),
-                name: 'Sem 1',
-                chapters: [
-
-                    {
-                        id: uuidv4(),
-                        name: 'chapter 1',
-                        sections: [
-                            {
-                                id: uuidv4(),
-                                name: 'section 1',
-                                content: [{
-                                    slides: [{ id: uuidv4, content: [] },]
-                                }]
-                            }
-                        ],
-                        quiz: []
-                    }
-
-                ]
-            },
-            {
-                id: uuidv4(),
-                name: 'sem 2',
-                chapters: [
-
-                    {
-                        id: uuidv4(),
-                        name: 'chapter 1',
-                        sections: [
-                            {
-                                id: uuidv4(),
-                                name: 'section 1',
-
-                                content: [{ slides: [] }]
-                            }
-                        ],
-                        quiz: [
-                            {
-                                id: uuidv4(),
-                                name: 'bioQuiz',
-                                content: []
-                            }
-                        ]
-                    }
-
-                ]
-            }
-        ]
-    }
-}

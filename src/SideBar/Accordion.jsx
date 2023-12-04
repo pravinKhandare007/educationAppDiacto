@@ -14,7 +14,7 @@ const Accordion = ({ items }) => {
           <div
             style={{
               border: '1px solid #ccc',
-              padding: '10px',
+              padding: '10px',  
               cursor: 'pointer',
               backgroundColor: openIndex === index ? '#f0f0f0' : 'white',
             }}

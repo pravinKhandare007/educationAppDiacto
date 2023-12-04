@@ -5,7 +5,7 @@
     /* border: 2px solid grey; */
     text-align: center;
     /* box-shadow: 2px 5px 15px -5px rgba(28, 27, 28, 0.7) !important; */
-    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 0px 2px 1px , rgba(14, 30, 37, 0.12) 0px 0px 2px 1px;
     border-radius:0.5em;
     color: rgb(107, 97, 97);
     display: flex;
@@ -15,4 +15,6 @@
     font-family:"Montserrat";
     position: relative;
     padding: 5px; 
+    background-color: #FFFFFF;
+    /* border:1px solid rgb(82, 82, 82); */
 }
