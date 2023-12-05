@@ -8,7 +8,7 @@ const Pagination = ({slides , paginate , currentSlideId , setCurrentSlideId}) =>
         siblingCount : 1
     })
 
-    console.log("paginationRange" , paginationRange);
+  
     // const numbers = slides.map((slide , index)=>{
     //     return {
     //         id:slide.id ,

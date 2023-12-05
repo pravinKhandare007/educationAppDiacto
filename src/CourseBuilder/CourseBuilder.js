@@ -9,17 +9,18 @@ import SideBarPreview from "../Preview_Component/SideBarPreview";
 import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
 
 const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discription = "This course will teach about the fundamentals of trigonometry"}) => {
-    console.log("rendering parent")
+    console.log("rendering parent");
+    
 
     const [selectedSemId, setSelectedSemId] = useState(null);
     const [selectedChapterId, setSelectedChapterId] = useState(null);
     const [selectedSectionId, setSelectedSectionId] = useState(null);
+    const [selectedQuizId , setSelectedQuizId] = useState(null);
     const [mainCourseData, setMainCourseData] = useState({ semesters: [] });
     const [showPreview, setShowPreview] = useState(false);
 
-    useEffect(() => {
-        console.log("mainCourseData: ", mainCourseData);
-    })
+    console.log("maincd" , mainCourseData);
+    
     useEffect(() => {
 
         setMainCourseData({
@@ -59,6 +60,7 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                 {
                     id: uuidv4(),
                     name: 'sem 2',
+                    content:null,
                     chapters: [
 
                         {
@@ -76,7 +78,7 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                                 {
                                     id: uuidv4(),
                                     name: 'bioQuiz',
-                                    content: []
+                                    content: null
                                 }
                             ]
                         }
@@ -91,20 +93,30 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
 
     const handleSelectedSemester = (semesterId) => {
         setSelectedSemId(semesterId);
-        setSelectedChapterId(null)
-        setSelectedSectionId(null)
+        setSelectedChapterId(null);
+        setSelectedSectionId(null);
+        setSelectedQuizId(null);
     }
 
     const handleSelectedChapter = (semesterId, chapId) => {
         setSelectedSemId(semesterId);
         setSelectedChapterId(chapId);
         setSelectedSectionId(null)
+        setSelectedQuizId(null);
     }
 
     const resetSelectedIds = ()=>{
         setSelectedSemId(null);
         setSelectedChapterId(null);
-        setSelectedSectionId(null)
+        setSelectedSectionId(null);
+        setSelectedQuizId(null);
+    }
+
+    const handleSelectedQuiz= (semId,chapId,quizId)=>{
+        setSelectedSemId(semId);
+        setSelectedChapterId(chapId);
+        setSelectedQuizId(quizId);
+        setSelectedSectionId(null);
     }
 
     const handleSelectedSection = (semesterId, chpId, secId) => {
@@ -125,7 +137,10 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                     <span><strong>Subject:</strong> {subject}</span><br></br>
                     <span><strong>Description:</strong> {discription}</span>
                 </div>
-                <div style={{ textAlign: "right", marginBottom: "10px" }}><button className="btn btn-primary" style={{marginRight:"5px"}}>Save Course</button><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button></div>
+                <div style={{ textAlign: "right", marginBottom: "10px" }}>
+                    <button className="btn btn-primary" style={{marginRight:"5px"}}>Save Course</button>
+                    <button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button>
+                </div>
             </div>
             <div className="course_builder_container">
                 {
@@ -155,20 +170,23 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                                         mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
                                         handleSelectedSemester={handleSelectedSemester}
                                         handleSelectedChapter={handleSelectedChapter} 
-                                        resetSelectedIds={resetSelectedIds}    
+                                        resetSelectedIds={resetSelectedIds} 
+                                        handleSelectedQuiz={handleSelectedQuiz}   
                                     />
                                         
                                 }
                             </div>
 
                             {
-                                selectedSectionId || selectedSemId || selectedChapterId ? (
+                                selectedSectionId || selectedSemId || selectedChapterId || selectedQuizId ? (
                                     <CourseCreator
                                         mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
                                         selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
                                         selectedSemId={selectedSemId}
                                         setShowPreview={setShowPreview}
                                         resetSelectedIds={resetSelectedIds}
+                                        selectedQuizId={selectedQuizId}
+                                        
                                     />
                                 ) : <div></div>
                             }

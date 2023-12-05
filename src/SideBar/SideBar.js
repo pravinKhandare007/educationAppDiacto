@@ -4,37 +4,53 @@ import { v4 as uuidv4 } from "uuid";
 import Modal from './Modal';
 import { createPortal } from 'react-dom';
 
-const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, handleSelectedSemester, handleSelectedChapter, resetSelectedIds }) => {
-    console.log("maincourseData : ", mainCourseData);
+const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, handleSelectedSemester, handleSelectedChapter, resetSelectedIds ,handleSelectedQuiz }) => {
+    console.log("rendering child sidebar");
     const [semesterName, setSemesterName] = useState('');
     const [chapterName, setChapterName] = useState('');
     const [sectionName, setSectionName] = useState('');
     const [semesterDropdown, setSemesterDropdown] = useState('');
     const [chapterDropdown, setChapterDropdown] = useState('');
-    const [semesters, setSemesters] = useState([]);
+    // const [semesters, setSemesters] = useState([]);
     const [isHovering, setIsHovering] = useState("");
     const [error, setError] = useState(false);
     const [edit, setEdit] = useState("");
     const [currentSection, setCurrentSection] = useState("");
-    const [showModal, setShowModal] = useState("");
+    const [showModal, setShowModal] = useState({
+        id: '',
+        edit: false,
+        delete: false
+    });
 
     //state variable to store the users input then on click of update button we change the semesters state
     //same state variable will be used to update sem name , chap name , section name.
     const [newName, setNewName] = useState("");
+    
+    // console.log("sidebar data :" , semesters);
 
 
+    // useEffect(() => {
+    //     console.log("inital data setting for sidebar only once: ")
+    //     setSemesters([...mainCourseData.semesters]);
+    // }, []);
 
-    useEffect(() => {
-        setSemesters([...mainCourseData.semesters]);
-    }, [])
+    //for setting the changes to mcd that course creator did to side bar 
+    // useEffect(()=>{
+    //     setSemesters([...mainCourseData.semesters]);
+    // },[mainCourseData.semesters])
 
 
-    useEffect(() => {
-        if (semesters.length) {
-            setMainCourseData({ semesters: semesters });
-        }
+    // useEffect(() => {
+    //     if (semesters.length) {
+    //         console.log("setting the sidebar changes to mainCourseData : data that is being set: " , semesters);
+    //         setMainCourseData({ semesters: semesters });
+    //     }
 
-    }, [semesters])
+    // }, [semesters])
+
+    useEffect(()=>{
+        console.log("finished rendering sidebar")
+    })
 
 
     //make a word document for the component also start styling this also domo knowledge required.
@@ -48,17 +64,13 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
         const newSemesterObj = {
             id: uuidv4(),
             name: semesterName,
+            content:null,
             chapters: []
         }
-        const newSemesters = [...semesters];
+        const newSemesters = [...mainCourseData.semesters];
         newSemesters.push(newSemesterObj);
-        setSemesters(newSemesters);
-        // setMainCourseData({semesters:newSemesters});
+        setMainCourseData({semesters: newSemesters})
         setSemesterName("");
-        // setMainCourseData((mainCourseData) => {
-        //     const newMainCourseData = { ...mainCourseData, semesters: newSemesters }; //i got the problem i am setting here to previous state 
-        //     return newMainCourseData;
-        // })
     };
 
     function addChapter(semIndex) {
@@ -66,13 +78,14 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
         const newChapter = {
             id: uuidv4(),
             name: chapterName,
+            content:null,
             sections: [],
             quiz: []
         }
 
-        const newSemesters = [...semesters];
+        const newSemesters = [...mainCourseData.semesters];
         newSemesters[semIndex].chapters.push(newChapter)
-        setSemesters(newSemesters);
+        setMainCourseData({semesters: newSemesters})
         setChapterName("");
     }
 
@@ -83,9 +96,9 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
             content: null
         }
 
-        const newSemesters = [...semesters];
+        const newSemesters = [...mainCourseData.semesters];
         newSemesters[semIndex].chapters[chapIndex].sections.push(newSection);
-        setSemesters(newSemesters);
+        setMainCourseData({semesters: newSemesters})
         setSectionName("");
     }
 
@@ -96,9 +109,9 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
             content: []
         }
 
-        const newSemesters = [...semesters];
+        const newSemesters = [...mainCourseData.semesters];
         newSemesters[semIndex].chapters[chapIndex].quiz.push(newQuiz);
-        setSemesters(newSemesters);
+        setMainCourseData({semesters: newSemesters})
     }
 
     function addQuizBelowChapters() {
@@ -114,12 +127,16 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
     };
 
     function deleteSemester(semId) {
-        setSemesters(semesters.filter((semester => semester.id !== semId)));
+
+        const newSemesters = [...mainCourseData.semesters];
+        
+        setMainCourseData({semesters:newSemesters.filter((semester => semester.id !== semId)) })
+       
         resetSelectedIds();
     }
 
     function editSemesterName(semId) {
-        setSemesters(semesters.map((semester => {
+        setMainCourseData({semesters : mainCourseData.semesters.map((semester => {
             if (semester.id === semId) {
                 return {
                     ...semester, name: newName
@@ -129,11 +146,11 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     ...semester
                 }
             }
-        })))
+        }))})
     }
 
     function deleteChapter(semId, chapId) {
-        setSemesters([...semesters.map((semester) => {
+        setMainCourseData({semesters: mainCourseData.semesters.map((semester) => {
             if (semester.id === semId) {
                 return {
                     ...semester, chapters: [...semester.chapters.filter((chapter) => chapter.id !== chapId)]
@@ -143,12 +160,12 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     ...semester
                 }
             }
-        })]);
+        })});
         resetSelectedIds();
     }
 
     function deleteSection(semId, chapId, sectionId) {
-        setSemesters(semesters.map((semester) => {
+        setMainCourseData({semesters : mainCourseData.semesters.map((semester) => {
             if (semester.id === semId) {
                 return {
                     ...semester, chapters: semester.chapters.map((chapter) => {
@@ -168,18 +185,18 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     ...semester
                 }
             }
-        }));
+        })});
         resetSelectedIds();
     }
 
-    function editChapterName(e, semId, chapId) {
-        setSemesters([...semesters.map((semester) => {
+    function editChapterName(semId, chapId) {
+        setMainCourseData({semesters: mainCourseData.semesters.map((semester) => {
             if (semester.id === semId) {
                 return {
                     ...semester, chapters: [...semester.chapters.map((chapter) => {
                         if (chapter.id === chapId) {
                             return {
-                                ...chapter, name: e.target.value
+                                ...chapter, name: newName
                             }
                         } else {
                             return {
@@ -193,11 +210,11 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     ...semester
                 }
             }
-        })])
+        })})
     }
 
-    function editSectionName(e, semId, chapId, sectionId) {
-        setSemesters(semesters.map((semester) => {
+    function editSectionName( semId, chapId, sectionId) {
+        setMainCourseData({semesters : mainCourseData.semesters.map((semester) => {
             if (semester.id === semId) {
                 return {
                     ...semester, chapters: semester.chapters.map((chapter) => {
@@ -206,7 +223,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                 ...chapter, sections: chapter.sections.map((section) => {
                                     if (section.id === sectionId) {
                                         return {
-                                            ...section, name: e.target.value
+                                            ...section, name: newName
                                         }
                                     } else {
                                         return {
@@ -227,17 +244,15 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     ...semester
                 }
             }
-        }))
+        })})
     }
+
+    //sub branch
     return (
         <>
-            {/* <div><button>show modal</button></div>
-            {createPortal(<Modal>
-
-            </Modal>, document.querySelector(".myPortalModalDiv"))} */}
             <div>
                 {
-                    semesters.map((semester, semIndex) => {
+                    mainCourseData.semesters.map((semester, semIndex) => {
                         return (
                             <div key={semIndex} style={{ marginBottom: '10px' }}>
                                 {/* below is the title div */}
@@ -258,21 +273,32 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                         }
                                     </div>
                                     <span>
-                                        {isHovering === semester.id && <i class="fa-solid fa-pen" onClick={() => setShowModal(semester.id)} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === semester.id ? 'red' : 'white' }}></i>}
-                                        {showModal === semester.id && createPortal(
+                                        {isHovering === semester.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: semester.id, edit: true, delete: false } })} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === semester.id ? 'red' : 'white' }}></i>}
+                                        {showModal.id === semester.id && createPortal(
                                             <Modal>
-                                                <div>Do you want to change the name of semester {semester.name}</div>
-                                                <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                <button onClick={() => { editSemesterName(semester.id); setShowModal(null); setNewName("") }}>Update</button><button onClick={() => setShowModal(null)}>cancel</button>
-                                                {/* close the above modal as well as update the name in state */}
+                                                {
+                                                    showModal.edit ? (<>
+                                                        <div>Do you want to change the name of semester {semester.name}</div>
+                                                        <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
+                                                        <button className='btn btn-primary' onClick={() => { editSemesterName(semester.id); setShowModal((showModal) => { return { ...showModal, id: null } }); setNewName("") }}>Update</button><button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button>
+                                                        {/* close the above modal as well as update the name in state */}
+                                                    </>) : null
+                                                }
+                                                {
+                                                    showModal.delete ? (<>
+                                                        <div>Do you want to delete {semester.name}</div>
+                                                        <div><button className='btn btn-primary' onClick={() => { deleteSemester(semester.id) }}>Yes</button><button style={{ marginLeft: "7px" }} className='btn btn-primary' onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button></div>
+
+                                                    </>) : null
+                                                }
                                             </Modal>, document.querySelector('.myPortalModalDiv'))}
-                                        {isHovering === semester.id && <i className="fa-regular fa-circle-xmark" onClick={() => { deleteSemester(semester.id) }} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
-                                        <i onClick={() => handleSemesterDropdownClick(semester.id)} class="fa-solid fa-caret-down" style={{ cursor: 'pointer', marginRight: "3px" }}></i>
+                                        {isHovering === semester.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, id: semester.id, edit: false, delete: true } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                        <i onClick={() => handleSemesterDropdownClick(semester.id)} className="fa-solid fa-caret-down" style={{ cursor: 'pointer', marginRight: "3px" }}></i>
                                     </span>
                                 </div>
                                 {/* below we are rendering the body of the accordian item */}
                                 {semesterDropdown === semester.id && (
-                                    <div style={{ border: '1px solid #ccc', padding: '10px' }}>
+                                    <div style={{ border: '1px solid #ccc', padding: '10px', transition: 'all 3s ease-in-out' }}>
                                         {
                                             semester.chapters.map((chapter, chapIndex) => {
                                                 return (
@@ -291,14 +317,34 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                         >
                                                             <div>
                                                                 {
-                                                                    edit === chapter.id ? (<input style={{ width: "50%" }} value={chapter.name} onChange={(e) => editChapterName(e, semester.id, chapter.id)}></input>) : (<label onClick={() => { handleSelectedChapter(semester.id, chapter.id) }}>{chapter.name}</label>)
+                                                                    <label onClick={() => { handleSelectedChapter(semester.id, chapter.id) }}>{chapter.name}</label>
                                                                 }
                                                             </div>
                                                             <span>
-                                                                {isHovering === chapter.id && <i class="fa-solid fa-pen" onClick={() => setEdit(edit === chapter.id ? null : chapter.id)} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === chapter.id ? 'red' : 'white' }}></i>}
-                                                                {isHovering === chapter.id && <i className="fa-regular fa-circle-xmark" onClick={() => { deleteChapter(semester.id, chapter.id) }} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                                                {isHovering === chapter.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: chapter.id, edit: true, delete: false } })} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === chapter.id ? 'red' : 'white' }}></i>}
+                                                                {isHovering === chapter.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, id: chapter.id, edit: false, delete: true } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
 
-                                                                <i onClick={() => handleChapterDropdownClick(chapter.id)} class="fa-solid fa-caret-down" style={{ cursor: 'pointer' }}></i>
+                                                                <i onClick={() => handleChapterDropdownClick(chapter.id)} className="fa-solid fa-caret-down" style={{ cursor: 'pointer' }}></i>
+
+                                                                {showModal.id === chapter.id && createPortal(
+                                                                    <Modal>
+                                                                        {
+                                                                            showModal.edit ? (<>
+                                                                                <div>Do you want to change the name of chapter {chapter.name}</div>
+                                                                                <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
+                                                                                <button className='btn btn-primary' onClick={() => { editChapterName(semester.id, chapter.id); setShowModal((showModal) => { return { ...showModal, id: null } }); setNewName("") }}>Update</button><button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button>
+                                                                                {/* close the above modal as well as update the name in state */}
+                                                                            </>) : null
+                                                                        }
+                                                                        {
+                                                                            showModal.delete ? (<>
+                                                                                <div>Do you want to delete {chapter.name}</div>
+                                                                                <div><button className='btn btn-primary' onClick={() => { deleteChapter(semester.id, chapter.id) }}>Yes</button><button style={{ marginLeft: "7px" }} className='btn btn-primary' onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button></div>
+
+                                                                            </>) : null
+                                                                        }
+                                                                    </Modal>, document.querySelector('.myPortalModalDiv'))}
+
                                                             </span>
                                                         </div>
                                                         {chapterDropdown === chapter.id && (
@@ -317,17 +363,72 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         >
                                                                             <div>
                                                                                 {
-                                                                                    edit === section.id ? (<input style={{ width: "50%" }} value={section.name} onChange={(e) => editSectionName(e, semester.id, chapter.id, section.id)}></input>) : (<label onClick={() => { handleSelectedSection(semester.id, chapter.id, section.id); setCurrentSection(section.id) }}>{section.name}</label>)
+                                                                                    <label onClick={() => { handleSelectedSection(semester.id, chapter.id, section.id); setCurrentSection(section.id) }}>{section.name}</label>
                                                                                 }
                                                                             </div>
-                                                                            <span>{isHovering === section.id && <i class="fa-solid fa-pen" onClick={() => setEdit(edit === section.id ? null : section.id)} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === section.id ? 'red' : 'white' }}></i>}
-                                                                                {isHovering === section.id && <i className="fa-regular fa-circle-xmark" onClick={() => { deleteSection(semester.id, chapter.id, section.id) }} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}</span>
+                                                                            <span>{isHovering === section.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: section.id, edit: true, delete: false } })} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === section.id ? 'red' : 'white' }}></i>}
+                                                                                {isHovering === section.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, id: section.id, edit: false, delete: true } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                                                            </span>
+                                                                            {showModal.id === section.id && createPortal(
+                                                                                <Modal>
+                                                                                    {
+                                                                                        showModal.edit ? (<>
+                                                                                            <div>Do you want to change the name of section {section.name}</div>
+                                                                                            <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
+                                                                                            <button className='btn btn-primary' onClick={() => { editSectionName(semester.id, chapter.id , section.id); setShowModal((showModal) => { return { ...showModal, id: null } }); setNewName("") }}>Update</button><button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button>
+                                                                                            {/* close the above modal as well as update the name in state */}
+                                                                                        </>) : null
+                                                                                    }
+                                                                                    {
+                                                                                        showModal.delete ? (<>
+                                                                                            <div>Do you want to delete {section.name}</div>
+                                                                                            <div><button className='btn btn-primary' onClick={() => { deleteSection(semester.id, chapter.id , section.id) }}>Yes</button><button style={{ marginLeft: "7px" }} className='btn btn-primary' onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button></div>
+
+                                                                                        </>) : null
+                                                                                    }
+                                                                                </Modal>, document.querySelector('.myPortalModalDiv'))}
                                                                         </div>
                                                                     ))
                                                                 }
                                                                 {
                                                                     chapter.quiz.map((q) => (
-                                                                        <div>{q.name}</div>
+                                                                        <div
+                                                                            style={{
+                                                                                display: "flex",
+                                                                                justifyContent: "space-between",
+                                                                                alignContent: "center",
+                                                                                backgroundColor: currentSection === q.id ? '#f0f0f0' : 'white',
+                                                                            }}
+                                                                            onMouseEnter={() => { setIsHovering(q.id) }}
+                                                                            onMouseLeave={() => { setIsHovering(null) }}
+                                                                        >
+                                                                            <div>
+                                                                                {
+                                                                                    <label onClick={() => { handleSelectedQuiz(semester.id, chapter.id, q.id); setCurrentSection(q.id) }}>{q.name}</label>
+                                                                                }
+                                                                            </div>
+                                                                            <span>{isHovering === q.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: q.id, edit: true, delete: false } })} style={{ cursor: 'pointer', marginRight: "3px", backgroundColor: edit === q.id ? 'red' : 'white' }}></i>}
+                                                                                {isHovering === q.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, id: q.id, edit: false, delete: true } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                                                            </span>
+                                                                            {showModal.id === q.id && createPortal(
+                                                                                <Modal>
+                                                                                    {
+                                                                                        showModal.edit ? (<>
+                                                                                            <div>Do you want to change the name of section {q.name}</div>
+                                                                                            <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
+                                                                                            <button className='btn btn-primary' onClick={() => { editSectionName(semester.id, chapter.id , q.id); setShowModal((showModal) => { return { ...showModal, id: null } }); setNewName("") }}>Update</button><button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button>
+                                                                                            {/* close the above modal as well as update the name in state */}
+                                                                                        </>) : null
+                                                                                    }
+                                                                                    {
+                                                                                        showModal.delete ? (<>
+                                                                                            <div>Do you want to delete {q.name}</div>
+                                                                                            <div><button className='btn btn-primary' onClick={() => { deleteSection(semester.id, chapter.id , q.id) }}>Yes</button><button style={{ marginLeft: "7px" }} className='btn btn-primary' onClick={() => setShowModal((showModal) => { return { ...showModal, id: null } })}>cancel</button></div>
+
+                                                                                        </>) : null
+                                                                                    }
+                                                                                </Modal>, document.querySelector('.myPortalModalDiv'))}
+                                                                        </div>
                                                                     ))
                                                                 }
                                                                 <div >
@@ -343,9 +444,20 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                             })
                                         }
                                         <div>
-                                            <input style={{ width: '100%' }} value={chapterName} onChange={(event) => setChapterName(event.target.value)}></input>
+
+                                            <span>Add Chapter</span><i style={{ marginLeft: "7px", fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, id: 'addChapter' }) }} className="fa-solid fa-square-plus"></i>
+                                            {
+                                                showModal.id === 'addChapter' && createPortal(<Modal>
+                                                    <label>Chapter Name: </label><input style={{ width: '100%' }} value={chapterName} onChange={(e) => setChapterName(e.target.value)}></input>
+                                                    {error && <span>enter name for Chapter</span>}
+                                                    <button className='btn btn-primary' onClick={() => { addChapter(semIndex); setShowModal((showModal) => { return { ...showModal, id: null } }) }}>add chapter</button>
+                                                    <button style={{ marginLeft: "5px" }} className='btn btn-primary' onClick={() => { setShowModal((showModal) => { return { ...showModal, id: null } }); setSemesterName('') }}>cancel</button>
+                                                </Modal>, document.querySelector('.myPortalModalDiv'))
+                                            }
+
+                                            {/* <input style={{ width: '100%' }} value={chapterName} onChange={(event) => setChapterName(event.target.value)}></input>
                                             <button onClick={() => addChapter(semIndex)}>add chapter</button>
-                                            <button onClick={() => addQuizBelowChapters(semIndex)}>add quiz</button>
+                                            <button onClick={() => addQuizBelowChapters(semIndex)}>add quiz</button> */}
                                         </div>
                                     </div>
 
@@ -355,9 +467,16 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     })
                 }
                 <div>
-                    <input style={{ width: '100%' }} value={semesterName} onChange={(e) => setSemesterName(e.target.value)}></input>
-                    {error && <span>enter name for semester</span>}
-                    <button className='btn btn-secondary' onClick={addSemester}>add sem</button>
+
+                    <span>Add Semester</span><i style={{ marginLeft: "7px", fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, id: 'addSem' }) }} className="fa-solid fa-square-plus"></i>
+
+                    {
+                        showModal.id === 'addSem' && createPortal(<Modal>
+                            <label>Semester Name: </label><input style={{ width: '100%' }} value={semesterName} onChange={(e) => setSemesterName(e.target.value)}></input>
+                            {error && <span>enter name for semester</span>}
+                            <button className='btn btn-primary' onClick={() => { addSemester(); setShowModal((showModal) => { return { ...showModal, id: null } }) }}>add sem</button><button style={{ marginLeft: "5px" }} className='btn btn-primary' onClick={() => { setShowModal((showModal) => { return { ...showModal, id: null } }); setSemesterName('') }}>cancel</button>
+                        </Modal>, document.querySelector('.myPortalModalDiv'))
+                    }
                 </div>
             </div>
 
@@ -366,82 +485,3 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
 }
 
 export default SideBar;
-//different branch
-
-
-
-
-
-// {
-//     semesters?.map((semester, semIndex) => (
-//         <Accordion.Item eventKey={semIndex + 1}>
-//             <Accordion.Header onClick={() => console.log("clicked")}>{semester.name} </Accordion.Header>
-//             <Accordion.Body style={{ padding: "0" }}>
-//                 <Accordion style={{ opacity: "0.9" }} >
-//                     {
-//                         semester.chapters?.map((chapter, chapIndex) => (
-//                             <Accordion.Item eventKey={chapIndex + 1}>
-//                                 <Accordion.Header >{chapter.name}</Accordion.Header>
-//                                 <Accordion.Body style={{ padding: "0" }}>
-//                                     <Accordion >
-
-//                                         {
-//                                             chapter.sections?.map((section, secIndex) => (
-//                                                 <Accordion >
-
-//                                                     {
-//                                                         <li onClick={() => handleSelectedSection(semester.id, chapter.id, section.id)}>{section.name}</li>
-//                                                     }
-//                                                 </Accordion>
-
-
-//                                             )
-
-//                                             )
-//                                         }
-//                                         {
-//                                             chapter.quiz?.map((q, secIndex) => (
-//                                                 <Accordion >
-
-//                                                     {
-//                                                         <li>{q.name}</li>
-//                                                     }
-//                                                 </Accordion>
-
-
-//                                             )
-
-//                                             )
-//                                         }
-//                                         <Accordion.Item eventKey={0}>
-//                                             <input style={{ marginBottom: '5px', marginTop: "5px" }} value={sectionName} onChange={(event) => setSectionName(event.target.value)}></input>
-//                                             <Button variant="primary" onClick={() => addSection(semIndex, chapIndex)}>
-//                                                 Add section
-//                                             </Button>
-//                                             <Button variant="primary" onClick={() => addQuiz(semIndex, chapIndex)}>
-//                                                 Add  Quiz
-//                                             </Button>
-//                                         </Accordion.Item>
-//                                     </Accordion>
-//                                 </Accordion.Body>
-//                             </Accordion.Item>
-
-
-//                         )
-
-//                         )
-//                     }
-//                     <Accordion.Item eventKey={0}>
-//                         <input style={{ marginBottom: '5px', marginTop: "5px" }} value={chapterName} onChange={(event) => setChapterName(event.target.value)}></input>
-//                         <Button variant="primary" onClick={() => addChapter(semIndex)}>
-//                             Add Chapter
-//                         </Button>
-
-
-//                     </Accordion.Item>
-//                 </Accordion>
-//             </Accordion.Body>
-//         </Accordion.Item>
-//     ))
-
-// }

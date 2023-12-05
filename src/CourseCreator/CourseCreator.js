@@ -17,7 +17,7 @@ import Video_Component from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
 
 
-const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, setShowPreview, setParentsCopyOfSlidesData, mainCourseData, setMainCourseData }) => {
+const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData ,selectedQuizId}) => {
 
 
     console.log("rendering course creater");
@@ -31,17 +31,11 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
     let initialSlidesData = { slides: [{ id: initialId, content: [] }] }
     const [slidesData, setSlidesData] = useState(initialSlidesData);
 
-    useEffect(() => {
-        console.log("maincourseData : ", mainCourseData, "semID : ", selectedSemId, "chapID : ", selectedChapterId);
-
-    })
-
-
+    console.log("maincourseData : ", mainCourseData, "semID : ", selectedSemId, "chapID : ", selectedChapterId , "sectionId: " , selectedSectionId);
 
     useEffect(() => {
-
-        console.log("setting slides data from main course data");
-        if (selectedSemId && !selectedChapterId && !selectedSectionId) {
+        console.log("setting slides data from mainCourseData");
+        if (selectedSemId && !selectedChapterId && !selectedSectionId && !selectedQuizId) {
             const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
             const selectedSemesterContent = mainCourseData.semesters[selectedSemIndex].content;
             if (selectedSemesterContent) {
@@ -60,16 +54,16 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
             }
         }
 
-        if(selectedSemId && selectedChapterId && !selectedSectionId){
+        if (selectedSemId && selectedChapterId && !selectedSectionId && !selectedQuizId) {
             const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
             const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
 
             const selectedChapterData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].content;
 
-            if(selectedChapterData){
+            if (selectedChapterData) {
                 setSlidesData(selectedChapterData);
                 setCurrentSlideId(selectedChapterData.slides[0].id);
-            }else{
+            } else {
                 const firstSlide = {
                     id: uuidv4(), content: []
                 }
@@ -84,7 +78,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
 
 
         //generateSlides(); //pass id 
-        if (selectedSemId && selectedChapterId && selectedSectionId) {
+        if (selectedSemId && selectedChapterId && selectedSectionId && !selectedQuizId) {
             const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
             const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
             const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
@@ -112,34 +106,89 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
             }
         }
 
-        
-    }, [selectedSectionId, selectedSemId, selectedChapterId])
+        if (selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId) {
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+            const selectedQuizIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].quiz.findIndex((q) => q.id === selectedQuizId);
+
+
+            const quizSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].quiz[selectedQuizIndex].content;
+            if (quizSlidesData) {
+                console.log("sectttionsSlidesdata : ", quizSlidesData);
+                console.log("current slide setting to : ", quizSlidesData.slides[0].id);
+                setSlidesData(() => {
+                    return { ...quizSlidesData }
+                });
+                setCurrentSlideId(quizSlidesData.slides[0].id);
+
+            } else {
+                const firstSlide = {
+                    id: uuidv4(), content: []
+                }
+                setSlidesData({
+                    slides: [
+                        firstSlide
+                    ]
+                })
+                setCurrentSlideId(firstSlide.id);
+            }
+        }
+
+
+    }, [selectedSectionId, selectedSemId, selectedChapterId ,selectedQuizId])
 
     useEffect(() => {
-        console.log("slidesdata ; ", slidesData)
+        console.log("setting data from slidesData to mainCourseData");
         //below if body is getting executed when section is clicked because we setted semId also when we set section id 
-        if(selectedSemId && !selectedChapterId && !selectedSectionId){
-            setMainCourseData((mainCourseData)=>{
-                const newMainCourseData = {...mainCourseData , semesters : mainCourseData.semesters.map((semester)=>{
-                    if(semester.id === selectedSemId){
-                        return {
-                            ...semester , content: slidesData
+        if (selectedSemId && !selectedChapterId && !selectedSectionId) {
+            setMainCourseData((mainCourseData) => {
+                const newMainCourseData = {
+                    ...mainCourseData, semesters: mainCourseData.semesters.map((semester) => {
+                        if (semester.id === selectedSemId) {
+                            return {
+                                ...semester, content: slidesData
+                            }
+                        } else {
+                            return {
+                                ...semester
+                            }
                         }
-                    }else{
-                        return {
-                            ...semester
-                        }
-                    }
-                })}
+                    })
+                }
                 return newMainCourseData;
             })
         }
 
-        if(selectedSemId && selectedChapterId && !selectedSectionId){
-
+        if (selectedSemId && selectedChapterId && !selectedSectionId) {
+            setMainCourseData((mainCourseData) => {
+                const newMainCourseData = {
+                    ...mainCourseData, semesters: mainCourseData.semesters.map((semester) => {
+                        if (semester.id === selectedSemId) {
+                            return {
+                                ...semester, chapters: semester.chapters.map((chapter) => {
+                                    if (chapter.id === selectedChapterId) {
+                                        return {
+                                            ...chapter, content: slidesData
+                                        }
+                                    } else {
+                                        return {
+                                            ...chapter
+                                        }
+                                    }
+                                })
+                            }
+                        } else {
+                            return {
+                                ...semester
+                            }
+                        }
+                    })
+                }
+                return newMainCourseData;
+            })
         }
 
-        if(selectedSemId && selectedChapterId && selectedSectionId){
+        if (selectedSemId && selectedChapterId && selectedSectionId) {
             setMainCourseData((mainCourseData) => {
                 return {
                     ...mainCourseData, semesters: [...mainCourseData.semesters.map((semester) => {
@@ -170,12 +219,9 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
                 }
             })
         }
-        
+
     }, [slidesData])
 
-    useEffect(() => {
-        console.log("main couse data : ", mainCourseData);
-    })
 
 
 
@@ -413,7 +459,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, se
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className='slides_container'>
                     <div className='slide' >
-                        
                         {
                             <Droppable id={currentSlideId}>
                                 <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
