@@ -37,7 +37,9 @@ export function SortableItem(props) {
     <Item ref={setNodeRef} style={style} >
       <div className='drag_activator' {...attributes} {...listeners}><i class="fa-solid fa-grip-lines-vertical"></i></div>
       <div  style={{ width:"100%"}}>{props.children}</div>
-      <div><i onClick={deleteContent}style={{cursor:"pointer"}} className="fa-regular fa-circle-xmark"></i></div>
+      {
+        props.selectedQuizId ? null : (<div><i onClick={deleteContent}style={{cursor:"pointer"}} className="fa-regular fa-circle-xmark"></i></div>)
+      }
     </Item>
   );
 }

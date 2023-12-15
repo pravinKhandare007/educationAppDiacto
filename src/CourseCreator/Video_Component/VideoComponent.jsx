@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import YouTubeVideo from "./YouTubeVideo";
 
-const VideoComponent = ({slidesData , setSlidesData , slideId , contentId}) => {
+const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data}) => {
    
    const [videoData , setVideoData ] = useState({
     renderComponent:"choiceComponent" , 
@@ -16,7 +16,7 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId}) => {
             const newSlidesData = {
                 ...slidesData, slides: [...slidesData.slides.map((slide) => {
                     if (slide.id === slideId) {
-                        console.log("slide.slideId: ", slide.id);
+                        //console.log("slide.slideId: ", slide.id);
                         return {
                             id: slide.id,
                             content: [...slide.content.map((contentObject) => {
@@ -40,6 +40,20 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId}) => {
             return newSlidesData;
         })
    },[videoData])
+   //when videoComponents parent re-renders then videoState is lost 
+   useEffect(()=>{
+    if(data){
+        setVideoData(data);
+    }else{
+        setVideoData({
+            renderComponent:"choiceComponent" , 
+            ytData : {
+                videoUrl:"",
+                videoId:""
+            }
+           })
+    }
+   },[slideId])
    
    if(videoData.renderComponent === "choiceComponent"){
     return (
@@ -49,7 +63,7 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId}) => {
                 <input type="file" name="desktop_upload" id="desktop_video" />
             </div>
             <div className="yt_video" onClick={()=> setVideoData((prevVideoData)=>{
-                const newVideoData = {...prevVideoData , renderComponent: "yt_video"};
+                const newVideoData = {...prevVideoData , renderComponent: "yt_component"};
                 return newVideoData;
             })}>
                 Click to upload youtube video
@@ -59,7 +73,7 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId}) => {
    }
    if(videoData.renderComponent === "yt_component"){
     return (
-        <YouTubeVideo />
+        <YouTubeVideo videoData={videoData} setVideoData={setVideoData}/>
     )
    }
 }

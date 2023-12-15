@@ -5,9 +5,10 @@
 }
 
 .slides_container{
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    
     /* padding: 1em; */
 }
 .widgets{
@@ -16,11 +17,9 @@
     padding: 1em;
     background-color: #FFFFFF;
 }
-.copy-ql-editor{
-    padding:12px 15px;
-}
+
 .draggables_container{
-    width: 10%;
+    width: 20%;
     /* padding: 1em; */
     border-left: 2px solid rgb(141, 141, 141);
     /* height:95vh; */
@@ -48,7 +47,8 @@
     overflow: scroll;
     background-color:#c8c7c7;
     /* color:whitesmoke */
-    padding: 1em;   
+    
+    
 }
 
 .pagination_container{

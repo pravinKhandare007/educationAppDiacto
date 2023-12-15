@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const YouTubeVideo = (props) => {
+const YouTubeVideo = ({videoData , setVideoData}) => {
   const [videoUrl, setVideoUrl] = useState('');
   const [videoId, setVideoId] = useState('');
 
@@ -23,8 +23,13 @@ const YouTubeVideo = (props) => {
   }
 
   useEffect(()=>{
-    
-  })
+    setVideoData({...videoData , ytData: {...videoData.ytData , videoUrl:videoUrl , videoId:videoId}});
+  },[videoId , videoUrl])
+
+  useEffect(()=>{
+    setVideoUrl(videoData.ytData.videoUrl);
+    setVideoId(videoData.ytData.videoId);
+  },[])
 
   return (
     <div>
@@ -39,7 +44,7 @@ const YouTubeVideo = (props) => {
       </label>
       <button onClick={handleYtURLUpload}>upload</button>
       {videoId && (
-        <div>
+        <div style={{display:"flex" , alignItems:"center" , justifyContent:"center"}}>
           <iframe
             width="560"
             height="315"

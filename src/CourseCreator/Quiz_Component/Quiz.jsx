@@ -13,7 +13,6 @@ const Quiz = ({ setSlidesData, slideId, contentId , slidesData }) => {
 
   //below useEffect runs only when the parent re-renders so we can get the data which was stored in parent 
   useEffect(()=>{
-
     const currentSlideIndex = slidesData.slides.findIndex(slide => slide.id === slideId);
     const contentIndex = slidesData.slides[currentSlideIndex].content.findIndex(contentObj => contentObj.id === contentId);
 
@@ -23,7 +22,7 @@ const Quiz = ({ setSlidesData, slideId, contentId , slidesData }) => {
    }else{
     setQuestions([initialQuestion]);
    }
-  },[])
+  },[slideId])
 
   //below useEffect updates the changes of the childs state into the parents state
   useEffect(() => {

@@ -16,11 +16,14 @@
     border-right: 2px solid rgb(199, 199, 199) ;
     height: 100%;
     overflow: scroll;
+    max-height: 600px;
 }
 
 .course_creator_container{
     width: 85%;
     height: 100%;
+    max-height: 600px;
+    overflow: auto;
 }
 
 .title{

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill"; // Import Quill from react-quill
-// import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
 import quill from "quill";
 
@@ -10,26 +10,26 @@ Quill.register("modules/imageResize", ImageResize);
 
 
 const Editor = ({ slidesData, setSlidesData, slideId, placeholder, content , contentId }) => {
-  console.log("Editor component called");
+  //console.log("Editor component called");
 
   useEffect(() => {
-    console.log("Editor component render finished and useEffect is called");
+    //console.log("Editor component render finished and useEffect is called");
   })
 
   const handleChange = (html) => {
-    console.log("Editors onChange funcion called");
+    //console.log("Editors onChange funcion called");
     setSlidesData((slidesData)=>{
-      const newFinalCourseData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
+      const newSlidesData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
         if(slide.id === slideId ){
-          console.log("slide.slideId: " , slide.slideId);
+          //console.log("slide.slideId: " , slide.slideId);
           return {
 
             id:slide.id,
             content:[...slide.content.map((contentObject)=>{
-              console.log("contentObject.id: ", contentObject.id);
-              console.log("contentId" , contentId)
+              //console.log("contentObject.id: ", contentObject.id);
+              //console.log("contentId" , contentId)
               if(contentObject.id === contentId ){
-                console.log("html: " , html);
+                //console.log("html: " , html);
                 return{
                   id:contentObject.id,
                   type:contentObject.type,
@@ -45,7 +45,7 @@ const Editor = ({ slidesData, setSlidesData, slideId, placeholder, content , con
           return {...slide}
         }
       })]}
-      return newFinalCourseData;
+      return newSlidesData;
     })
   };
 

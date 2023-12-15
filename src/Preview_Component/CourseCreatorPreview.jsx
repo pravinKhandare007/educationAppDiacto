@@ -1,10 +1,12 @@
-import { useEffect, useInsertionEffect, useState } from 'react';
-import './Preview.css'
+import React, { useEffect, useState } from 'react';
+// import './PreviewCourseCreator.css'
+import '../CourseCreator/CourseCreator.css';
+//../CourseCreator/CourseCreator.css
 import Pagination from '../Pagination/Pagination';
-import "react-quill/dist/quill.snow.css";
+
 import { v4 as uuidv4 } from 'uuid';
 
-const CourseCreatorPreview = ({mainCourseData ,selectedChapterId,selectedSectionId,selectedSemId,setShowPreview }) => {
+const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedChapterPreviewId, selectedSectionPreviewId, selectedQuizPreviewId, slideId }) => {
 
     console.log("rendering course creater");
     const initialId = uuidv4();
@@ -16,134 +18,345 @@ const CourseCreatorPreview = ({mainCourseData ,selectedChapterId,selectedSection
     let initialSlidesData = { slides: [{ id: initialId, content: [] }] }
     const [slidesData, setSlidesData] = useState(initialSlidesData);
 
+    // useEffect(() => {
+    //     console.log("setting slides data from mainCourseData");
+    //     if (selectedSemId && !selectedChapterId && !selectedSectionId && !selectedQuizId) {
+    //         console.log("selectedSemId && !selectedChapterId && !selectedSectionId && !selectedQuizId")
+    //         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //         const selectedSemesterContent = mainCourseData.semesters[selectedSemIndex].content;
+    //         if (selectedSemesterContent) {
+    //             setSlidesData(mainCourseData.semesters[selectedSemIndex].content);
+    //             setCurrentSlideId(selectedSemesterContent.slides[0].id);
+    //         } else {
+    //             const firstSlide = {
+    //                 id: uuidv4(), content: []
+    //             }
+    //             setSlidesData({
+    //                 slides: [
+    //                     firstSlide
+    //                 ]
+    //             })
+    //             setCurrentSlideId(firstSlide.id);
+    //         }
+    //     }
+    //     //below if body only executes when user has selected a chapter level quiz
+    //     if(selectedSemId && !selectedChapterId && !selectedSectionId && selectedQuizId){
+    //         console.log("selectedSemId && !selectedChapterId && !selectedSectionId && selectedQuizId");
+    //         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //         const selectedQuizIndex =  mainCourseData.semesters[selectedSemIndex].quiz.findIndex((q)=> q.id === selectedQuizId);
+
+    //         const selectedQuizData = mainCourseData.semesters[selectedSemIndex].quiz[selectedQuizIndex].content;
+
+    //         if(selectedQuizData){
+    //             setSlidesData(selectedQuizData);
+    //             setCurrentSlideId(selectedQuizData.slides[0].id);
+    //         }else{
+    //             const firstSlide = {
+    //                 id: uuidv4(), content: []
+    //             }
+    //             setSlidesData({
+    //                 slides: [
+    //                     firstSlide
+    //                 ]
+    //             })
+    //             setCurrentSlideId(firstSlide.id);
+    //         }
+    //     }
+
+    //     if (selectedSemId && selectedChapterId && !selectedSectionId && !selectedQuizId) {
+    //         console.log("selectedSemId && selectedChapterId && !selectedSectionId && !selectedQuizId")
+    //         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //         const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+
+    //         const selectedChapterData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].content;
+
+    //         if (selectedChapterData) {
+    //             setSlidesData(selectedChapterData);
+    //             setCurrentSlideId(selectedChapterData.slides[0].id);
+    //         } else {
+    //             const firstSlide = {
+    //                 id: uuidv4(), content: []
+    //             }
+    //             setSlidesData({
+    //                 slides: [
+    //                     firstSlide
+    //                 ]
+    //             })
+    //             setCurrentSlideId(firstSlide.id);
+    //         }
+    //     }
+
+
+    //     //generateSlides(); //pass id 
+    //     if (selectedSemId && selectedChapterId && selectedSectionId && !selectedQuizId) {
+    //         console.log("selectedSemId && selectedChapterId && selectedSectionId && !selectedQuizId")
+    //         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //         const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+    //         const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
+
+
+    //         const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+    //         if (sectionsSlidesData) {
+    //             console.log("sectttionsSlidesdata : ", sectionsSlidesData);
+    //             console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
+    //             setSlidesData(() => {
+    //                 return { ...sectionsSlidesData }
+    //             });
+    //             setCurrentSlideId(sectionsSlidesData.slides[0].id);
+
+    //         } else {
+    //             const firstSlide = {
+    //                 id: uuidv4(), content: []
+    //             }
+    //             setSlidesData({
+    //                 slides: [
+    //                     firstSlide
+    //                 ]
+    //             })
+    //             setCurrentSlideId(firstSlide.id);
+    //         }
+    //     }
+
+
+    //     if (selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId) {
+    //         console.log("selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId");
+    //         const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //         const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+    //         const selectedQuizIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].quiz.findIndex((q) => q.id === selectedQuizId);
+
+
+    //         const quizSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].quiz[selectedQuizIndex].content;
+    //         if (quizSlidesData) {
+    //             console.log("sectttionsSlidesdata : ", quizSlidesData);
+    //             console.log("current slide setting to : ", quizSlidesData.slides[0].id);
+    //             setSlidesData(() => {
+    //                 return { ...quizSlidesData }
+    //             });
+    //             setCurrentSlideId(quizSlidesData.slides[0].id);
+
+    //         } else {
+    //             const firstSlide = {
+    //                 id: uuidv4(), content: []
+    //             }
+    //             setSlidesData({
+    //                 slides: [
+    //                     firstSlide
+    //                 ]
+    //             })
+    //             setCurrentSlideId(firstSlide.id);
+    //         }
+    //     }
+
+
+    // }, [selectedSectionPreviewId, selectedSemPreviewId, selectedChapterPreviewId ,selectedQuizPreviewId])
+
+    // useEffect(() => {
+    //     const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
+    //     const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+    //     const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
+
+
+    //     const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+    //     if (sectionsSlidesData) {
+    //         console.log("sectttionsSlidesdata : ", sectionsSlidesData);
+    //         console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
+    //         setSlidesData(() => {
+    //             return { ...sectionsSlidesData }
+    //         });
+    //         setCurrentSlideId(sectionsSlidesData.slides[0].id);
+
+    //     }
+    // }, [selectedSectionId])
+
     useEffect(() => {
-        const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemId);
-        const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterId);
-        const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionId);
+        console.log("setting slides data from mainCourseData");
 
+        if (selectedSemPreviewId && !selectedChapterPreviewId && !selectedSectionPreviewId && !selectedQuizPreviewId) {
+            console.log("selectedSemPreviewId && !selectedChapterPreviewId && !selectedSectionPreviewId && !selectedQuizPreviewId")
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemPreviewId);
+            const selectedSemesterContent = mainCourseData.semesters[selectedSemIndex].content;
 
-        const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
-        if (sectionsSlidesData) {
-            console.log("sectttionsSlidesdata : ", sectionsSlidesData);
-            console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
-            setSlidesData(()=>{ 
-                return {...sectionsSlidesData}
-            });
-            setCurrentSlideId(sectionsSlidesData.slides[0].id);     
-
+            if (selectedSemesterContent) {
+                setSlidesData(mainCourseData.semesters[selectedSemIndex].content);
+                setCurrentSlideId(selectedSemesterContent.slides[0].id);
+            } else {
+                setSlidesData(null);
+            }
         }
-    }, [selectedSectionId])
 
-      
+        if (selectedSemPreviewId && !selectedChapterPreviewId && !selectedSectionPreviewId && selectedQuizPreviewId) {
+            console.log("selectedSemPreviewId && !selectedChapterPreviewId && !selectedSectionPreviewId && selectedQuizPreviewId");
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemPreviewId);
+            const selectedQuizIndex = mainCourseData.semesters[selectedSemIndex].semesterTest.findIndex((q) => q.id === selectedQuizPreviewId);
 
-    // const [slidesData] = useState(mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content);
-    // const [currentSlideId, setCurrentSlideId] = useState(sectionsSlidesData.slides[0].id);
+            const selectedQuizData = mainCourseData.semesters[selectedSemIndex].semesterTest[selectedQuizIndex].content;
 
+            if (selectedQuizData) {
+                setSlidesData(selectedQuizData);
+                console.log("+++" , selectedQuizData.slides[0].id);
+                setCurrentSlideId(selectedQuizData.slides[0].id);
+            } else {
+                setSlidesData(null);
+            }
+        }
+
+        if (selectedSemPreviewId && selectedChapterPreviewId && !selectedSectionPreviewId && !selectedQuizPreviewId) {
+            console.log("selectedSemPreviewId && selectedChapterPreviewId && !selectedSectionPreviewId && !selectedQuizPreviewId")
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemPreviewId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterPreviewId);
+
+            const selectedChapterData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].content;
+
+            if (selectedChapterData) {
+                setSlidesData(selectedChapterData);
+                setCurrentSlideId(selectedChapterData.slides[0].id);
+            } else {
+                setSlidesData(null);
+            }
+        }
+
+        if (selectedSemPreviewId && selectedChapterPreviewId && selectedSectionPreviewId && !selectedQuizPreviewId) {
+            console.log("selectedSemPreviewId && selectedChapterPreviewId && selectedSectionPreviewId && !selectedQuizPreviewId")
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemPreviewId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterPreviewId);
+            const selectedSectionIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections.findIndex((section) => section.id === selectedSectionPreviewId);
+
+            const sectionsSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].sections[selectedSectionIndex].content;
+            if (sectionsSlidesData) {
+                console.log("sectionsSlidesdata : ", sectionsSlidesData);
+                console.log("current slide setting to : ", sectionsSlidesData.slides[0].id);
+                setSlidesData(() => ({ ...sectionsSlidesData }));
+                setCurrentSlideId(sectionsSlidesData.slides[0].id);
+            } else {
+                setSlidesData(null);
+            }
+        }
+
+        if (selectedSemPreviewId && selectedChapterPreviewId && selectedQuizPreviewId && !selectedSectionPreviewId) {
+            console.log("selectedSemPreviewId && selectedChapterPreviewId && selectedQuizPreviewId && !selectedSectionPreviewId");
+            const selectedSemIndex = mainCourseData.semesters.findIndex((semester) => semester.id === selectedSemPreviewId);
+            const selectedChapterIndex = mainCourseData.semesters[selectedSemIndex].chapters.findIndex((chapter) => chapter.id === selectedChapterPreviewId);
+            const selectedQuizIndex = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].chapterTest.findIndex((q) => q.id === selectedQuizPreviewId);
+
+            const quizSlidesData = mainCourseData.semesters[selectedSemIndex].chapters[selectedChapterIndex].chapterTest[selectedQuizIndex].content;
+            if (quizSlidesData) {
+                console.log("quizSlidesdata : ", quizSlidesData);
+                console.log("current slide setting to : ", quizSlidesData.slides[0].id);
+                setSlidesData(() => ({ ...quizSlidesData }));
+                setCurrentSlideId(quizSlidesData.slides[0].id);
+            } else {
+                setSlidesData(null);
+            }
+        }
+
+    }, [selectedSectionPreviewId, selectedSemPreviewId, selectedChapterPreviewId, selectedQuizPreviewId]);
+
+    useEffect(() => {
+        if(slideId){
+            setCurrentSlideId(slideId);
+        }
+        
+    }, [])
 
     function paginate(currentSlideId) {
         setCurrentSlideId(currentSlideId);
     }
 
-
-
+    //if the slides data is null you give a message to teacher that there is no data in the semester.
     return (<>
-        <div style={{ padding: "1em", width: "85%"}}>
-            <button onClick={() => setShowPreview((showPreview) => !showPreview)} className='btn btn-primary' style={{marginBottom:"10px"}}> Go back</button>
-            <div style={{width:"100%" , height:"550px" , overflow:"scroll"}}>
-            <div className="single_slide" style={{ border: "1px solid black", width: '100%', padding: '1em', minHeight: '300px', display: "flex", flexDirection: "column", gap: "10px" }}>
-                <span>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
-                {
-                    slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((contentObj) => {
-                        if (contentObj.type === "Heading") {
-                            return (
-                                <div className='ql-editor'>
-                                    <span className="heading_from_top">{contentObj.data}</span>
-                                </div>
-                            )
-                        }
-                        if (contentObj.type === "Text") {
-                            return (
-                                <div dangerouslySetInnerHTML={{ __html: contentObj.data }} className='ql-editor'>
-                                </div>
-                            )
-                        }
-                        if (contentObj.type === "Quiz") {
-                            return (
-                                <div>
-                                    {
-                                        contentObj.data.map((q, index) => {
+        {
+            slidesData ? (<div className='course_creator_container'>
+                <div className='slides_container' style={{ width: "100%" }}>
+                    <div className='slide' style={{
+                        paddingLeft: "5em",
+                        paddingRight: "5em",
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center"
+                    }} >
+                        {
+                            <div style={{ border: "1px solid grey", width: '100%', padding: '1em', display: "flex", flexDirection: "column", gap: "10px", backgroundColor: "#ffffff" }}>
+                                {
+                                    slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((contentObj) => {
+                                        if(!contentObj.data) return;
+                                        if (contentObj.type === "Heading") {
                                             return (
-                                                <div>
-                                                    <span>{`Q${index + 1}`}</span>
-                                                    <div>{q.question}</div>
-                                                    <div>
-                                                        {
-                                                            q.options.map((option, optIndex) => {
-                                                                return (
-                                                                    <div style={{ padding: "0.2em" }}>
-                                                                        <input type='radio' value={option} id={`option${optIndex}`} name={`question${index}`}></input><label for={`option${optIndex}`}>{option}</label>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
+                                                <div className='copy-ql-editor'>
+                                                    <span className="heading_from_top" style={{ fontSize: "20px", fontWeight: '400', lineHeight: '145%', width: '100%', color: 'black' }}>{contentObj.data}</span>
+                                                </div>
+                                            )
+                                        }
+                                        if (contentObj.type === "Text") {
+                                            return (
+                                                <div className='ql-snow'>
+                                                    <div dangerouslySetInnerHTML={{ __html: contentObj.data }} className='ql-editor'>
+
                                                     </div>
                                                 </div>
                                             )
+                                        }
+                                        if (contentObj.type === "Quiz") {
+                                            return (
+                                                <div className=''>
+                                                    <div>
+                                                        <span>{`Q) `}</span>
+                                                        <span>{contentObj.data.question}</span>
+                                                        <div>
+                                                            {
+                                                                contentObj.data.options.map((option, optIndex) => {
+                                                                    return (
+                                                                        <div style={{ paddingTop: "0.2em" }}>
+                                                                            <input type='radio' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
+                                                                        </div>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                        })
-                                    }
-                                </div>
+                                            )
+                                        }
+                                        if (contentObj.type === "Image") {
+                                            return (
+                                                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
 
-                            )
+                                                    <div className="box">
+                                                        <img id={"imgId"} src={URL.createObjectURL(contentObj.data)} ></img>
+                                                    </div>
+
+                                                </div>
+                                            )
+                                        }
+                                        if (contentObj.type === "Video") {
+                                            return (
+                                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                    <iframe
+                                                        width="560"
+                                                        height="315"
+                                                        src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
+                                                        title="YouTube Video"
+                                                        frameBorder="0"
+                                                        allowFullScreen
+                                                    ></iframe>
+                                                </div>
+                                            )
+                                        }
+                                    })
+                                }
+                            </div>
                         }
-                        if (contentObj.type === "Image") {
-                            return (
-                                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-
-                                    <div className="box">
-                                        <img id={"imgId"} src={URL.createObjectURL(contentObj.data)} ></img>
-                                    </div>
-
-                                </div>
-                            )
-                        }
-                    })
-                }
-            </div>
-            </div>
-            <div>
-                <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
-            </div>
-        </div>
-
-
+                    </div>
+                    <div>
+                        <div className='pagination_container'>
+                            <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>) : <div></div>
+        }
     </>);
 }
 
 export default CourseCreatorPreview;
-
-/*
-
-
-<h2>Heading 2 of text editor</h2><p><br></p><p>This is the second slide </p><p><span class=\"ql-font-monospace\">with content center as well as different font-styles</span></p><p><br></p><ol><li class=\"ql-align-center\">first </li><li class=\"ql-align-center\">second</li><li class=\"ql-align-center\">third </li></ol>"
-id
-: 
-"9f3b9faf-ca7b-486c-b6a9-2bf1b2822a78"*/
-
-/*
-content
-: 
-Array(2)
-0
-: 
-{id: '52427614-8a44-4d94-99b7-225d9ec8b1b0', type: 'Text', data: '<h1>Biology</h1><p><br></p><p>In this section we w…ti-cellular</li><li>power house of cell</li></ol>'}
-1
-: 
-{id: 'bf424c42-15a4-4cd8-b051-48399c68cc9b', type: 'Heading', data: 'Normal Heading'}
-length
-: 
-2
-
-
-
-*/ 

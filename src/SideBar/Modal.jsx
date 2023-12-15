@@ -7,7 +7,7 @@ const Modal = ({children}) => {
         document.body.style.overflowY = 'hidden';
 
         return ()=>{
-            document.body.style.overflowY = 'scroll';
+            document.body.style.overflowY = 'auto';
         }
     })
 

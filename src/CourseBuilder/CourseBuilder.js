@@ -7,20 +7,36 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import SideBarPreview from "../Preview_Component/SideBarPreview";
 import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
+import McqComponent from "../CourseCreator/MCQ_Component/McqComponent";
 
-const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discription = "This course will teach about the fundamentals of trigonometry"}) => {
+const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discription = "This course will teach about the fundamentals of trigonometry" }) => {
     console.log("rendering parent");
-    
 
+    //useParam 
     const [selectedSemId, setSelectedSemId] = useState(null);
     const [selectedChapterId, setSelectedChapterId] = useState(null);
     const [selectedSectionId, setSelectedSectionId] = useState(null);
-    const [selectedQuizId , setSelectedQuizId] = useState(null);
+    const [selectedQuizId, setSelectedQuizId] = useState(null);
     const [mainCourseData, setMainCourseData] = useState({ semesters: [] });
     const [showPreview, setShowPreview] = useState(false);
+    const [type , setType] = useState('');
 
-    console.log("maincd" , mainCourseData);
-    
+    //ids for preview components 
+    const [selectedSemPreviewId, setSelectedSemPreviewId] = useState(null);
+    const [selectedChapterPreviewId, setSelectedChapterPreviewId] = useState(null);
+    const [selectedSectionPreviewId, setSelectedSectionPreviewId] = useState(null);
+    const [selectedQuizPreviewId, setSelectedQuizPreviewId] = useState(null);
+
+    //below state is to store the information about which slide the teacher is on so on app re-render we have the same slide 
+    const [slideId, setSlideId] = useState('')
+
+    //below state is to store information about the open dropdowns. which is passed to preview component 
+    const [semesterDropdownInfo, setSemesterDropdownInfo] = useState('');
+    const [chapterDropdownInfo, setChapterDropdownInfo] = useState('');
+
+
+    console.log("maincd", mainCourseData);
+
     useEffect(() => {
 
         setMainCourseData({
@@ -44,102 +60,148 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                                     id: uuidv4(),
                                     name: 'section 1',
                                     content: {
-                                        slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'section 1 slide 1' }] },
-                                        { id: uuidv4(), content: [{ id: uuidv4(), type: 'Text', data: 'section 1 slide 2' }] },
+                                        slides: [
+                                            { id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'section 1 slide 1' }] },
+                                            { id: uuidv4(), content: [{ id: uuidv4(), type: 'Text', data: 'section 1 slide 2' }] },
                                         ]
                                     }
                                 }
                             ],
-                            quiz: []
+                            chapterTest: [{id:uuidv4() , name: "sectionTest" ,numberOfQuestions:5,timeLimit:{hours:4 , minutes: 24}, content:{slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }]} }]
                         },
 
 
                     ],
-                    quiz: []
+                    semesterTest: [{id:uuidv4() , name: "chapterTest" ,numberOfQuestions:7,timeLimit:{hours:2 , minutes: 20}, content:{slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }]} }]
                 },
-                {
-                    id: uuidv4(),
-                    name: 'sem 2',
-                    content:null,
-                    chapters: [
 
-                        {
-                            id: uuidv4(),
-                            name: 'chapter 1',
-                            sections: [
-                                {
-                                    id: uuidv4(),
-                                    name: 'section 1',
-
-                                    content: null
-                                }
-                            ],
-                            quiz: [
-                                {
-                                    id: uuidv4(),
-                                    name: 'bioQuiz',
-                                    content: null
-                                }
-                            ]
-                        }
-
-                    ],
-                    quiz: []
-                }
             ]
         });
     }, []);
 
+    useEffect(() => {
+        console.log("last parent render : , ", mainCourseData);
+    })
 
-    const handleSelectedSemester = (semesterId) => {
+    const handleSlectedIds = (semId , chapId , secId , quizId , type)=>{
+        setType(type);
+        setSelectedSemId(semId);
+        setSelectedChapterId(chapId);
+        setSelectedSectionId(secId);
+        setSelectedQuizId(quizId);
+    }
+
+    const handleSelectedSemester = (semesterId , type) => {
+        setType(type);
         setSelectedSemId(semesterId);
         setSelectedChapterId(null);
         setSelectedSectionId(null);
         setSelectedQuizId(null);
     }
 
-    const handleSelectedChapter = (semesterId, chapId) => {
+    const handleSelectedChapter = (semesterId, chapId , type) => {
+        setType(type);
         setSelectedSemId(semesterId);
         setSelectedChapterId(chapId);
         setSelectedSectionId(null)
         setSelectedQuizId(null);
     }
 
-    const resetSelectedIds = ()=>{
+    const resetSelectedIds = () => {
         setSelectedSemId(null);
         setSelectedChapterId(null);
         setSelectedSectionId(null);
         setSelectedQuizId(null);
+        setType(null);
+        setSlideId(null); //if not setted to null then when user deletes a sem, chap, sec. adds a new sem chap or sec and clicks on that. currentSlideId is set to the deleted slides Id.
     }
 
-    const handleSelectedQuiz= (semId,chapId,quizId)=>{
+    const handleSelectedQuiz = (semId, chapId, quizId , type) => {
+        setType(type);
         setSelectedSemId(semId);
         setSelectedChapterId(chapId);
         setSelectedQuizId(quizId);
         setSelectedSectionId(null);
     }
 
-    const handleSelectedSection = (semesterId, chpId, secId) => {
+    const handleSelectedSection = (semesterId, chpId, secId , type) => {
+        setType(type);
         setSelectedChapterId(chpId)
         setSelectedSectionId(secId)
         setSelectedSemId(semesterId)
+        setSelectedQuizId(null); //I got an error because i didnt put this line which took me 2 hours to solve.
+    }
+
+    const handleSelectedQuizOnChapterLevel = (semId, quizId , type) => {
+        setType(type);
+        setSelectedSemId(semId);
+        setSelectedChapterId(null);
+        setSelectedQuizId(quizId);
+        setSelectedSectionId(null);
     }
 
     function saveCourseData() {
         axios.post("/api/courses", mainCourseData);
     }
 
+    function setPreviewIds() {
+        setSelectedSemPreviewId(selectedSemId);
+        setSelectedChapterPreviewId(selectedChapterId);
+        setSelectedSectionPreviewId(selectedSectionId);
+        setSelectedQuizPreviewId(selectedQuizId);
+    }
+
+    function handleSelectedPreviewSemester(semId) {
+        setSelectedSemPreviewId(semId);
+        setSelectedChapterPreviewId(null);
+        setSelectedSectionPreviewId(null);
+        setSelectedQuizPreviewId(null);
+    }
+
+    function handleSelectedPreviewChapter(semId, chapId) {
+        setSelectedSemPreviewId(semId);
+        setSelectedChapterPreviewId(chapId);
+        setSelectedSectionPreviewId(null);
+        setSelectedQuizPreviewId(null);
+    }
+
+    function handleSelectedPreviewSection(semId, chapId, sectionId) {
+        setSelectedSemPreviewId(semId);
+        setSelectedChapterPreviewId(chapId);
+        setSelectedSectionPreviewId(sectionId);
+        setSelectedQuizPreviewId(null);
+    }
+
+    function handleSelectedPreviewQuiz(semId, chapId, quizId) {
+        setSelectedSemPreviewId(semId);
+        setSelectedChapterPreviewId(chapId);
+        setSelectedSectionPreviewId(null);
+        setSelectedQuizPreviewId(quizId);
+    }
+
+    const handleSelectedPreviewQuizOnChapterLevel = (semId, quizId) => {
+        setSelectedSemPreviewId(semId);
+        setSelectedChapterPreviewId(null);
+        setSelectedQuizPreviewId(quizId);
+        setSelectedSectionPreviewId(null);
+    }
+
     return (<>
         <div className="builder_container">
             <div className="title">
+               
                 <div>
                     <span><strong>Course Name:</strong> {name}</span><br></br>
                     <span><strong>Subject:</strong> {subject}</span><br></br>
                     <span><strong>Description:</strong> {discription}</span>
                 </div>
                 <div style={{ textAlign: "right", marginBottom: "10px" }}>
-                    <button className="btn btn-primary" style={{marginRight:"5px"}}>Save Course</button>
-                    <button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className='btn btn-primary'>Preview</button>
+                    {
+                        showPreview ? (<button className="btn btn-primary" onClick={() => { setShowPreview((showPreview) => !showPreview) }}>Go Back</button>) : (
+                            <><button className="btn btn-primary" style={{ marginRight: "5px" }}>Save Course</button>
+                                <button onClick={() => { setShowPreview((showPreview) => !showPreview); setPreviewIds() }} className='btn btn-primary'>Preview</button></>
+                        )
+                    }
                 </div>
             </div>
             <div className="course_builder_container">
@@ -147,17 +209,28 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                     showPreview ? (
                         <>
                             <div className="sidebar_container">
-                                <SideBarPreview handleSelectedSection={handleSelectedSection}
-                                    mainCourseData={mainCourseData} />
+                                <SideBarPreview
+                                    mainCourseData={mainCourseData}
+                                    handleSelectedPreviewSemester={handleSelectedPreviewSemester}
+                                    handleSelectedPreviewChapter={handleSelectedPreviewChapter}
+                                    handleSelectedPreviewSection={handleSelectedPreviewSection}
+                                    handleSelectedPreviewQuiz={handleSelectedPreviewQuiz}
+                                    handleSelectedPreviewQuizOnChapterLevel={handleSelectedPreviewQuizOnChapterLevel}
+                                    semesterDropdownInfo={semesterDropdownInfo}
+                                    chapterDropdownInfo={chapterDropdownInfo}
+
+                                />
                             </div>
 
                             {
-                                selectedSectionId ? (
+                                selectedSectionPreviewId || selectedSemPreviewId || selectedChapterPreviewId || selectedQuizPreviewId ? (
                                     <CourseCreatorPreview
                                         mainCourseData={mainCourseData}
-                                        selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
-                                        selectedSemId={selectedSemId}
-                                        setShowPreview={setShowPreview}
+                                        selectedSemPreviewId={selectedSemPreviewId}
+                                        selectedChapterPreviewId={selectedChapterPreviewId}
+                                        selectedSectionPreviewId={selectedSectionPreviewId}
+                                        selectedQuizPreviewId={selectedQuizPreviewId}
+                                        slideId={slideId}
                                     />
                                 ) : <div></div>
                             }
@@ -166,14 +239,19 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                         <>
                             <div className="sidebar_container">
                                 {
-                                    mainCourseData.semesters.length > 0 && <SideBar handleSelectedSection={handleSelectedSection}
-                                        mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                    <SideBar handleSelectedSection={handleSelectedSection}
+                                        mainCourseData={mainCourseData}
+                                        setMainCourseData={setMainCourseData}
                                         handleSelectedSemester={handleSelectedSemester}
-                                        handleSelectedChapter={handleSelectedChapter} 
-                                        resetSelectedIds={resetSelectedIds} 
-                                        handleSelectedQuiz={handleSelectedQuiz}   
+                                        handleSelectedChapter={handleSelectedChapter}
+                                        resetSelectedIds={resetSelectedIds}
+                                        handleSelectedQuiz={handleSelectedQuiz}
+                                        handleSelectedQuizOnChapterLevel={handleSelectedQuizOnChapterLevel}
+                                        semesterDropdownInfo={semesterDropdownInfo}
+                                        chapterDropdownInfo={chapterDropdownInfo}
+                                        setSemesterDropdownInfo={setSemesterDropdownInfo}
+                                        setChapterDropdownInfo={setChapterDropdownInfo}
                                     />
-                                        
                                 }
                             </div>
 
@@ -181,12 +259,14 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
                                 selectedSectionId || selectedSemId || selectedChapterId || selectedQuizId ? (
                                     <CourseCreator
                                         mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
-                                        selectedChapterId={selectedChapterId} selectedSectionId={selectedSectionId}
+                                        selectedChapterId={selectedChapterId}
+                                        selectedSectionId={selectedSectionId}
                                         selectedSemId={selectedSemId}
-                                        setShowPreview={setShowPreview}
                                         resetSelectedIds={resetSelectedIds}
                                         selectedQuizId={selectedQuizId}
-                                        
+                                        setSlideId={setSlideId}
+                                        slideId={slideId}
+                                        type={type}
                                     />
                                 ) : <div></div>
                             }
@@ -201,5 +281,36 @@ const CourseBuilder = ({name="Trigonometry course" , subject = "Maths" , discrip
 
 export default CourseBuilder;
 
+{
+    // {
+    //     id: uuidv4(),
+    //     name: 'sem 2',
+    //     content:null,
+    //     chapters: [
 
+    //         {
+    //             id: uuidv4(),
+    //             name: 'chapter 1',
+    //             content:null,
+    //             sections: [
+    //                 {
+    //                     id: uuidv4(),
+    //                     name: 'section 1',
+
+    //                     content: {slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'section data' }] }]}
+    //                 }
+    //             ],
+    //             quiz: [
+    //                 {
+    //                     id: uuidv4(),
+    //                     name: 'bioQuiz',
+    //                     content: {slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'bio quiz data' }] }]}
+    //                 }
+    //             ]
+    //         }
+
+    //     ],
+    //     quiz: []
+    // }
+}
 
