@@ -21,10 +21,11 @@ import {
     restrictToWindowEdges,
     restrictToParentElement,
     restrictToFirstScrollableAncestor
-} from '@dnd-kit/modifiers'
+} from '@dnd-kit/modifiers';
+import { Resizable } from 're-resizable';
 
 const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type }) => {
-    
+
     const initialId = uuidv4();
     const [activeId, setActiveId] = useState(null);
     const [currentSlideId, setCurrentSlideId] = useState(initialId); // will contain the id of the current slide
@@ -40,11 +41,11 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
     const firstSlide = {
         id: uuidv4(), content: []
     }
+    const [isSorted, setIsSorted] = useState(false);
 
-    
 
     function getDataFromParent(semId, chapId, secId, quizId) {
- 
+
         const semester = mainCourseData.semesters ? mainCourseData['semesters'].find(semObj => semObj.id === semId) : null
         const chapter = semester ? semester['chapters'].find(chapObj => chapObj.id === chapId) : null
         const section = chapter ? chapter['sections'].find(sectionObj => sectionObj.id === secId) : null
@@ -73,16 +74,16 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
             if (chapterTest) {
                 setSlidesData(chapterTest.content ? chapterTest.content : { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: "Quiz", data: null }] }] })
                 setCurrentSlideId(chapterTest.content ? chapterTest.content.slides[0].id : firstSlide.id);
-                setNumberOfQuestionToShow(chapterTest.numberOfQuestions ? chapterTest.numberOfQuestions: 0);
-                setTimeLimit(chapterTest.timeLimit);
+                setNumberOfQuestionToShow(chapterTest.numberOfQuestions ? chapterTest.numberOfQuestions : 0);
+                setTimeLimit(chapterTest.timeLimit ? chapterTest.timeLimit: null);
             }
         }
         if (type === 'semesterTest') {
             if (semesterTest) {
                 setSlidesData(semesterTest.content ? semesterTest.content : { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: "Quiz", data: null }] }] })
                 setCurrentSlideId(semesterTest.content ? semesterTest.content.slides[0].id : firstSlide.id);
-                setNumberOfQuestionToShow(semesterTest.numberOfQuestions ? semesterTest.numberOfQuestions: 0);
-                setTimeLimit(semesterTest.timeLimit);
+                setNumberOfQuestionToShow(semesterTest.numberOfQuestions ? semesterTest.numberOfQuestions : 0);
+                setTimeLimit(semesterTest.timeLimit ? semesterTest.timeLimit:null);
             }
         }
     }
@@ -105,7 +106,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                 }
                 return newMainCourseData;
             })
-            
+
         }
         if (type === 'chapters') {
             setMainCourseData((mainCourseData) => {
@@ -177,7 +178,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                         ...chapter, chapterTest: chapter.chapterTest.map((q) => {
                                             if (q.id === quizId) {
                                                 return {
-                                                    ...q, content: slidesData
+                                                    ...q, content: slidesData , timeLimit: timeLimit , numberOfQuestions: numberOfQuestionToShow
                                                 }
                                             } else {
                                                 return {
@@ -209,7 +210,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                             ...semester, semesterTest: semester.semesterTest.map((q) => {
                                 if (q.id === quizId) {
                                     return {
-                                        ...q, content: slidesData
+                                        ...q, content: slidesData , timeLimit:timeLimit , numberOfQuestions: numberOfQuestionToShow
                                     }
                                 } else {
                                     return {
@@ -234,91 +235,96 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
     useEffect(() => {
         setDataToParent(selectedSemId, selectedChapterId, selectedSectionId, selectedQuizId);
-    }, [slidesData])
+    }, [slidesData , timeLimit , numberOfQuestionToShow])
 
     //below useEffect run when teacher enters number of question to display and saves the entered data into parents data
 
-    useEffect(() => {
-        if (selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId) {
-            setMainCourseData({
-                semesters: mainCourseData.semesters.map((semester) => {
-                    if (semester.id === selectedSemId) {
-                        return {
-                            ...semester, chapters: semester.chapters.map((chapter) => {
-                                if (chapter.id === selectedChapterId) {
-                                    return {
-                                        ...chapter, chapterTest: chapter.chapterTest.map((t) => {
-                                            if (t.id === selectedQuizId) {
-                                                return {
-                                                    ...t, numberOfQuestions: numberOfQuestionToShow
-                                                }
-                                            } else {
-                                                return {
-                                                    ...t
-                                                }
-                                            }
-                                        })
-                                    }
-                                } else {
-                                    return {
-                                        ...chapter
-                                    }
-                                }
-                            })
-                        }
-                    } else {
-                        return {
-                            ...semester
-                        }
-                    }
-                })
-            })
-        }
+    // useEffect(() => {
+    //     if (selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId) {
+    //         setMainCourseData({
+    //             semesters: mainCourseData.semesters.map((semester) => {
+    //                 if (semester.id === selectedSemId) {
+    //                     return {
+    //                         ...semester, chapters: semester.chapters.map((chapter) => {
+    //                             if (chapter.id === selectedChapterId) {
+    //                                 return {
+    //                                     ...chapter, chapterTest: chapter.chapterTest.map((t) => {
+    //                                         if (t.id === selectedQuizId) {
+    //                                             return {
+    //                                                 ...t, numberOfQuestions: numberOfQuestionToShow
+    //                                             }
+    //                                         } else {
+    //                                             return {
+    //                                                 ...t
+    //                                             }
+    //                                         }
+    //                                     })
+    //                                 }
+    //                             } else {
+    //                                 return {
+    //                                     ...chapter
+    //                                 }
+    //                             }
+    //                         })
+    //                     }
+    //                 } else {
+    //                     return {
+    //                         ...semester
+    //                     }
+    //                 }
+    //             })
+    //         })
+    //     }
 
-        if (selectedSemId && !selectedChapterId && !selectedSectionId && selectedQuizId) {
-            setMainCourseData({
-                semesters: mainCourseData.semesters.map((semester) => {
-                    if (semester.id === selectedSemId) {
-                        return {
-                            ...semester, semesterTest: semester.semesterTest.map((t) => {
-                                if (t.id === selectedQuizId) {
-                                    return {
-                                        ...t, numberOfQuestions: numberOfQuestionToShow
-                                    }
-                                } else {
-                                    return {
-                                        ...t
-                                    }
-                                }
-                            })
-                        }
-                    } else {
-                        return {
-                            ...semester
-                        }
-                    }
-                })
-            })
-        }
+    //     if (selectedSemId && !selectedChapterId && !selectedSectionId && selectedQuizId) {
+    //         setMainCourseData({
+    //             semesters: mainCourseData.semesters.map((semester) => {
+    //                 if (semester.id === selectedSemId) {
+    //                     return {
+    //                         ...semester, semesterTest: semester.semesterTest.map((t) => {
+    //                             if (t.id === selectedQuizId) {
+    //                                 return {
+    //                                     ...t, numberOfQuestions: numberOfQuestionToShow
+    //                                 }
+    //                             } else {
+    //                                 return {
+    //                                     ...t
+    //                                 }
+    //                             }
+    //                         })
+    //                     }
+    //                 } else {
+    //                     return {
+    //                         ...semester
+    //                     }
+    //                 }
+    //             })
+    //         })
+    //     }
 
-    }, [numberOfQuestionToShow])
-
+    // }, [numberOfQuestionToShow])
+    //below useEffect stores currentSlideId value into parent so when user goes into preview we can show that exact slide in preview aswell 
     useEffect(() => {
         setSlideId(currentSlideId);
     }, [currentSlideId])
-
+    //below useEffect is used to set the currentSlideId to the id it was before going into preview
     useEffect(() => {
-        if (slideId === '') {
-            return
-        } else {
-            if(slideId){
-                setCurrentSlideId(slideId);
-            }
+        if(slideId){
+            setCurrentSlideId(slideId);
         }
+        
+        // if (!slideId) {
+        //     return
+        // } else {
+        //     if (slideId) {
+        //         setCurrentSlideId(slideId);
+        //     }
+        // }
     }, [])
 
     function handleDragStart(event) {
-        console.log("drag start", event)
+        console.log("drag start", event);
+        //based on this we render the required overlay
         setIsDragging(event.active.id);
     }
 
@@ -348,6 +354,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
             return newSlidesData;
         })
         setActiveId(null);
+        setIsSorted(!isSorted);
     }
 
     function handleDragEnd(event) {
@@ -395,7 +402,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
     function handleSortStart(event) {
         const { active } = event;
-
         setActiveId(active.id)
         console.log("sort end", event)
     }
@@ -494,11 +500,10 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                     {
                         selectedQuizId && (<div>
                             <span>No. of question to display: <input type='number' value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
-                            <span>Time Limit: <input value={timeLimit ? timeLimit.hours: null} type='number'></input><span>Hr</span><input value={timeLimit ? timeLimit.minutes: null} type='number'></input><span>Minutes</span></span>
+                            <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e)=>{setTimeLimit((timeLimit)=>{ return {...timeLimit , hours: e.target.value }})}}></input><span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number'></input><span>Minutes</span></span>
                         </div>)
                     }
                     <div className='slide' >
-                        
                         {
                             <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
                                 <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
@@ -508,43 +513,54 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                         {
                                             slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((element, index) => {
                                                 if (element.type === 'Heading') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
                                                         <div className='heading_form_top'>
-                                                        
+
                                                             <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
                                                         </div>
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Text') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
                                                         <Editor slidesData={slidesData} setSlidesData={setSlidesData} content={element.data} slideId={currentSlideId} contentId={element.id} />
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Image') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} >
+                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
                                                         {element.data ? (
                                                             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                                                                <div className="box">
-                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} ></img>
-                                                                </div>
+                                                                <Resizable
+                                                                    maxWidth='100%'
+                                                                    style={{
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                        alighItems: "center",
+                                                                    }}
+                                                                    onResizeStop={(e, d, ref, delta) => { console.log(e, d, ref, delta) }}
+                                                                    lockAspectRatio={false}
+                                                                >
+                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} style={{ maxHeight: "100%", maxWidth: "100%" }}></img>
+                                                                </Resizable>
                                                             </div>
                                                         ) : null}
-                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}><label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label></div>}
+                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}>
+                                                            <label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label>
+                                                        </div>}
                                                         <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
                                                     </SortableItem>;
                                                 }
                                                 if (element.type === 'Video') {
                                                     return (
-                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId}>
-                                                            <VideoComponent slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} data={element.data} />
+                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
+                                                            <VideoComponent slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} data={element.data} isSorted={isSorted} />
                                                         </SortableItem>
                                                     )
                                                 }
                                                 if (element.type === 'Quiz') {
-                                                   
+
                                                     return (
-                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} selectedQuizId={selectedQuizId}>
-                                                            <McqComponent setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} data={element.data} />
+                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} selectedQuizId={selectedQuizId} setIsSorted={setIsSorted}>
+                                                            <McqComponent setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} data={element.data} isSorted={isSorted} />
                                                         </SortableItem>
                                                     )
                                                 }
@@ -619,7 +635,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                             <div className="draggable">
                                 <i className="fa-solid fa-video"></i>
                                 <p>Video</p>
-                                
+
                             </div>
                         ) : null
                     }

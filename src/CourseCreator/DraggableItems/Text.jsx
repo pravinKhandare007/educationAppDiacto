@@ -18,7 +18,7 @@ export default function Text(props) {
     //   Text Field
     // </button>
     <NewItem ref={setNodeRef} {...listeners} {...attributes}>
-      <div style={style} data-tooltip-id="my-tooltip" data-tooltip-content="Drag to add text editor" data-tooltip-place="top" className="draggable">
+      <div style={style} data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled":"Drag to add text editor"} data-tooltip-place="top" className="draggable">
         <i className="fa-regular fa-pen-to-square" ></i>
         <p>Text</p>
         <Tooltip id="my-tooltip" />

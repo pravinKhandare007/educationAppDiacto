@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const YouTubeVideo = ({videoData , setVideoData}) => {
+const YouTubeVideo = ({videoData , setVideoData , reRenderChid}) => {
   const [videoUrl, setVideoUrl] = useState('');
   const [videoId, setVideoId] = useState('');
 
@@ -24,12 +24,12 @@ const YouTubeVideo = ({videoData , setVideoData}) => {
 
   useEffect(()=>{
     setVideoData({...videoData , ytData: {...videoData.ytData , videoUrl:videoUrl , videoId:videoId}});
-  },[videoId , videoUrl])
+  },[videoId , videoUrl ])
 
   useEffect(()=>{
     setVideoUrl(videoData.ytData.videoUrl);
     setVideoId(videoData.ytData.videoId);
-  },[])
+  },[reRenderChid])
 
   return (
     <div>

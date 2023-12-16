@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-const McqComponent = ({ setSlidesData, slideId, contentId, slidesData, data }) => {
-
+const McqComponent = ({ setSlidesData, slideId, contentId, slidesData, data ,isSorted}) => {
+    //isSorted is toggled when there is a sort opration, isSorted is required because McqComponent was not setting the data from the parent after the sort happend 
     console.log("rendering mcq component")
     const [mcq, setMcq] = useState(null);
     const [isChecked, setIsChecked] = useState({})
@@ -19,7 +19,7 @@ const McqComponent = ({ setSlidesData, slideId, contentId, slidesData, data }) =
                 type: 'single'
             });
         }
-    }, [slideId])
+    }, [slideId , isSorted])
 
     useEffect(() => {
         console.log("mcq useEffect 2 setting parent data to ", mcq)
@@ -113,7 +113,7 @@ const McqComponent = ({ setSlidesData, slideId, contentId, slidesData, data }) =
                     <div>
                         <span>Q{')'}</span>
                         <input type="text" placeholder="Question" value={mcq.question} onChange={(e) => { updateQuestion(e) }} style={{ width: '90%', border: 'none', marginBottom: '10px', outline: "none" }}></input>
-                        <select onChange={handleSingleOrMultiple}>
+                        <select onChange={handleSingleOrMultiple} value={mcq.type}>
                             <option value={"single"} >Single correct</option>
                             <option value={"multiple"}>Multiple correct</option>
                         </select>

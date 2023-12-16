@@ -31,6 +31,7 @@ export function SortableItem(props) {
       })]}
       return newSlidesData;
     })
+    props.setIsSorted((isSorted)=> !isSorted);
   }
   
   return (

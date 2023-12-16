@@ -16,7 +16,7 @@ export default function VideoDraggable(props) {
 
         <NewItem ref={setNodeRef} {...listeners} {...attributes}>
             <div className="draggable" data-tooltip-id="my-tooltip"
-                data-tooltip-content="Drag to add video content"
+                data-tooltip-content={props.disabled ? "disabled":"Drag to add video content"}
                 data-tooltip-place="top-start" style={style}>
                 <i className="fa-solid fa-video"></i>
                 <p>Video</p>

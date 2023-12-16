@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import YouTubeVideo from "./YouTubeVideo";
 
-const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data}) => {
+const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data , isSorted}) => {
    
    const [videoData , setVideoData ] = useState({
     renderComponent:"choiceComponent" , 
@@ -10,6 +10,22 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data
         videoId:""
     }
    })
+   const [reRenderChid , setReRenderChild] = useState(false);
+   //when videoComponents parent re-renders then videoState is lost 
+   useEffect(()=>{
+    if(data){
+        setVideoData(data);
+    }else{
+        setVideoData({
+            renderComponent:"choiceComponent" , 
+            ytData : {
+                videoUrl:"",
+                videoId:""
+            }
+           })
+    }
+    setReRenderChild(!reRenderChid);
+   },[slideId , isSorted])
 
    useEffect(()=>{
         setSlidesData((slidesData)=>{
@@ -40,20 +56,7 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data
             return newSlidesData;
         })
    },[videoData])
-   //when videoComponents parent re-renders then videoState is lost 
-   useEffect(()=>{
-    if(data){
-        setVideoData(data);
-    }else{
-        setVideoData({
-            renderComponent:"choiceComponent" , 
-            ytData : {
-                videoUrl:"",
-                videoId:""
-            }
-           })
-    }
-   },[slideId])
+   
    
    if(videoData.renderComponent === "choiceComponent"){
     return (
@@ -73,7 +76,7 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data
    }
    if(videoData.renderComponent === "yt_component"){
     return (
-        <YouTubeVideo videoData={videoData} setVideoData={setVideoData}/>
+        <YouTubeVideo videoData={videoData} setVideoData={setVideoData} reRenderChid={reRenderChid}/>
     )
    }
 }

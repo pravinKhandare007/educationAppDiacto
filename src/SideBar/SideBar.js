@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { v4 as uuidv4 } from "uuid";
 import Modal from './Modal';
 import { createPortal } from 'react-dom';
+import './SideBar.css';
 
 const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, handleSelectedSemester,
     handleSelectedChapter, resetSelectedIds, handleSelectedQuiz, handleSelectedQuizOnChapterLevel,
@@ -483,7 +484,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                 >
                                     <div>
                                         {
-                                            <label onClick={() => {/*here update selectedSemester */ handleSelectedSemester(semester.id, 'semesters') }}>{semester.name}</label>
+                                            <label onClick={() => {/*here update selectedSemester */ handleSelectedSemester(semester.id, 'semesters') } } style={{ cursor:'pointer'}}>{semester.name}</label>
                                         }
                                     </div>
                                     <span>
@@ -497,7 +498,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                     showModal.edit ? (<>
                                                         <div>Do you want to change the name of semester {semester.name}</div>
                                                         <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                        {error && <><span>name required</span><br/></>}
+                                                        {error && <><span style={{color:"red" , fontSize:"12px"}}>name required</span><br/></>}
                                                         <button className='btn btn-primary'
                                                             onClick={() => { editSemesterName(semester.id);}}>Update</button>
                                                         <button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => {setShowModal((showModal) => { return { ...showModal, id: null } }); setError(false)}} >cancel</button>
@@ -525,7 +526,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                 </div>
                                 {/* below we are rendering the body of the accordian item */}
                                 {semesterDropdown === semester.id && (
-                                    <div style={{ border: '1px solid #ccc', padding: '10px', transition: 'all 3s ease-in-out' }}>
+                                    <div style={{ border: '1px solid #ccc', padding: '10px' ,transition: 'all 3s ease'}} className='dropdown_animate'>
                                         {
                                             semester.chapters.map((chapter, chapIndex) => {
                                                 return (
@@ -544,7 +545,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                         >
                                                             <div>
                                                                 {
-                                                                    <label onClick={() => { handleSelectedChapter(semester.id, chapter.id, 'chapters') }}>{chapter.name}</label>
+                                                                    <label onClick={() => { handleSelectedChapter(semester.id, chapter.id, 'chapters') }} style={{ cursor:'pointer'}}>{chapter.name}</label>
                                                                 }
                                                             </div>
                                                             <span>
@@ -564,7 +565,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                             showModal.edit ? (<>
                                                                                 <div>Do you want to change the name of chapter {chapter.name}</div>
                                                                                 <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                                                {error && <><span>name required</span><br/></>}
+                                                                                {error && <><span style={{color:"red" , fontSize:"12px"}}>name required</span><br/></>}
                                                                                 <button className='btn btn-primary'
                                                                                     onClick={() => { editChapterName(semester.id, chapter.id);  }}>Update</button>
                                                                                 <button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => {setShowModal((showModal) => { return { ...showModal, id: null } }); setError(false)}}>cancel</button>
@@ -598,7 +599,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         >
                                                                             <div>
                                                                                 {
-                                                                                    <label onClick={() => { handleSelectedSection(semester.id, chapter.id, section.id, 'sections'); setCurrentSection(section.id) }}>{section.name}</label>
+                                                                                    <label onClick={() => { handleSelectedSection(semester.id, chapter.id, section.id, 'sections'); setCurrentSection(section.id) }} style={{ cursor:'pointer'}}>{section.name}</label>
                                                                                 }
                                                                             </div>
                                                                             <span>{isHovering === section.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: section.id, edit: true, delete: false } })} style={{ cursor: 'pointer' }}></i>}
@@ -610,7 +611,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                                         showModal.edit ? (<>
                                                                                             <div>Do you want to change the name of section {section.name}</div>
                                                                                             <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                                                            {error && <><span>name required</span><br/></>}
+                                                                                            {error && <><span style={{color:"red" , fontSize:"12px"}}>name required</span><br/></>}
                                                                                             <button className='btn btn-primary' onClick={() => { editSectionName(semester.id, chapter.id, section.id); setNewName("") }}>Update</button><button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => {setShowModal((showModal) => { return { ...showModal, id: null } });setError(false)}}>cancel</button>
                                                                                             {/* close the above modal as well as update the name in state */}
                                                                                         </>) : null
@@ -640,7 +641,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         >
                                                                             <div>
                                                                                 {
-                                                                                    <label onClick={() => { handleSelectedQuiz(semester.id, chapter.id, q.id, 'chapterTest'); setCurrentSection(q.id) }}>{q.name}</label>
+                                                                                    <label onClick={() => { handleSelectedQuiz(semester.id, chapter.id, q.id, 'chapterTest'); setCurrentSection(q.id) }} style={{ cursor:'pointer'}}>{q.name}</label>
                                                                                 }
                                                                             </div>
                                                                             <span>{isHovering === q.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: q.id, edit: true, delete: false } })} style={{ cursor: 'pointer' }}></i>}
@@ -652,7 +653,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                                         showModal.edit ? (<>
                                                                                             <div>Do you want to change the name of test {q.name}</div>
                                                                                             <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                                                            {error && <><span>name required</span><br/></>}
+                                                                                            {error && <><span style={{color:"red" , fontSize:"12px"}}>name required</span><br/></>}
                                                                                             <button className='btn btn-primary' onClick={() => { editQuizName(semester.id, chapter.id, q.id);  }}>Update</button>
                                                                                             <button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => {setShowModal((showModal) => { return { ...showModal, id: null } }); setError(false)}}>cancel</button>
                                                                                             {/* close the above modal as well as update the name in state */}
@@ -676,7 +677,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                     {
                                                                         showModal.id === 'addSection' && createPortal(<Modal>
                                                                             <label>Section Name: </label><input style={{ width: '100%' }} value={sectionName} onChange={(e) => setSectionName(e.target.value)}></input>
-                                                                            {error && <span>enter name for Section</span>}
+                                                                            {error && <><span style={{color:"red" , fontSize:"12px"}}>enter name for Section</span><br/></>}
                                                                             <button className='btn btn-primary' onClick={() => { addSection(semIndex, chapIndex);  }}>add section</button>
                                                                             <button style={{ marginLeft: "5px" }} className='btn btn-primary' onClick={() => { setShowModal((showModal) => { return { ...showModal, id: null } }); setSemesterName(''); setError(false)  }}>cancel</button>
                                                                         </Modal>, document.querySelector('.myPortalModalDiv'))
@@ -684,7 +685,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                     {
                                                                         showModal.id === 'addSectionTest' && createPortal(<Modal>
                                                                             <label>Test Name: </label><input style={{ width: '100%' }} value={quizName} onChange={(e) => setQuizName(e.target.value)}></input>
-                                                                            {error && <span>enter name for test</span>}
+                                                                            {error && <><span style={{color:"red" , fontSize:"12px"}}>enter name for test</span><br/></>}
                                                                             <button className='btn btn-primary' onClick={() => { addSectionLevelQuiz(semIndex, chapIndex);  }}>add test</button>
                                                                             <button style={{ marginLeft: "5px" }} className='btn btn-primary' onClick={() => { setShowModal((showModal) => { return { ...showModal, id: null } }); setSemesterName('');setError(false); }}>cancel</button>
                                                                         </Modal>, document.querySelector('.myPortalModalDiv'))
@@ -719,7 +720,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
 
                                                         <div>
                                                             {
-                                                                <label onClick={() => { handleSelectedQuizOnChapterLevel(semester.id, q.id, 'semesterTest') }}>{q.name}</label>
+                                                                <label onClick={() => { handleSelectedQuizOnChapterLevel(semester.id, q.id, 'semesterTest') }} style={{ cursor:'pointer'}}>{q.name}</label>
                                                             }
                                                         </div>
                                                         <span>
@@ -737,7 +738,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         showModal.edit ? (<>
                                                                             <div>Do you want to change the name of test {q.name}</div>
                                                                             <div>New Name: <input value={newName} onChange={(e) => setNewName(e.target.value)}></input></div>
-                                                                            {error && <><span>name required</span><br/></>}
+                                                                            {error && <><span style={{color:"red" , fontSize:"12px"}}>name required</span><br/></>}
                                                                             <button className='btn btn-primary'
                                                                                 onClick={() => { editChapterLevelQuizName(semester.id, q.id);  }}>Update</button>
                                                                             <button className='btn btn-primary' style={{ marginLeft: "6px" }} onClick={() => {setShowModal((showModal) => { return { ...showModal, id: null } }); setError(false)}}>cancel</button>
