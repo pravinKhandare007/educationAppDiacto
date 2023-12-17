@@ -498,12 +498,14 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
                 <div className='slides_container'>
                     {
-                        selectedQuizId && (<div>
+                        selectedQuizId && 
+                        (<div>
                             <span>No. of question to display: <input type='number' value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
-                            <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e)=>{setTimeLimit((timeLimit)=>{ return {...timeLimit , hours: e.target.value }})}}></input><span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number'></input><span>Minutes</span></span>
+                            <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e)=>{setTimeLimit((timeLimit)=>{ return {...timeLimit , hours: e.target.value }})}}></input>
+                            <span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e)=> { setTimeLimit((timeLimit)=>{ return {...timeLimit , minutes: e.target.value}})}}></input><span>Minutes</span></span>
                         </div>)
                     }
-                    <div className='slide' >
+                    <div className='slide'>
                         {
                             <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
                                 <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
@@ -515,7 +517,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                 if (element.type === 'Heading') {
                                                     return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
                                                         <div className='heading_form_top'>
-
                                                             <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
                                                         </div>
                                                     </SortableItem>;
@@ -539,7 +540,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                                     onResizeStop={(e, d, ref, delta) => { console.log(e, d, ref, delta) }}
                                                                     lockAspectRatio={false}
                                                                 >
-                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} style={{ maxHeight: "100%", maxWidth: "100%" }}></img>
+                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} style={{ height: "100%", width: "100%" }}></img>
                                                                 </Resizable>
                                                             </div>
                                                         ) : null}
@@ -557,7 +558,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                     )
                                                 }
                                                 if (element.type === 'Quiz') {
-
                                                     return (
                                                         <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} selectedQuizId={selectedQuizId} setIsSorted={setIsSorted}>
                                                             <McqComponent setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} data={element.data} isSorted={isSorted} />

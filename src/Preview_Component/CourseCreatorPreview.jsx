@@ -193,7 +193,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
 
             if (selectedQuizData) {
                 setSlidesData(selectedQuizData);
-                console.log("+++" , selectedQuizData.slides[0].id);
+                console.log("+++", selectedQuizData.slides[0].id);
                 setCurrentSlideId(selectedQuizData.slides[0].id);
             } else {
                 setSlidesData(null);
@@ -252,10 +252,10 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
     }, [selectedSectionPreviewId, selectedSemPreviewId, selectedChapterPreviewId, selectedQuizPreviewId]);
 
     useEffect(() => {
-        if(slideId){
+        if (slideId) {
             setCurrentSlideId(slideId);
         }
-        
+
     }, [])
 
     function paginate(currentSlideId) {
@@ -279,7 +279,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                             <div style={{ border: "1px solid grey", width: '100%', padding: '1em', display: "flex", flexDirection: "column", gap: "10px", backgroundColor: "#ffffff" }}>
                                 {
                                     slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((contentObj) => {
-                                        if(!contentObj.data) return;
+                                        if (!contentObj.data) return;
                                         if (contentObj.type === "Heading") {
                                             return (
                                                 <div className='copy-ql-editor'>
@@ -332,14 +332,16 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                                         if (contentObj.type === "Video") {
                                             return (
                                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                    <iframe
-                                                        width="560"
-                                                        height="315"
-                                                        src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
-                                                        title="YouTube Video"
-                                                        frameBorder="0"
-                                                        allowFullScreen
-                                                    ></iframe>
+                                                    {contentObj.data.ytData.videoId &&
+                                                        <iframe
+                                                            width="560"
+                                                            height="315"
+                                                            src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
+                                                            title="YouTube Video"
+                                                            frameBorder="0"
+                                                            allowFullScreen
+                                                        ></iframe>
+                                                    }
                                                 </div>
                                             )
                                         }
