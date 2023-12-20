@@ -16,25 +16,20 @@ import QuizDraggable from './DraggableItems/QuizDraggable';
 import VideoComponent from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
 import McqComponent from './MCQ_Component/McqComponent';
-import {
-    restrictToVerticalAxis,
-    restrictToWindowEdges,
-    restrictToParentElement,
-    restrictToFirstScrollableAncestor
-} from '@dnd-kit/modifiers';
+import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { Resizable } from 're-resizable';
 
-const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type }) => {
+const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type ,isDeleted }) => {
 
-    const initialId = uuidv4();
+
     const [activeId, setActiveId] = useState(null);
-    const [currentSlideId, setCurrentSlideId] = useState(initialId); // will contain the id of the current slide
+    const [currentSlideId, setCurrentSlideId] = useState(null); // will contain the id of the current slide
     //rename slidesData
     //api we need to send sectionID and body -- sildesData.
     //sample api endpoint = /api/section/:sectionId 
     //api body = slidesData
-    let initialSlidesData = { slides: [{ id: initialId, content: [] }] }
-    const [slidesData, setSlidesData] = useState(initialSlidesData);
+
+    const [slidesData, setSlidesData] = useState(null);
     const [timeLimit, setTimeLimit] = useState(null);
     const [numberOfQuestionToShow, setNumberOfQuestionToShow] = useState(null);
     const [isDragging, setIsDragging] = useState("");
@@ -51,7 +46,10 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
         const section = chapter ? chapter['sections'].find(sectionObj => sectionObj.id === secId) : null
         const chapterTest = chapter?.chapterTest ? chapter['chapterTest'].find(chapterTestObj => chapterTestObj.id === quizId) : null
         const semesterTest = semester?.semesterTest ? semester['semesterTest'].find(semesterTestObj => semesterTestObj.id === quizId) : null
-
+        if(!semester || !chapter || !section || !chapterTest || !semesterTest){
+            setSlidesData(null);
+            setCurrentSlideId(null);
+        }
         if (type === 'semesters') {
             if (semester) {
                 setSlidesData(semester?.content ? semester.content : { slides: [firstSlide] });
@@ -75,7 +73,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                 setSlidesData(chapterTest.content ? chapterTest.content : { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: "Quiz", data: null }] }] })
                 setCurrentSlideId(chapterTest.content ? chapterTest.content.slides[0].id : firstSlide.id);
                 setNumberOfQuestionToShow(chapterTest.numberOfQuestions ? chapterTest.numberOfQuestions : 0);
-                setTimeLimit(chapterTest.timeLimit ? chapterTest.timeLimit: null);
+                setTimeLimit(chapterTest.timeLimit ? chapterTest.timeLimit : null);
             }
         }
         if (type === 'semesterTest') {
@@ -83,7 +81,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                 setSlidesData(semesterTest.content ? semesterTest.content : { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: "Quiz", data: null }] }] })
                 setCurrentSlideId(semesterTest.content ? semesterTest.content.slides[0].id : firstSlide.id);
                 setNumberOfQuestionToShow(semesterTest.numberOfQuestions ? semesterTest.numberOfQuestions : 0);
-                setTimeLimit(semesterTest.timeLimit ? semesterTest.timeLimit:null);
+                setTimeLimit(semesterTest.timeLimit ? semesterTest.timeLimit : null);
             }
         }
     }
@@ -178,7 +176,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                         ...chapter, chapterTest: chapter.chapterTest.map((q) => {
                                             if (q.id === quizId) {
                                                 return {
-                                                    ...q, content: slidesData , timeLimit: timeLimit , numberOfQuestions: numberOfQuestionToShow
+                                                    ...q, content: slidesData, timeLimit: timeLimit, numberOfQuestions: numberOfQuestionToShow
                                                 }
                                             } else {
                                                 return {
@@ -210,7 +208,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                             ...semester, semesterTest: semester.semesterTest.map((q) => {
                                 if (q.id === quizId) {
                                     return {
-                                        ...q, content: slidesData , timeLimit:timeLimit , numberOfQuestions: numberOfQuestionToShow
+                                        ...q, content: slidesData, timeLimit: timeLimit, numberOfQuestions: numberOfQuestionToShow
                                     }
                                 } else {
                                     return {
@@ -231,95 +229,21 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
     useEffect(() => {
         getDataFromParent(selectedSemId, selectedChapterId, selectedSectionId, selectedQuizId);
-    }, [selectedSectionId, selectedSemId, selectedChapterId, selectedQuizId])
+    }, [selectedSectionId, selectedSemId, selectedChapterId, selectedQuizId , isDeleted])
 
     useEffect(() => {
         setDataToParent(selectedSemId, selectedChapterId, selectedSectionId, selectedQuizId);
-    }, [slidesData , timeLimit , numberOfQuestionToShow])
+    }, [slidesData, timeLimit, numberOfQuestionToShow])
 
-    //below useEffect run when teacher enters number of question to display and saves the entered data into parents data
-
-    // useEffect(() => {
-    //     if (selectedSemId && selectedChapterId && selectedQuizId && !selectedSectionId) {
-    //         setMainCourseData({
-    //             semesters: mainCourseData.semesters.map((semester) => {
-    //                 if (semester.id === selectedSemId) {
-    //                     return {
-    //                         ...semester, chapters: semester.chapters.map((chapter) => {
-    //                             if (chapter.id === selectedChapterId) {
-    //                                 return {
-    //                                     ...chapter, chapterTest: chapter.chapterTest.map((t) => {
-    //                                         if (t.id === selectedQuizId) {
-    //                                             return {
-    //                                                 ...t, numberOfQuestions: numberOfQuestionToShow
-    //                                             }
-    //                                         } else {
-    //                                             return {
-    //                                                 ...t
-    //                                             }
-    //                                         }
-    //                                     })
-    //                                 }
-    //                             } else {
-    //                                 return {
-    //                                     ...chapter
-    //                                 }
-    //                             }
-    //                         })
-    //                     }
-    //                 } else {
-    //                     return {
-    //                         ...semester
-    //                     }
-    //                 }
-    //             })
-    //         })
-    //     }
-
-    //     if (selectedSemId && !selectedChapterId && !selectedSectionId && selectedQuizId) {
-    //         setMainCourseData({
-    //             semesters: mainCourseData.semesters.map((semester) => {
-    //                 if (semester.id === selectedSemId) {
-    //                     return {
-    //                         ...semester, semesterTest: semester.semesterTest.map((t) => {
-    //                             if (t.id === selectedQuizId) {
-    //                                 return {
-    //                                     ...t, numberOfQuestions: numberOfQuestionToShow
-    //                                 }
-    //                             } else {
-    //                                 return {
-    //                                     ...t
-    //                                 }
-    //                             }
-    //                         })
-    //                     }
-    //                 } else {
-    //                     return {
-    //                         ...semester
-    //                     }
-    //                 }
-    //             })
-    //         })
-    //     }
-
-    // }, [numberOfQuestionToShow])
     //below useEffect stores currentSlideId value into parent so when user goes into preview we can show that exact slide in preview aswell 
     useEffect(() => {
         setSlideId(currentSlideId);
     }, [currentSlideId])
     //below useEffect is used to set the currentSlideId to the id it was before going into preview
     useEffect(() => {
-        if(slideId){
+        if (slideId) {
             setCurrentSlideId(slideId);
         }
-        
-        // if (!slideId) {
-        //     return
-        // } else {
-        //     if (slideId) {
-        //         setCurrentSlideId(slideId);
-        //     }
-        // }
     }, [])
 
     function handleDragStart(event) {
@@ -364,13 +288,11 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
         if (event.over && event.over.id !== null) {
             const newSlides = slidesData.slides.map((slide) => {
-                console.log("event.over.id: ", event.over.id);
-                console.log("slide.id: ", slide.id);
                 if (event.over.id === slide.id) {
                     //update the content of that slide 
                     return {
                         id: slide.id,
-                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: "" }]
+                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: event.active.id === "Image" ? { imgData: '', width: '', height: '' } : "" }]
                     }
                 } else {
                     return slide;
@@ -455,7 +377,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                     return {
                                         id: contentObject.id,
                                         type: contentObject.type,
-                                        data: image
+                                        data: { ...contentObject.data, imgData: image }
                                     }
                                 }
                                 return {
@@ -493,155 +415,192 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
         console.log("add slide slidesData, ", slidesData);
     }
 
+    function handleResize(e, d, ref, delta, element) {
+        setSlidesData({
+            ...slidesData, slides: slidesData.slides.map((slide) => {
+                if (slide.id === currentSlideId) {
+                    return {
+                        ...slide, content: slide.content.map((obj) => {
+                            if (obj.id === element.id) {
+                                return {
+                                    ...obj, data: {
+                                        ...obj.data, width: ref.style.width,
+                                        height: ref.style.height,
+                                    }
+                                }
+                            } else {
+                                return {
+                                    ...obj
+                                }
+                            }
+                        })
+                    }
+                } else {
+                    return {
+                        ...slide
+                    }
+                }
+            })
+        })
+    }
+
     return (<>
-        <div className='course_creator_container'>
-            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
-                <div className='slides_container'>
-                    {
-                        selectedQuizId && 
-                        (<div>
-                            <span>No. of question to display: <input type='number' value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
-                            <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e)=>{setTimeLimit((timeLimit)=>{ return {...timeLimit , hours: e.target.value }})}}></input>
-                            <span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e)=> { setTimeLimit((timeLimit)=>{ return {...timeLimit , minutes: e.target.value}})}}></input><span>Minutes</span></span>
-                        </div>)
-                    }
-                    <div className='slide'>
-                        {
-                            <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
-                                <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
-                                <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
+        {
+            slidesData && (
+                <div className='course_creator_container'>
+                    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
+                        <div className='slides_container'>
+                            {
+                                selectedQuizId &&
+                                (<div>
+                                    <span>No. of question to display: <input type='number' value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
+                                    <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, hours: e.target.value } }) }}></input>
+                                        <span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, minutes: e.target.value } }) }}></input><span>Minutes</span></span>
+                                </div>)
+                            }
+                            <div className='slide'>
+                                {
+                                    <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
+                                        <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
+                                        <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
 
-                                    <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
-                                        {
-                                            slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((element, index) => {
-                                                if (element.type === 'Heading') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
-                                                        <div className='heading_form_top'>
-                                                            <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
-                                                        </div>
-                                                    </SortableItem>;
-                                                }
-                                                if (element.type === 'Text') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
-                                                        <Editor slidesData={slidesData} setSlidesData={setSlidesData} content={element.data} slideId={currentSlideId} contentId={element.id} />
-                                                    </SortableItem>;
-                                                }
-                                                if (element.type === 'Image') {
-                                                    return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
-                                                        {element.data ? (
-                                                            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                                                                <Resizable
-                                                                    maxWidth='100%'
-                                                                    style={{
-                                                                        display: "flex",
-                                                                        justifyContent: "center",
-                                                                        alighItems: "center",
-                                                                    }}
-                                                                    onResizeStop={(e, d, ref, delta) => { console.log(e, d, ref, delta) }}
-                                                                    lockAspectRatio={false}
-                                                                >
-                                                                    <img id={"imgId"} src={URL.createObjectURL(element.data)} style={{ height: "100%", width: "100%" }}></img>
-                                                                </Resizable>
-                                                            </div>
-                                                        ) : null}
-                                                        {element.data ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}>
-                                                            <label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label>
-                                                        </div>}
-                                                        <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
-                                                    </SortableItem>;
-                                                }
-                                                if (element.type === 'Video') {
-                                                    return (
-                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
-                                                            <VideoComponent slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} data={element.data} isSorted={isSorted} />
-                                                        </SortableItem>
-                                                    )
-                                                }
-                                                if (element.type === 'Quiz') {
-                                                    return (
-                                                        <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} selectedQuizId={selectedQuizId} setIsSorted={setIsSorted}>
-                                                            <McqComponent setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} data={element.data} isSorted={isSorted} />
-                                                        </SortableItem>
-                                                    )
-                                                }
+                                            <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
+                                                {
+                                                    slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((element, index) => {
+                                                        if (element.type === 'Heading') {
+                                                            return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
+                                                                <div className='heading_form_top'>
+                                                                    <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
+                                                                </div>
+                                                            </SortableItem>;
+                                                        }
+                                                        if (element.type === 'Text') {
+                                                            return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
+                                                                <Editor slidesData={slidesData} setSlidesData={setSlidesData} data={element.data} slideId={currentSlideId} contentId={element.id} isSorted={isSorted} />
+                                                            </SortableItem>;
+                                                        }
+                                                        if (element.type === 'Image') {
+                                                            return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
+                                                                {element.data.imgData ? (
+                                                                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                                                                        <Resizable
+                                                                            size={{
+                                                                                width: element.data.width,
+                                                                                height: element.data.height
+                                                                            }}
+                                                                            maxWidth='100%'
+                                                                            style={{
+                                                                                display: "flex",
+                                                                                justifyContent: "center",
+                                                                                alignItems: "center",
+                                                                            }}
+                                                                            lockAspectRatio={false}
+                                                                            onResizeStop={(e, d, ref, delta) => handleResize(e, d, ref, delta, element)}
+                                                                        >
+                                                                            <img id={"imgId"} src={URL.createObjectURL(element.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
+                                                                        </Resizable>
+                                                                    </div>
+                                                                ) : null}
+                                                                {element.data.imgData ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}>
+                                                                    <label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label>
+                                                                </div>}
+                                                                <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
+                                                            </SortableItem>;
+                                                        }
+                                                        if (element.type === 'Video') {
+                                                            return (
+                                                                <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
+                                                                    <VideoComponent slidesData={slidesData} setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} data={element.data} isSorted={isSorted} />
+                                                                </SortableItem>
+                                                            )
+                                                        }
+                                                        if (element.type === 'Quiz') {
+                                                            return (
+                                                                <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} selectedQuizId={selectedQuizId} setIsSorted={setIsSorted}>
+                                                                    <McqComponent setSlidesData={setSlidesData} slideId={currentSlideId} contentId={element.id} slidesData={slidesData} data={element.data} isSorted={isSorted} />
+                                                                </SortableItem>
+                                                            )
+                                                        }
 
-                                            })
-                                        }
-                                    </SortableContext>
-                                    <DragOverlay>
-                                        {activeId ? <Item id={activeId}><i className="fa-solid fa-sort" style={{ fontSize: "30px" }}></i></Item> : null}
-                                    </DragOverlay>
-                                </DndContext>
-                            </Droppable>
-                        }
-                    </div>
-                    <div>
-                        <div className='pagination_container'>
-                            <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
+                                                    })
+                                                }
+                                            </SortableContext>
+                                            <DragOverlay>
+                                                {activeId ? <Item id={activeId}><i className="fa-solid fa-sort" style={{ fontSize: "30px" }}></i></Item> : null}
+                                            </DragOverlay>
+                                        </DndContext>
+                                    </Droppable>
+                                }
+                            </div>
+                            <div className='pagination_addSlide_container'>
+                                <div className='pagination_container'>
+                                    <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
+                                </div>
+                                {
+                                    selectedQuizId ? (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addQuestion()}>Add Question</button></div>) : (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>)
+
+                                }
+                            </div>
                         </div>
-                        {
-                            selectedQuizId ? (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addQuestion()}>Add Question</button></div>) : (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>)
+                        <div className='draggables_container'>
+                            <div className='widgets'>WIDGETS</div>
+                            <div className='draggables'>
+                                <>
+                                    <Heading disabled={selectedQuizId ? true : false} />
+                                    <Text disabled={selectedQuizId ? true : false} />
+                                    <Image disabled={selectedQuizId ? true : false} />
+                                    <Video disabled={selectedQuizId ? true : false} />
+                                    <QuizDraggable disabled={selectedQuizId ? true : false} />
+                                </>
+                            </div>
+                        </div>
+                        <DragOverlay>
+                            {
+                                isDragging === "Text" ? (
+                                    <div className="draggable">
+                                        <i className="fa-regular fa-pen-to-square" ></i>
+                                        <p>Text</p>
+                                    </div>
+                                ) : null
+                            }
+                            {
+                                isDragging === "Heading" ? (
+                                    <div className="draggable" >
+                                        <i className="fa-solid fa-heading"></i>
+                                        <p>Heading</p>
+                                    </div>
+                                ) : null
+                            }
+                            {
+                                isDragging === "Image" ? (
+                                    <div className="draggable">
+                                        <i className="fa-regular fa-image image"></i>
+                                        <p>Info-Graphic</p>
+                                    </div>
+                                ) : null
+                            }
+                            {
+                                isDragging === "Quiz" ? (
+                                    <div className="draggable">
+                                        <i class="fa-solid fa-q"></i>
+                                        <p>Quiz</p>
+                                    </div>
+                                ) : null
+                            }
+                            {
+                                isDragging === "Video" ? (
+                                    <div className="draggable">
+                                        <i className="fa-solid fa-video"></i>
+                                        <p>Video</p>
 
-                        }
-                    </div>
+                                    </div>
+                                ) : null
+                            }
+                        </DragOverlay>
+                    </DndContext>
                 </div>
-                <div className='draggables_container'>
-                    <div className='widgets'>WIDGETS</div>
-                    <div className='draggables'>
-                        <>
-                            <Heading disabled={selectedQuizId ? true : false} />
-                            <Text disabled={selectedQuizId ? true : false} />
-                            <Image disabled={selectedQuizId ? true : false} />
-                            <Video disabled={selectedQuizId ? true : false} />
-                            <QuizDraggable disabled={selectedQuizId ? true : false} />
-                        </>
-                    </div>
-                </div>
-                <DragOverlay>
-                    {
-                        isDragging === "Text" ? (
-                            <div className="draggable">
-                                <i className="fa-regular fa-pen-to-square" ></i>
-                                <p>Text</p>
-                            </div>
-                        ) : null
-                    }
-                    {
-                        isDragging === "Heading" ? (
-                            <div className="draggable" >
-                                <i className="fa-solid fa-heading"></i>
-                                <p>Heading</p>
-                            </div>
-                        ) : null
-                    }
-                    {
-                        isDragging === "Image" ? (
-                            <div className="draggable">
-                                <i className="fa-regular fa-image image"></i>
-                                <p>Info-Graphic</p>
-                            </div>
-                        ) : null
-                    }
-                    {
-                        isDragging === "Quiz" ? (
-                            <div className="draggable">
-                                <i class="fa-solid fa-q"></i>
-                                <p>Quiz</p>
-                            </div>
-                        ) : null
-                    }
-                    {
-                        isDragging === "Video" ? (
-                            <div className="draggable">
-                                <i className="fa-solid fa-video"></i>
-                                <p>Video</p>
-
-                            </div>
-                        ) : null
-                    }
-                </DragOverlay>
-            </DndContext>
-        </div>
+            )
+        }
     </>);
 }
 

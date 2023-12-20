@@ -5,9 +5,9 @@ import Modal from './Modal';
 import { createPortal } from 'react-dom';
 import './SideBar.css';
 
-const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, handleSelectedSemester,
-    handleSelectedChapter, resetSelectedIds, handleSelectedQuiz, handleSelectedQuizOnChapterLevel,
-    semesterDropdownInfo, chapterDropdownInfo, setSemesterDropdownInfo, setChapterDropdownInfo
+const SideBar = ({  mainCourseData, setMainCourseData, 
+    resetSelectedIds, semesterDropdownInfo, chapterDropdownInfo, setSemesterDropdownInfo, setChapterDropdownInfo,
+    handleSlectedIds , setIsDeleted
 }) => {
     //console.log("rendering child sidebar");
 
@@ -195,8 +195,8 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
 
     function deleteSemester(semId) {
         const newSemesters = [...mainCourseData.semesters];
-        setMainCourseData({ semesters: newSemesters.filter((semester => semester.id !== semId)) })
-        resetSelectedIds();
+        setMainCourseData({ semesters: newSemesters.filter((semester => semester.id !== semId)) });
+        setIsDeleted((isDeleted)=> !isDeleted);
     }
 
     function editSemesterName(semId) {
@@ -236,7 +236,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                 }
             })
         });
-        resetSelectedIds();
+        setIsDeleted((isDeleted)=> !isDeleted);
     }
 
     function deleteSection(semId, chapId, sectionId) {
@@ -263,7 +263,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                 }
             })
         });
-        resetSelectedIds();
+        setIsDeleted((isDeleted)=> !isDeleted);
     }
 
     function editChapterName(semId, chapId) {
@@ -430,8 +430,8 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                     }
                 }
             })
-        })
-        resetSelectedIds()
+        });
+        setIsDeleted((isDeleted)=> !isDeleted);
     }
 
     function deleteSectionLevelQuiz(semId, chapId, quizId) {
@@ -458,8 +458,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                 }
             })
         })
-
-        resetSelectedIds();
+        setIsDeleted((isDeleted)=> !isDeleted);
     }
 
     //sub branch
@@ -469,7 +468,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                 {
                     mainCourseData.semesters.map((semester, semIndex) => {
                         return (
-                            <div key={semIndex} style={{ marginBottom: '10px' }}>
+                            <div key={semIndex} style={{ marginBottom: '10px',position:'relative'}}>
                                 {/* below is the title div */}
                                 <div
                                     style={{
@@ -484,7 +483,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                 >
                                     <div>
                                         {
-                                            <label onClick={() => {/*here update selectedSemester */ handleSelectedSemester(semester.id, 'semesters') } } style={{ cursor:'pointer'}}>{semester.name}</label>
+                                            <label onClick={() => {/*here update selectedSemester */  handleSlectedIds(semester.id , null , null , null , 'semesters') } } style={{ cursor:'pointer'}}>{semester.name}</label>
                                         }
                                     </div>
                                     <span>
@@ -545,7 +544,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                         >
                                                             <div>
                                                                 {
-                                                                    <label onClick={() => { handleSelectedChapter(semester.id, chapter.id, 'chapters') }} style={{ cursor:'pointer'}}>{chapter.name}</label>
+                                                                    <label onClick={() => {  handleSlectedIds(semester.id , chapter.id , null , null , 'chapters') }} style={{ cursor:'pointer'}}>{chapter.name}</label>
                                                                 }
                                                             </div>
                                                             <span>
@@ -599,7 +598,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         >
                                                                             <div>
                                                                                 {
-                                                                                    <label onClick={() => { handleSelectedSection(semester.id, chapter.id, section.id, 'sections'); setCurrentSection(section.id) }} style={{ cursor:'pointer'}}>{section.name}</label>
+                                                                                    <label onClick={() => { handleSlectedIds(semester.id , chapter.id , section.id , null , 'sections'); setCurrentSection(section.id) }} style={{ cursor:'pointer'}}>{section.name}</label>
                                                                                 }
                                                                             </div>
                                                                             <span>{isHovering === section.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: section.id, edit: true, delete: false } })} style={{ cursor: 'pointer' }}></i>}
@@ -641,7 +640,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
                                                                         >
                                                                             <div>
                                                                                 {
-                                                                                    <label onClick={() => { handleSelectedQuiz(semester.id, chapter.id, q.id, 'chapterTest'); setCurrentSection(q.id) }} style={{ cursor:'pointer'}}>{q.name}</label>
+                                                                                    <label onClick={() => {  handleSlectedIds(semester.id , chapter.id , null , q.id , 'chapterTest');setCurrentSection(q.id) }} style={{ cursor:'pointer'}}>{q.name}</label>
                                                                                 }
                                                                             </div>
                                                                             <span>{isHovering === q.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, id: q.id, edit: true, delete: false } })} style={{ cursor: 'pointer' }}></i>}
@@ -720,7 +719,7 @@ const SideBar = ({ handleSelectedSection, mainCourseData, setMainCourseData, han
 
                                                         <div>
                                                             {
-                                                                <label onClick={() => { handleSelectedQuizOnChapterLevel(semester.id, q.id, 'semesterTest') }} style={{ cursor:'pointer'}}>{q.name}</label>
+                                                                <label onClick={() => { handleSlectedIds(semester.id , null , null , q.id , 'semesterTest'); }} style={{ cursor:'pointer'}}>{q.name}</label>
                                                             }
                                                         </div>
                                                         <span>

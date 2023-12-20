@@ -1,90 +1,84 @@
-*{box-sizing: border-box;}
-
-.course_creator_container{
-    display: flex;
+* {
+    box-sizing: border-box;
 }
 
-.slides_container{
+.animate_slide{
+    transition: width 0.2s ease-in-out;
+}
+
+
+.slides_container {
     width: 90%;
     display: flex;
     flex-direction: column;
     /* padding: 1em; */
 }
-.widgets{
-    border-bottom: 2px solid rgb(141, 141, 141);
-    margin:0;
-    padding: 1em;
-    background-color: #FFFFFF;
-}
-.copy-ql-editor{
-    padding:12px 15px;
-}
-.draggables_container{
+
+.draggables_container {
     width: 10%;
-    /* padding: 1em; */
     border-left: 2px solid rgb(141, 141, 141);
-    /* height:95vh; */
-    /* background-color: rgb(217, 217, 217); */
     background-color: rgb(255, 255, 255);
 }
 
-.draggables{
+.slide {
+    height: 77%;
+    overflow: auto;
+    background-color: #c8c7c7;
+    padding: 1em;
+}
+
+.widgets {
+    border-bottom: 2px solid rgb(141, 141, 141);
+    margin: 0;
+    padding: 1em;
+    background-color: #FFFFFF;
+}
+
+.copy-ql-editor {
+    padding: 12px 15px;
+}
+
+.draggables {
     display: flex;
-    gap:10px;
+    gap: 10px;
     padding: 0.5em;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
 }
 
-.single_slide_container{
+.single_slide_container {
     display: flex;
-    width:100%;
-    gap:10px
+    width: 100%;
+    gap: 10px
+}
+.pagination_addSlide_container{
+    padding: 1em;
 }
 
-.slide{
-    height: 550px;
-    overflow: scroll;
-    background-color:#c8c7c7;
-    /* color:whitesmoke */
-    padding: 1em;   
-}
-
-.pagination_container{
+.pagination_container {
     padding: 0.3em;
-    
 }
 
-.pagination_container nav{
-   align-items: right;
-} 
+.pagination_container nav {
+    align-items: right;
+}
 
-.heading_form_top{
+.heading_form_top {
     background-color: white;
     border-radius: 8px;
-    padding:10px 10px;
+    padding: 10px 10px;
 }
 
-.heading_form_top_name{
+.heading_form_top_name {
     box-sizing: border-box;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 40px;
-  line-height: 145%;
-  width: 100%;
-  border: none;
-  outline: none;
-  color: black;
-  width: 100%;
-}
-
-.box{
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 40px;
+    line-height: 145%;
     width: 100%;
-    padding: 0.5em;
-}
-
-.box img{
+    border: none;
+    outline: none;
+    color: black;
     width: 100%;
 }
-

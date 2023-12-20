@@ -1,34 +1,40 @@
 *{box-sizing: border-box;}
 
-.course_builder_container{
-    display: flex;
-    flex:1;
-    overflow: auto;
-}
 
 .builder_container{
     display: flex;
     flex-direction: column;
+    height: 100vh;
 }
-
-.sidebar_container{
-    width: 15%;
-    border-right: 2px solid rgb(199, 199, 199) ;
-    height: 100%;
-    overflow: scroll;
-    max-height: 600px;
-}
-
-.course_creator_container{
-    width: 85%;
-    height: 100%;
-    max-height: 600px;
-    overflow: auto;
-}
-
 .title{
     padding: 1em;
     border-bottom: 2px solid rgb(141, 141, 141);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    height: 15%;
+    overflow: auto;
 }
+
+.course_builder_container{
+    display: flex;
+    height: 85%;
+    overflow: auto;
+}
+
+.sidebar_container{
+    width: 15%;
+    border-right: 2px solid rgb(141, 141, 141);
+    height: 100%;
+    overflow: auto;
+    
+}
+
+.course_creator_container{
+    display: flex;
+    width: 85%;
+    height: 100%;
+    overflow: auto;
+    overflow-x: hidden;
+}
+

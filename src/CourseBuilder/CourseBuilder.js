@@ -19,13 +19,14 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
     const [selectedQuizId, setSelectedQuizId] = useState(null);
     const [mainCourseData, setMainCourseData] = useState({ semesters: [] });
     const [showPreview, setShowPreview] = useState(false);
-    const [type , setType] = useState('');
+    const [type, setType] = useState('');
 
     //ids for preview components 
     const [selectedSemPreviewId, setSelectedSemPreviewId] = useState(null);
     const [selectedChapterPreviewId, setSelectedChapterPreviewId] = useState(null);
     const [selectedSectionPreviewId, setSelectedSectionPreviewId] = useState(null);
     const [selectedQuizPreviewId, setSelectedQuizPreviewId] = useState(null);
+    const [previewType, setPreviewType] = useState("");
 
     //below state is to store the information about which slide the teacher is on so on app re-render we have the same slide 
     const [slideId, setSlideId] = useState('')
@@ -34,11 +35,10 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
     const [semesterDropdownInfo, setSemesterDropdownInfo] = useState('');
     const [chapterDropdownInfo, setChapterDropdownInfo] = useState('');
 
-
-    console.log("maincd", mainCourseData);
+    //below state is used to execute the useEffect in course creator component which sets slidesData state when a semster is deleted.
+    const [isDeleted , setIsDeleted] = useState(false);
 
     useEffect(() => {
-
         setMainCourseData({
             semesters: [
                 {
@@ -67,12 +67,12 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                                     }
                                 }
                             ],
-                            chapterTest: [{id:uuidv4() , name: "sectionTest" ,numberOfQuestions:5,timeLimit:{hours:4 , minutes: 24}, content:{slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }]} }]
+                            chapterTest: [{ id: uuidv4(), name: "Chapter Test", numberOfQuestions: 5, timeLimit: { hours: 4, minutes: 24 }, content: { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }] } }]
                         },
 
 
                     ],
-                    semesterTest: [{id:uuidv4() , name: "chapterTest" ,numberOfQuestions:7,timeLimit:{hours:2 , minutes: 20}, content:{slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }]} }]
+                    semesterTest: [{ id: uuidv4(), name: "Semester Test", numberOfQuestions: 7, timeLimit: { hours: 2, minutes: 20 }, content: { slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Quiz', data: null }] }] } }]
                 },
 
             ]
@@ -83,28 +83,12 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         console.log("last parent render : , ", mainCourseData);
     })
 
-    const handleSlectedIds = (semId , chapId , secId , quizId , type)=>{
+    const handleSlectedIds = (semId, chapId, secId, quizId, type) => {
         setType(type);
         setSelectedSemId(semId);
         setSelectedChapterId(chapId);
         setSelectedSectionId(secId);
         setSelectedQuizId(quizId);
-    }
-
-    const handleSelectedSemester = (semesterId , type) => {
-        setType(type);
-        setSelectedSemId(semesterId);
-        setSelectedChapterId(null);
-        setSelectedSectionId(null);
-        setSelectedQuizId(null);
-    }
-
-    const handleSelectedChapter = (semesterId, chapId , type) => {
-        setType(type);
-        setSelectedSemId(semesterId);
-        setSelectedChapterId(chapId);
-        setSelectedSectionId(null)
-        setSelectedQuizId(null);
     }
 
     const resetSelectedIds = () => {
@@ -116,30 +100,6 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         setSlideId(null); //if not setted to null then when user deletes a sem, chap, sec. adds a new sem chap or sec and clicks on that. currentSlideId is set to the deleted slides Id.
     }
 
-    const handleSelectedQuiz = (semId, chapId, quizId , type) => {
-        setType(type);
-        setSelectedSemId(semId);
-        setSelectedChapterId(chapId);
-        setSelectedQuizId(quizId);
-        setSelectedSectionId(null);
-    }
-
-    const handleSelectedSection = (semesterId, chpId, secId , type) => {
-        setType(type);
-        setSelectedChapterId(chpId)
-        setSelectedSectionId(secId)
-        setSelectedSemId(semesterId)
-        setSelectedQuizId(null); //I got an error because i didnt put this line which took me 2 hours to solve.
-    }
-
-    const handleSelectedQuizOnChapterLevel = (semId, quizId , type) => {
-        setType(type);
-        setSelectedSemId(semId);
-        setSelectedChapterId(null);
-        setSelectedQuizId(quizId);
-        setSelectedSectionId(null);
-    }
-
     function saveCourseData() {
         axios.post("/api/courses", mainCourseData);
     }
@@ -149,6 +109,7 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         setSelectedChapterPreviewId(selectedChapterId);
         setSelectedSectionPreviewId(selectedSectionId);
         setSelectedQuizPreviewId(selectedQuizId);
+        setPreviewType(type);
     }
 
     function handleSelectedPreviewSemester(semId) {
@@ -189,7 +150,7 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
     return (<>
         <div className="builder_container">
             <div className="title">
-               
+
                 <div>
                     <span><strong>Course Name:</strong> {name}</span><br></br>
                     <span><strong>Subject:</strong> {subject}</span><br></br>
@@ -231,6 +192,7 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                                         selectedSectionPreviewId={selectedSectionPreviewId}
                                         selectedQuizPreviewId={selectedQuizPreviewId}
                                         slideId={slideId}
+                                        previewType={previewType}
                                     />
                                 ) : <div></div>
                             }
@@ -239,36 +201,32 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                         <>
                             <div className="sidebar_container">
                                 {
-                                    <SideBar handleSelectedSection={handleSelectedSection}
+                                    <SideBar
                                         mainCourseData={mainCourseData}
                                         setMainCourseData={setMainCourseData}
-                                        handleSelectedSemester={handleSelectedSemester}
-                                        handleSelectedChapter={handleSelectedChapter}
                                         resetSelectedIds={resetSelectedIds}
-                                        handleSelectedQuiz={handleSelectedQuiz}
-                                        handleSelectedQuizOnChapterLevel={handleSelectedQuizOnChapterLevel}
                                         semesterDropdownInfo={semesterDropdownInfo}
                                         chapterDropdownInfo={chapterDropdownInfo}
                                         setSemesterDropdownInfo={setSemesterDropdownInfo}
                                         setChapterDropdownInfo={setChapterDropdownInfo}
+                                        handleSlectedIds={handleSlectedIds}
+                                        setIsDeleted={setIsDeleted}
                                     />
                                 }
                             </div>
-
                             {
-                                selectedSectionId || selectedSemId || selectedChapterId || selectedQuizId ? (
-                                    <CourseCreator
-                                        mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
-                                        selectedChapterId={selectedChapterId}
-                                        selectedSectionId={selectedSectionId}
-                                        selectedSemId={selectedSemId}
-                                        resetSelectedIds={resetSelectedIds}
-                                        selectedQuizId={selectedQuizId}
-                                        setSlideId={setSlideId}
-                                        slideId={slideId}
-                                        type={type}
-                                    />
-                                ) : <div></div>
+                                <CourseCreator
+                                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                    selectedChapterId={selectedChapterId}
+                                    selectedSectionId={selectedSectionId}
+                                    selectedSemId={selectedSemId}
+                                    resetSelectedIds={resetSelectedIds}
+                                    selectedQuizId={selectedQuizId}
+                                    setSlideId={setSlideId}
+                                    slideId={slideId}
+                                    type={type}
+                                    isDeleted={isDeleted}
+                                />
                             }
                         </>
                     )
