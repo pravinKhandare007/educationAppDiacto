@@ -2,11 +2,6 @@
     box-sizing: border-box;
 }
 
-.animate_slide{
-    transition: width 0.2s ease-in-out;
-}
-
-
 .slides_container {
     width: 90%;
     display: flex;
@@ -17,21 +12,24 @@
 .draggables_container {
     width: 10%;
     border-left: 2px solid rgb(141, 141, 141);
-    background-color: rgb(255, 255, 255);
+    background-color: #f0f5f9;
 }
 
 .slide {
     height: 77%;
     overflow: auto;
-    background-color: #c8c7c7;
-    padding: 1em;
+    background-color: #f0f5f9;
+    padding: 10px;
 }
 
 .widgets {
     border-bottom: 2px solid rgb(141, 141, 141);
     margin: 0;
     padding: 1em;
-    background-color: #FFFFFF;
+    background-color: #007FFF;
+    color:white;
+    line-height: 40x;
+    letter-spacing: 3px;
 }
 
 .copy-ql-editor {
@@ -45,6 +43,7 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    
 }
 
 .single_slide_container {
@@ -54,6 +53,8 @@
 }
 .pagination_addSlide_container{
     padding: 1em;
+    border-top: 2px solid grey;
+    box-shadow: 0px -5px 2px rgb(187, 187, 187);
 }
 
 .pagination_container {
@@ -81,4 +82,10 @@
     outline: none;
     color: black;
     width: 100%;
+}
+
+
+.text_area{
+    height: fit-content !important;
+    resize: none;
 }

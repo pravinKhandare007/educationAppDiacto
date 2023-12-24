@@ -496,13 +496,13 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                                             }}
                                                                             lockAspectRatio={false}
                                                                             onResizeStop={(e, d, ref, delta) => handleResize(e, d, ref, delta, element)}
-                                                                        >
+                                                                        > 
                                                                             <img id={"imgId"} src={URL.createObjectURL(element.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
                                                                         </Resizable>
                                                                     </div>
                                                                 ) : null}
-                                                                {element.data.imgData ? null : <div style={{ width: "100%", height: "100px", textAlign: "center", display: "flex", border: "1px solid grey", justifyContent: "center", alignContent: "center" }}>
-                                                                    <label htmlFor={`${element.id}`} style={{ display: "flex", justifyContent: "center" }} ><span>upload image</span></label>
+                                                                {element.data.imgData ? null : <div  style={{ width: "100%", height: "150px", textAlign: "center", display: "flex", border: "2px dashed #E5E4E2",borderRadius:'12px', justifyContent: "center", alignItems: "center" }}>
+                                                                    <label htmlFor={`${element.id}`} style={{ width:'100%' , height:'100%' , cursor:'pointer' , display:'flex' , justifyContent: "center", alignItems: "center" , flexDirection:'column'}} ><i style={{fontSize:'34px' , color:'#7393B3'}} className="fa-solid fa-file-image"></i><span style={{color:"#7393B3"}}>upload image</span></label>
                                                                 </div>}
                                                                 <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
                                                             </SortableItem>;

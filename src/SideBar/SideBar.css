@@ -12,16 +12,21 @@
 
 /* Your styles for dropdown */
 .dropdown {
-    max-height: 0;
+    position: absolute;
     transform: scale(1,0);
     transform-origin: top;
-    transition: transform 500ms ease-in-out;
+    transition: transform 400ms ease-in-out;
     width: 100%;
-    /* Make it full width */
     background-color: white;
 }
 
 .dropdown.active {
+    position: relative;
     transform: scale(1,1);
+    
     max-height: 100%;
+}
+
+.add-semester-button-container{
+    text-align: center;
 }

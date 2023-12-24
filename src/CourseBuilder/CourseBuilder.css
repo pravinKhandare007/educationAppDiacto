@@ -1,11 +1,11 @@
 *{box-sizing: border-box;}
 
-
 .builder_container{
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
+
 .title{
     padding: 1em;
     border-bottom: 2px solid rgb(141, 141, 141);
@@ -14,6 +14,8 @@
     align-items: center;
     height: 15%;
     overflow: auto;
+    background-image: linear-gradient(to right , #0047AB, #7393B3);
+    color: white;
 }
 
 .course_builder_container{
@@ -27,7 +29,6 @@
     border-right: 2px solid rgb(141, 141, 141);
     height: 100%;
     overflow: auto;
-    
 }
 
 .course_creator_container{
@@ -37,4 +38,3 @@
     overflow: auto;
     overflow-x: hidden;
 }
-

@@ -110,9 +110,9 @@ const McqComponent = ({ setSlidesData, slideId, contentId, slidesData, data ,isS
         <>
             {
                 mcq && <div>
-                    <div>
+                    <div style={{display:'flex' , alignItems:'flex-start'}}>
                         <span>Q{')'}</span>
-                        <input type="text" placeholder="Question" value={mcq.question} onChange={(e) => { updateQuestion(e) }} style={{ width: '90%', border: 'none', marginBottom: '10px', outline: "none" }}></input>
+                        <textarea rows={3} type="text" placeholder="Question" value={mcq.question} onChange={(e) => { updateQuestion(e) }} style={{ width: '90%', marginBottom: '10px',resize:'none' }}></textarea>
                         <select onChange={handleSingleOrMultiple} value={mcq.type}>
                             <option value={"single"} >Single correct</option>
                             <option value={"multiple"}>Multiple correct</option>
