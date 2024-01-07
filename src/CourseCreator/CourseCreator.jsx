@@ -11,7 +11,6 @@ import Video from './DraggableItems/VideoDraggable';
 import { SortableItem } from './SortableItem/SortableItem';
 import { Item } from './SortableItem/Item';
 import Editor from './Editor_Component/Editor';
-import Quiz from './Quiz_Component/Quiz';
 import QuizDraggable from './DraggableItems/QuizDraggable';
 import VideoComponent from './Video_Component/VideoComponent';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,7 +18,7 @@ import McqComponent from './MCQ_Component/McqComponent';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { Resizable } from 're-resizable';
 
-const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type ,isDeleted }) => {
+const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type, isDeleted }) => {
 
 
     const [activeId, setActiveId] = useState(null);
@@ -46,7 +45,8 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
         const section = chapter ? chapter['sections'].find(sectionObj => sectionObj.id === secId) : null
         const chapterTest = chapter?.chapterTest ? chapter['chapterTest'].find(chapterTestObj => chapterTestObj.id === quizId) : null
         const semesterTest = semester?.semesterTest ? semester['semesterTest'].find(semesterTestObj => semesterTestObj.id === quizId) : null
-        if(!semester || !chapter || !section || !chapterTest || !semesterTest){
+        //executed after deletion of a semester or chapter , section
+        if (!semester || !chapter || !section || !chapterTest || !semesterTest) {
             setSlidesData(null);
             setCurrentSlideId(null);
         }
@@ -229,7 +229,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
     useEffect(() => {
         getDataFromParent(selectedSemId, selectedChapterId, selectedSectionId, selectedQuizId);
-    }, [selectedSectionId, selectedSemId, selectedChapterId, selectedQuizId , isDeleted])
+    }, [selectedSectionId, selectedSemId, selectedChapterId, selectedQuizId, isDeleted])
 
     useEffect(() => {
         setDataToParent(selectedSemId, selectedChapterId, selectedSectionId, selectedQuizId);
@@ -292,7 +292,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                     //update the content of that slide 
                     return {
                         id: slide.id,
-                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: event.active.id === "Image" ? { imgData: '', width: '', height: '' } : "" }]
+                        content: [...slide.content, { id: uuidv4(), type: event.active.id, data: event.active.id === "Image" ? { imgData: '', width: '800px', height: '500px' } : "" }]
                     }
                 } else {
                     return slide;
@@ -320,7 +320,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
         console.log("add slide slidesData, ", slidesData);
         //setCurrentSlideId(slideId);
     }
-
 
     function handleSortStart(event) {
         const { active } = event;
@@ -400,12 +399,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
             const newSlidesData = {
                 ...slidesData, slides: [...slidesData.slides, {
                     id: newSlideId, content: [{
-                        id: uuidv4(), type: "Quiz", data: {
-                            question: '',
-                            options: [''],
-                            correctAnswer: '',
-                            type: 'single'
-                        }
+                        id: uuidv4(), type: "Quiz", data: null
                     }]
                 }]
             }
@@ -452,16 +446,19 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                         <div className='slides_container'>
                             {
                                 selectedQuizId &&
-                                (<div>
-                                    <span>No. of question to display: <input type='number' value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
-                                    <span>Time Limit: <input value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, hours: e.target.value } }) }}></input>
-                                        <span>Hr</span><input value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, minutes: e.target.value } }) }}></input><span>Minutes</span></span>
+                                (<div style={{ display: 'flex', justifyContent: 'center', alignItems:'center',borderBottom: '1px solid #b6ccd8', padding: '4px', gap: '1em' }}>
+                                    <span>No. of question to display: <input type='number' style={{ width: '50px' }} value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
+                                    <span>Time Limit:</span>
+                                    <input style={{ width: '50px' }} value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, hours: e.target.value } }) }}></input>
+                                        
+                                    
+                                    <span>Hr</span><input style={{ width: '50px' }} value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, minutes: e.target.value } }) }}></input><span>Minutes</span>
                                 </div>)
                             }
                             <div className='slide'>
                                 {
                                     <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
-                                        <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span>
+                                        {/* <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span> */}
                                         <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
 
                                             <SortableContext items={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content} strategy={verticalListSortingStrategy}>
@@ -496,13 +493,13 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                                             }}
                                                                             lockAspectRatio={false}
                                                                             onResizeStop={(e, d, ref, delta) => handleResize(e, d, ref, delta, element)}
-                                                                        > 
-                                                                            <img id={"imgId"} src={URL.createObjectURL(element.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
+                                                                        >
+                                                                            <img src={URL.createObjectURL(element.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
                                                                         </Resizable>
                                                                     </div>
                                                                 ) : null}
-                                                                {element.data.imgData ? null : <div  style={{ width: "100%", height: "150px", textAlign: "center", display: "flex", border: "2px dashed #E5E4E2",borderRadius:'12px', justifyContent: "center", alignItems: "center" }}>
-                                                                    <label htmlFor={`${element.id}`} style={{ width:'100%' , height:'100%' , cursor:'pointer' , display:'flex' , justifyContent: "center", alignItems: "center" , flexDirection:'column'}} ><i style={{fontSize:'34px' , color:'#7393B3'}} className="fa-solid fa-file-image"></i><span style={{color:"#7393B3"}}>upload image</span></label>
+                                                                {element.data.imgData ? null : <div style={{ width: "100%", height: "150px", textAlign: "center", display: "flex", border: "2px dashed #E5E4E2", borderRadius: '12px', justifyContent: "center", alignItems: "center" }}>
+                                                                    <label htmlFor={`${element.id}`} style={{ width: '100%', height: '100%', cursor: 'pointer', display: 'flex', justifyContent: "center", alignItems: "center", flexDirection: 'column' }} ><i style={{ fontSize: '34px', color: '#7393B3' }} className="fa-solid fa-file-image"></i><span style={{ color: "#7393B3" }}>upload image</span></label>
                                                                 </div>}
                                                                 <input type='file' accept='image/*' id={`${element.id}`} onChange={(event) => handleImageChange(event, currentSlideId, element.id)} style={{ display: "none" }}></input>
                                                             </SortableItem>;
@@ -533,13 +530,14 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                 }
                             </div>
                             <div className='pagination_addSlide_container'>
-                                <div className='pagination_container'>
+                                <div style={{ position: 'relative' }} className='pagination_container'>
                                     <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
+                                    {
+                                        selectedQuizId ? (<button className='add-question-button' style={{ position: 'absolute', top: '5px', right: '20px' }} onClick={() => addQuestion()}>Add Question</button>) :
+                                            (<button className='add-slide-button' style={{ position: 'absolute', top: '5px', right: '30px' }} onClick={() => addSlide()}>Add Slide</button>)
+                                    }
                                 </div>
-                                {
-                                    selectedQuizId ? (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addQuestion()}>Add Question</button></div>) : (<div style={{ textAlign: "right", marginRight: "26px" }}><button className='btn btn-primary' onClick={() => addSlide()}>Add Slide</button></div>)
 
-                                }
                             </div>
                         </div>
                         <div className='draggables_container'>

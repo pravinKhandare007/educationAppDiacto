@@ -1,32 +1,33 @@
-/* .dropdown{
-
-    transform: scale(1,0);
-    transform-origin: top;
-    transition: transform 400ms ease-in-out;
-    z-index: 1;
+.testing{
+    border-left: 3px solid var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    padding: 0.5em;
 }
 
-.dropdown .active{
-    transform: scale(1,1);
-} */
-
-/* Your styles for dropdown */
-.dropdown {
-    position: absolute;
-    transform: scale(1,0);
-    transform-origin: top;
-    transition: transform 400ms ease-in-out;
-    width: 100%;
-    background-color: white;
+.testing-2{
+    border-left: 3px solid var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    padding: 0.5em;
 }
 
-.dropdown.active {
-    position: relative;
-    transform: scale(1,1);
+.card{
+    border-radius: 0 !important;
+    margin-top: 5px;    
+}
+
+.card-header{
     
-    max-height: 100%;
 }
 
 .add-semester-button-container{
-    text-align: center;
+    padding: 5px 0px;
+}
+
+.highlight{
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.highlight:hover{
+    background-color: rgb(194, 194, 194);
 }

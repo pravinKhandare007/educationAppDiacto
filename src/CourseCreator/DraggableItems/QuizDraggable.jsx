@@ -16,11 +16,12 @@ export default function QuizDraggable(props) {
 
     return (
         <NewItem ref={setNodeRef} {...listeners} {...attributes}>
-            <div data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled":"Drag to add quiz questions"} data-tooltip-place="top" className="draggable" style={style}>
+            <div data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled":"Drag to add quiz questions"} data-tooltip-place="left-start" className="draggable" style={style}>
                 <i class="fa-solid fa-q"></i>
                 <p>Quiz</p>
-                <Tooltip id="my-tooltip" />
+                
             </div>
+            <Tooltip id="my-tooltip" />
         </NewItem>
 
 

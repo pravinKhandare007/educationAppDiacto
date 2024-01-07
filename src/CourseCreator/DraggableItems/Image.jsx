@@ -15,12 +15,12 @@ export default function Image(props) {
         //styling for this component is same as all other draggable components all have class draggable
         <NewItem ref={setNodeRef} {...listeners} {...attributes}>
             <div className="draggable" data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled" : "Drag to add info-graphic image"}
-                data-tooltip-place="top" style={style}>
+                data-tooltip-place="left-start" style={style}>
                 <i className="fa-regular fa-image image"></i>
                 <p>Info-Graphic</p>
-                <Tooltip id="my-tooltip" />
+                
             </div>
-
+            <Tooltip id="my-tooltip" />
         </NewItem>
 
 

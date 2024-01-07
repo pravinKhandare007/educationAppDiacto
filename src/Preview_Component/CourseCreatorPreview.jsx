@@ -48,14 +48,14 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
     //         if (chapterTest) {
     //             setSlidesData(chapterTest.content ? chapterTest.content : null)
     //             setCurrentSlideId(chapterTest.content ? chapterTest.content.slides[0].id : null);
-                
+
     //         }
     //     }
     //     if (type === 'semesterTest') {
     //         if (semesterTest) {
     //             setSlidesData(semesterTest.content ? semesterTest.content : null)
     //             setCurrentSlideId(semesterTest.content ? semesterTest.content.slides[0].id : null);
-                
+
     //         }
     //     }
     // }
@@ -157,112 +157,110 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
     //if the slides data is null you give a message to teacher that there is no data in the semester.
     return (<>
         {
-            slidesData ? (<div className='course_creator_container'>
-                <div className='slides_container' style={{ width: "100%" }}>
-                    <div className='slide' style={{
-                        paddingLeft: "5em",
-                        paddingRight: "5em",
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center"
-                    }} >
-                        {
-                            <div style={{border: "1px solid grey", width: '100%', padding: '1em', display: "flex", flexDirection: "column", gap: "10px", backgroundColor: "#ffffff" }}>
-                                {
-                                    slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((contentObj) => {
-                                        if (!contentObj.data) return;
-                                        if (contentObj.type === "Heading") {
-                                            return (
-                                                <div className='copy-ql-editor'>
-                                                    <span className="heading_from_top" style={{ fontSize: "20px", fontWeight: '400', lineHeight: '145%', width: '100%', color: 'black' }}>{contentObj.data}</span>
-                                                </div>
-                                            )
-                                        }
-                                        if (contentObj.type === "Text") {
-                                            return (
-                                                <div className='ql-snow'>
-                                                    <div dangerouslySetInnerHTML={{ __html: contentObj.data }} className='ql-editor'>
-
+            slidesData ? (
+                <div className='course_creator_container'>
+                    <div className='slides_container' style={{ width: "100%" , display:'flex' , flexDirection:'column' , height:'100%'}}>
+                        <div className='slide' style={{
+                           height:'100%',
+                           overflow:'auto',
+                           padding:'2em'
+                        }} >
+                            {
+                                <div style={{ border: "1px solid #b6ccd8", position: 'relative', width: '100%', padding: '1em', minHeight: '100%', display: "flex", flexDirection: "column", gap: "10px", backgroundColor: "#ffffff", borderRadius: '12px' }}>
+                                    {
+                                        slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((contentObj) => {
+                                            if (!contentObj.data) return;
+                                            if (contentObj.type === "Heading") {
+                                                return (
+                                                    <div className='copy-ql-editor'>
+                                                        <span className="heading_from_top" style={{ fontSize: "20px", fontWeight: '400', lineHeight: '145%', width: '100%', color: 'black' }}>{contentObj.data}</span>
                                                     </div>
-                                                </div>
-                                            )
-                                        }
-                                        if (contentObj.type === "Quiz") {
-                                            return (
-                                                <div className=''>
-                                                    <div>
-                                                        <span>{`Q) `}</span>
-                                                        <span>{contentObj.data.question}</span>
+                                                )
+                                            }
+                                            if (contentObj.type === "Text") {
+                                                return (
+                                                    <div className='ql-snow'>
+                                                        <div dangerouslySetInnerHTML={{ __html: contentObj.data }} className='ql-editor'>
+
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                            if (contentObj.type === "Quiz") {
+                                                return (
+                                                    <div className=''>
                                                         <div>
-                                                            {
-                                                                contentObj.data.type === 'single' ? (
-                                                                    contentObj.data.options.map((option, optIndex) => {
-                                                                        return (
-                                                                            <div style={{ paddingTop: "0.2em" }}>
-                                                                                <input type='radio' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
-                                                                            </div>
-                                                                        )
-                                                                    })
-                                                                ): (
-                                                                    contentObj.data.options.map((option, optIndex) => {
-                                                                        return (
-                                                                            <div style={{ paddingTop: "0.2em" }}>
-                                                                                <input type='checkbox' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
-                                                                            </div>
-                                                                        )
-                                                                    })
-                                                                )
-                                                            }
+                                                            <span>{`Q) `}</span>
+                                                            <span>{contentObj.data.question}</span>
+                                                            <div>
+                                                                {
+                                                                    contentObj.data.type === 'single' ? (
+                                                                        contentObj.data.options.map((option, optIndex) => {
+                                                                            return (
+                                                                                <div style={{ paddingTop: "0.2em" }}>
+                                                                                    <input type='radio' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
+                                                                                </div>
+                                                                            )
+                                                                        })
+                                                                    ) : (
+                                                                        contentObj.data.options.map((option, optIndex) => {
+                                                                            return (
+                                                                                <div style={{ paddingTop: "0.2em" }}>
+                                                                                    <input type='checkbox' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
+                                                                                </div>
+                                                                            )
+                                                                        })
+                                                                    )
+                                                                }
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                            )
-                                        }
-                                        if (contentObj.type === "Image") {
-                                            return (
-                                                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                                                    {contentObj.data.imgData && (
-                                                        <div style={{ width: contentObj.data.width ? contentObj.data.width : 'auto', height: contentObj.data.height ? contentObj.data.height : 'auto' }}>
-                                                            <img id={"imgId"} src={URL.createObjectURL(contentObj.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
-                                                        </div>
-                                                    )}
+                                                )
+                                            }
+                                            if (contentObj.type === "Image") {
+                                                return (
+                                                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                                                        {contentObj.data.imgData && (
+                                                            <div style={{ width: contentObj.data.width ? contentObj.data.width : 'auto', height: contentObj.data.height ? contentObj.data.height : 'auto' }}>
+                                                                <img id={"imgId"} src={URL.createObjectURL(contentObj.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
+                                                            </div>
+                                                        )}
 
-                                                </div>
-                                            )
-                                        }
-                                        if (contentObj.type === "Video") {
-                                            return (
-                                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                    {contentObj.data.ytData.videoId &&
-                                                        <iframe
-                                                            width="560"
-                                                            height="315"
-                                                            src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
-                                                            title="YouTube Video"
-                                                            frameBorder="0"
-                                                            allowFullScreen
-                                                        ></iframe>
-                                                    }
-                                                </div>
-                                            )
-                                        }
-                                    })
-                                }
-                                <div style={{height:'50px'}}>
+                                                    </div>
+                                                )
+                                            }
+                                            if (contentObj.type === "Video") {
+                                                return (
+                                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                        {contentObj.data.ytData.videoId &&
+                                                            <iframe
+                                                                width="560"
+                                                                height="315"
+                                                                src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
+                                                                title="YouTube Video"
+                                                                frameBorder="0"
+                                                                allowFullScreen
+                                                            ></iframe>
+                                                        }
+                                                    </div>
+                                                )
+                                            }
+                                        })
+                                    }
+                                    <div style={{ height: '50px' }}>
 
+                                    </div>
                                 </div>
+                            }
+                        </div>
+                        <div>
+                            <div className='pagination_container'>
+                                <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                             </div>
-                        }
-                    </div>
-                    <div>
-                        <div className='pagination_container'>
-                            <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                         </div>
                     </div>
-                </div>
-            </div>) : <div></div>
+                </div>) : <div></div>
         }
     </>);
 }

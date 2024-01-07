@@ -9,11 +9,18 @@ window.Quill = quill;
 Quill.register("modules/imageResize", ImageResize);
 
 const Editor = ({ slidesData, setSlidesData, slideId, placeholder, data , contentId , isSorted}) => {
+  
   const [editorContent , setEditorContent] = useState("");
 
+  useEffect(()=>{
+    if(data){
+      setEditorContent(data);
+    }else{
+      setEditorContent('');
+    }
+  },[slideId , isSorted])
 
-  const handleChange = (html) => {
-    
+  useEffect(()=>{
     setSlidesData((slidesData)=>{
       const newSlidesData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
         if(slide.id === slideId ){
@@ -24,7 +31,7 @@ const Editor = ({ slidesData, setSlidesData, slideId, placeholder, data , conten
                 return{
                   id:contentObject.id,
                   type:contentObject.type,
-                  data:html
+                  data:editorContent
                 }
               }
               return{
@@ -38,6 +45,35 @@ const Editor = ({ slidesData, setSlidesData, slideId, placeholder, data , conten
       })]}
       return newSlidesData;
     })
+  },[editorContent])
+
+  const handleChange = (html) => {
+
+    setEditorContent(html);
+    // setSlidesData((slidesData)=>{
+    //   const newSlidesData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
+    //     if(slide.id === slideId ){
+    //       return {
+    //         id:slide.id,
+    //         content:[...slide.content.map((contentObject)=>{
+    //           if(contentObject.id === contentId ){
+    //             return{
+    //               id:contentObject.id,
+    //               type:contentObject.type,
+    //               data:html
+    //             }
+    //           }
+    //           return{
+    //             ...contentObject
+    //           }
+    //         })]
+    //       }
+    //     }else{
+    //       return {...slide}
+    //     }
+    //   })]}
+    //   return newSlidesData;
+    // })
   };
 
   const modules = {
@@ -85,9 +121,9 @@ const Editor = ({ slidesData, setSlidesData, slideId, placeholder, data , conten
   ];
 
   return (
-    <ReactQuill
+     <ReactQuill
       onChange={handleChange}
-      value={data}
+      value={editorContent}
       modules={modules}
       formats={formats}
       bounds="#root"
