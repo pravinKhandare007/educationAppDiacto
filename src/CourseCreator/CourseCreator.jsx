@@ -35,6 +35,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
     const firstSlide = {
         id: uuidv4(), content: []
     }
+    //below state is need to re-render nested components when sorting happens 
     const [isSorted, setIsSorted] = useState(false);
 
 
@@ -261,9 +262,9 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
 
             const oldIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === active.id);
             const newIndex = slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.findIndex(contentObject => contentObject.id === over.id);
-
+            //arrayMove is provided by DnD kit sortable library 
             const newContent = arrayMove(slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content, oldIndex, newIndex);
-
+            //we changed the arrangement and then set the parent state
             newSlidesData.slides = newSlidesData.slides.map((slide) => {
                 if (slide.id === currentSlideId) {
                     return {
@@ -284,8 +285,9 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
     function handleDragEnd(event) {
         console.log("drag end", event)
         setIsDragging(null);
-        if (event.over === null) return;
-
+        if (event.over === null) return;    
+        //the droppable component is passed the silde Id i.e which slide we are currenty on 
+        //we compare that id with the id's of all the slides in the parent state and update the content when matched
         if (event.over && event.over.id !== null) {
             const newSlides = slidesData.slides.map((slide) => {
                 if (event.over.id === slide.id) {
@@ -457,7 +459,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                             }
                             <div className='slide'>
                                 {
-                                    <Droppable id={currentSlideId} selectedQuizId={selectedQuizId}>
+                                    <Droppable id={currentSlideId} selectedQuizId={selectedQuizId} content={slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content}>
                                         {/* <span style={{ textAlign: "right" }}>slide No: {slidesData.slides.findIndex((slide) => slide.id === currentSlideId) + 1}</span> */}
                                         <DndContext onDragStart={handleSortStart} onDragEnd={(event) => handleSortEnd(event, currentSlideId)}>
 
@@ -466,7 +468,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                     slidesData.slides.filter(slide => slide.id === currentSlideId)[0].content.map((element, index) => {
                                                         if (element.type === 'Heading') {
                                                             return <SortableItem id={element.id} key={index} setSlidesData={setSlidesData} slideId={currentSlideId} setIsSorted={setIsSorted}>
-                                                                <div className='heading_form_top'>
+                                                                <div className='heading_form_top border p-1'>
                                                                     <input type='text' value={element.data} onChange={(e) => { handleOnChange(e, element.id, currentSlideId) }} placeholder='Heading...' className='heading_form_top_name'></input>
                                                                 </div>
                                                             </SortableItem>;
@@ -493,6 +495,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                                                             }}
                                                                             lockAspectRatio={false}
                                                                             onResizeStop={(e, d, ref, delta) => handleResize(e, d, ref, delta, element)}
+                                                                            className='border'
                                                                         >
                                                                             <img src={URL.createObjectURL(element.data.imgData)} style={{ height: "100%", width: "100%" }}></img>
                                                                         </Resizable>

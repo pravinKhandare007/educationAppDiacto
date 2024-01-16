@@ -60,16 +60,17 @@ const VideoComponent = ({slidesData , setSlidesData , slideId , contentId , data
    
    if(videoData.renderComponent === "choiceComponent"){
     return (
-        <div className="d-flex justify-content-around">
-            <div className="video_file">
-                <label>choose from pc</label>
-                <input type="file" name="desktop_upload" id="desktop_video" />
+        <div className="d-flex justify-content-center border flex-column align-items-center">
+            <div className="video_file d-flex flex-column justify-content-center align-items-center p-3" >
+                <label htmlFor={`${contentId}`} style={{cursor:'pointer'}}>choose from pc</label>
+                <input type="file" name="desktop_upload" id={`${contentId}`} style={{display:'none'}} />
             </div>
-            <div className="yt_video" onClick={()=> setVideoData((prevVideoData)=>{
+            <div className="yt_video d-flex flex-column justify-content-center align-items-center p-3" style={{cursor:'pointer'}} onClick={()=> setVideoData((prevVideoData)=>{
                 const newVideoData = {...prevVideoData , renderComponent: "yt_component"};
                 return newVideoData;
             })}>
                 Click to upload youtube video
+                <i style={{fontSize:'2em'}} class="fa-brands fa-youtube"></i>
             </div>
         </div>
     )

@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import SideBar from "../SideBar/SideBar";
 import CourseCreator from "../CourseCreator/CourseCreator";
 import './CourseBuilder.css'
-import Preview from "../Preview_Component/CourseCreatorPreview";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 import SideBarPreview from "../Preview_Component/SideBarPreview";
 import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
-import McqComponent from "../CourseCreator/MCQ_Component/McqComponent";
+import { v4 as uuidv4 } from "uuid";
+
 
 const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discription = "This course will teach about the fundamentals of trigonometry" }) => {
     console.log("rendering parent");
@@ -45,7 +44,7 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                     id: uuidv4(),
                     name: 'Sem 1',
                     content: {
-                        slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 discription or content' }] }]
+                        slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 heading' }] }]
                     },
                     chapters: [
 
@@ -53,7 +52,7 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                             id: uuidv4(),
                             name: 'chapter 1',
                             content: {
-                                slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 chapter 1 content' }] }]
+                                slides: [{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'Sem 1 chapter 1 heading' }] }]
                             },
                             sections: [
                                 {
@@ -112,40 +111,14 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         setPreviewType(type);
     }
 
-    function handleSelectedPreviewSemester(semId) {
-        setSelectedSemPreviewId(semId);
-        setSelectedChapterPreviewId(null);
-        setSelectedSectionPreviewId(null);
-        setSelectedQuizPreviewId(null);
-    }
-
-    function handleSelectedPreviewChapter(semId, chapId) {
+    const handleSlectedPreviewIds = (semId, chapId, secId, quizId, type) => {
         setSelectedSemPreviewId(semId);
         setSelectedChapterPreviewId(chapId);
-        setSelectedSectionPreviewId(null);
-        setSelectedQuizPreviewId(null);
-    }
-
-    function handleSelectedPreviewSection(semId, chapId, sectionId) {
-        setSelectedSemPreviewId(semId);
-        setSelectedChapterPreviewId(chapId);
-        setSelectedSectionPreviewId(sectionId);
-        setSelectedQuizPreviewId(null);
-    }
-
-    function handleSelectedPreviewQuiz(semId, chapId, quizId) {
-        setSelectedSemPreviewId(semId);
-        setSelectedChapterPreviewId(chapId);
-        setSelectedSectionPreviewId(null);
+        setSelectedSectionPreviewId(secId);
         setSelectedQuizPreviewId(quizId);
+        setPreviewType(type);
     }
 
-    const handleSelectedPreviewQuizOnChapterLevel = (semId, quizId) => {
-        setSelectedSemPreviewId(semId);
-        setSelectedChapterPreviewId(null);
-        setSelectedQuizPreviewId(quizId);
-        setSelectedSectionPreviewId(null);
-    }
 
     return (<>
         <div className="builder_container">
@@ -171,63 +144,48 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                         <>
                             <div className="sidebar_container">
                                 <SideBarPreview
+                                    handleSlectedPreviewIds={handleSlectedPreviewIds}
                                     mainCourseData={mainCourseData}
-                                    handleSelectedPreviewSemester={handleSelectedPreviewSemester}
-                                    handleSelectedPreviewChapter={handleSelectedPreviewChapter}
-                                    handleSelectedPreviewSection={handleSelectedPreviewSection}
-                                    handleSelectedPreviewQuiz={handleSelectedPreviewQuiz}
-                                    handleSelectedPreviewQuizOnChapterLevel={handleSelectedPreviewQuizOnChapterLevel}
-                                    semesterDropdownInfo={semesterDropdownInfo}
-                                    chapterDropdownInfo={chapterDropdownInfo}
-
                                 />
                             </div>
-
-                            {
-                                selectedSectionPreviewId || selectedSemPreviewId || selectedChapterPreviewId || selectedQuizPreviewId ? (
-                                    <CourseCreatorPreview
-                                        mainCourseData={mainCourseData}
-                                        selectedSemPreviewId={selectedSemPreviewId}
-                                        selectedChapterPreviewId={selectedChapterPreviewId}
-                                        selectedSectionPreviewId={selectedSectionPreviewId}
-                                        selectedQuizPreviewId={selectedQuizPreviewId}
-                                        slideId={slideId}
-                                        previewType={previewType}
-                                    />
-                                ) : <div></div>
-                            }
+                            <CourseCreatorPreview
+                                mainCourseData={mainCourseData}
+                                selectedSemPreviewId={selectedSemPreviewId}
+                                selectedChapterPreviewId={selectedChapterPreviewId}
+                                selectedSectionPreviewId={selectedSectionPreviewId}
+                                selectedQuizPreviewId={selectedQuizPreviewId}
+                                slideId={slideId}
+                                previewType={previewType}
+                            />
                         </>
                     ) : (
                         <>
                             <div className="sidebar_container">
-                                {
-                                    <SideBar
-                                        mainCourseData={mainCourseData}
-                                        setMainCourseData={setMainCourseData}
-                                        resetSelectedIds={resetSelectedIds}
-                                        semesterDropdownInfo={semesterDropdownInfo}
-                                        chapterDropdownInfo={chapterDropdownInfo}
-                                        setSemesterDropdownInfo={setSemesterDropdownInfo}
-                                        setChapterDropdownInfo={setChapterDropdownInfo}
-                                        handleSlectedIds={handleSlectedIds}
-                                        setIsDeleted={setIsDeleted}
-                                    />
-                                }
-                            </div>
-                            {
-                                <CourseCreator
-                                    mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
-                                    selectedChapterId={selectedChapterId}
-                                    selectedSectionId={selectedSectionId}
-                                    selectedSemId={selectedSemId}
+                                <SideBar
+                                    mainCourseData={mainCourseData}
+                                    setMainCourseData={setMainCourseData}
                                     resetSelectedIds={resetSelectedIds}
-                                    selectedQuizId={selectedQuizId}
-                                    setSlideId={setSlideId}
-                                    slideId={slideId}
-                                    type={type}
-                                    isDeleted={isDeleted}
+                                    semesterDropdownInfo={semesterDropdownInfo}
+                                    chapterDropdownInfo={chapterDropdownInfo}
+                                    setSemesterDropdownInfo={setSemesterDropdownInfo}
+                                    setChapterDropdownInfo={setChapterDropdownInfo}
+                                    handleSlectedIds={handleSlectedIds}
+                                    setIsDeleted={setIsDeleted}
                                 />
-                            }
+                            </div>
+                            <CourseCreator
+                                mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
+                                selectedChapterId={selectedChapterId}
+                                selectedSectionId={selectedSectionId}
+                                selectedSemId={selectedSemId}
+                                resetSelectedIds={resetSelectedIds}
+                                selectedQuizId={selectedQuizId}
+                                setSlideId={setSlideId}
+                                slideId={slideId}
+                                type={type}
+                                isDeleted={isDeleted}
+                            />
+
                         </>
                     )
                 }
@@ -239,36 +197,4 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
 
 export default CourseBuilder;
 
-{
-    // {
-    //     id: uuidv4(),
-    //     name: 'sem 2',
-    //     content:null,
-    //     chapters: [
-
-    //         {
-    //             id: uuidv4(),
-    //             name: 'chapter 1',
-    //             content:null,
-    //             sections: [
-    //                 {
-    //                     id: uuidv4(),
-    //                     name: 'section 1',
-
-    //                     content: {slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'section data' }] }]}
-    //                 }
-    //             ],
-    //             quiz: [
-    //                 {
-    //                     id: uuidv4(),
-    //                     name: 'bioQuiz',
-    //                     content: {slides:[{ id: uuidv4(), content: [{ id: uuidv4(), type: 'Heading', data: 'bio quiz data' }] }]}
-    //                 }
-    //             ]
-    //         }
-
-    //     ],
-    //     quiz: []
-    // }
-}
 

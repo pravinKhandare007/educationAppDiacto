@@ -511,17 +511,18 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                         }}
                                         onMouseEnter={() => { setIsHovering(semester.id) }}
                                         onMouseLeave={() => { setIsHovering(null) }}
+                                        title={`${semester.name}`}
                                     >
                                         <label onClick={() => { handleSlectedIds(semester.id, null, null, null, 'semesters') }}
-                                            style={{ cursor: 'pointer', maxWidth: '80%', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                            style={{ cursor: 'pointer', maxWidth: '70%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>
                                             {semester.name}
                                         </label>
                                         <span>
-                                            {isHovering === semester.id && <i className="fa-solid fa-pen"
+                                            {isHovering === semester.id && <i className="fa-solid fa-pen me-2"
                                                 onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, type: 'semester', action: 'edit', show: true, title: `Edit Semester Name`, name: semester.name } })}
                                                 style={{ cursor: "pointer" }}
                                             ></i>}
-                                            {isHovering === semester.id && <i className="fa-regular fa-circle-xmark"
+                                            {isHovering === semester.id && <i className="fa-regular fa-circle-xmark me-2"
                                                 onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, type: 'semester', action: 'delete', show: true, title: 'delete semseter', name: semester.name } })}
                                                 style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
                                             <CustomToggle eventKey={`${semIndex}`} />
@@ -535,7 +536,7 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                             {
                                                 semester.chapters.map((chapter, chapIndex) => (
                                                     <Card>
-                                                        <Card.Header >
+                                                        <Card.Header>
                                                             <div
                                                                 style={{
                                                                     display: 'flex',
@@ -543,13 +544,14 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                                                 }}
                                                                 onMouseEnter={() => { setIsHovering(chapter.id) }}
                                                                 onMouseLeave={() => { setIsHovering(null) }}
+                                                                title={`${chapter.name}`}
                                                             >
-                                                                <label onClick={() => { handleSlectedIds(semester.id, chapter.id, null, null, 'chapters') }} style={{ cursor: 'pointer' }}>{chapter.name}</label>
+                                                                <label onClick={() => { handleSlectedIds(semester.id, chapter.id, null, null, 'chapters') }} style={{ cursor: 'pointer' ,maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap'}}>{chapter.name}</label>
                                                                 <span>
-                                                                    {isHovering === chapter.id && <i className="fa-solid fa-pen"
+                                                                    {isHovering === chapter.id && <i className="fa-solid fa-pen me-2"
                                                                         onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, action: 'edit', type: 'chapter', name: chapter.name, show: true, title: 'Edit Chapter' } })}
                                                                         style={{ cursor: 'pointer' }}></i>}
-                                                                    {isHovering === chapter.id && <i className="fa-regular fa-circle-xmark"
+                                                                    {isHovering === chapter.id && <i className="fa-regular fa-circle-xmark me-2"
                                                                         onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, type: 'chapter', action: 'delete', show: true, title: 'Delete Chapter', name: chapter.name } })}
                                                                         style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
                                                                     <CustomToggle eventKey={`${chapIndex}`}>Click me!</CustomToggle>
@@ -570,14 +572,14 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                                                             }}
                                                                             onMouseEnter={() => { setIsHovering(section.id) }}
                                                                             onMouseLeave={() => { setIsHovering(null) }}
+                                                                            className='p-1 border mb-1'
+                                                                            title={section.name}
                                                                         >
-                                                                            <div>
-                                                                                {
-                                                                                    <label onClick={() => { handleSlectedIds(semester.id, chapter.id, section.id, null, 'sections'); setCurrentSection(section.id) }} style={{ cursor: 'pointer' }}>{section.name}</label>
-                                                                                }
-                                                                            </div>
-                                                                            <span>{isHovering === section.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, secId: section.id, name: section.name, type: 'section', action: 'edit', show: true, title: 'Edit Section' } })} style={{ cursor: 'pointer' }}></i>}
-                                                                                {isHovering === section.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, secId: section.id, name: section.name, type: 'section', action: 'delete', show: true, title: 'Delete Section' } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                                                            
+                                                                            <label onClick={() => { handleSlectedIds(semester.id, chapter.id, section.id, null, 'sections'); setCurrentSection(section.id) }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>{section.name}</label>
+                                                                                
+                                                                            <span>{isHovering === section.id && <i className="fa-solid fa-pen me-2" onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, secId: section.id, name: section.name, type: 'section', action: 'edit', show: true, title: 'Edit Section' } })} style={{ cursor: 'pointer' }}></i>}
+                                                                                {isHovering === section.id && <i className="fa-regular fa-circle-xmark me-2" onClick={() => setShowModal((showModal) => { return { ...showModal, semId: semester.id, chapId: chapter.id, secId: section.id, name: section.name, type: 'section', action: 'delete', show: true, title: 'Delete Section' } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
                                                                             </span>
                                                                         </div>
                                                                     ))
@@ -593,22 +595,26 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                                                             }}
                                                                             onMouseEnter={() => { setIsHovering(q.id) }}
                                                                             onMouseLeave={() => { setIsHovering(null) }}
+                                                                            className='p-1 border mb-1'
+                                                                            title={`${q.name}`}
                                                                         >
-                                                                            <div>
-                                                                                {
-                                                                                    <label onClick={() => { handleSlectedIds(semester.id, chapter.id, null, q.id, 'chapterTest'); setCurrentSection(q.id) }} style={{ cursor: 'pointer' }}>{q.name}</label>
-                                                                                }
-                                                                            </div>
-                                                                            <span>{isHovering === q.id && <i className="fa-solid fa-pen" onClick={() => setShowModal((showModal) => { return { ...showModal, chapTestId: q.id, semId: semester.id, chapId: chapter.id, name: q.name, type: 'chapTest', action: 'edit', show: true, title: 'Edit Test' } })} style={{ cursor: 'pointer' }}></i>}
-                                                                                {isHovering === q.id && <i className="fa-regular fa-circle-xmark" onClick={() => setShowModal((showModal) => { return { ...showModal, chapTestId: q.id, semId: semester.id, chapId: chapter.id, name: q.name, type: 'chapTest', action: 'delete', show: true, title: 'Delete Test' } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
+                                                                            
+                                                                            <label onClick={() => { handleSlectedIds(semester.id, chapter.id, null, q.id, 'chapterTest'); setCurrentSection(q.id) }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>{q.name}</label>
+                                                                                
+                                                                            <span>{isHovering === q.id && <i className="fa-solid fa-pen me-2" onClick={() => setShowModal((showModal) => { return { ...showModal, chapTestId: q.id, semId: semester.id, chapId: chapter.id, name: q.name, type: 'chapTest', action: 'edit', show: true, title: 'Edit Test' } })} style={{ cursor: 'pointer' }}></i>}
+                                                                                {isHovering === q.id && <i className="fa-regular fa-circle-xmark me-2" onClick={() => setShowModal((showModal) => { return { ...showModal, chapTestId: q.id, semId: semester.id, chapId: chapter.id, name: q.name, type: 'chapTest', action: 'delete', show: true, title: 'Delete Test' } })} style={{ cursor: 'pointer', marginRight: "3px" }}></i>}
                                                                             </span>
                                                                         </div>
                                                                     ))
                                                                 }
                                                                 <div >
-
-                                                                    <span>Add Section</span><i style={{ marginLeft: "7px", cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, semIndex: semIndex, chapIndex: chapIndex, type: 'section', action: 'add', show: true, title: 'Add Section' }) }} className="fa-solid fa-square-plus"></i><br />
-                                                                    <span>Add Test</span><i style={{ marginLeft: "7px", cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, semIndex: semIndex, chapIndex: chapIndex, type: 'chapTest', action: 'add', show: true, title: 'Add Test' }) }} className="fa-solid fa-square-plus"></i>
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2px 0px' }}>
+                                                                    <span>Add Section</span><i style={{ marginLeft: "7px", cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, semIndex: semIndex, chapIndex: chapIndex, type: 'section', action: 'add', show: true, title: 'Add Section' }) }} className="fa-solid fa-plus"></i>
+                                                                </div>  
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2px 0px' }}>
+                                                                <span>Add Test</span><i style={{ marginLeft: "7px", cursor: 'pointer' }} onClick={() => { setShowModal({ ...showModal, semIndex: semIndex, chapIndex: chapIndex, type: 'chapTest', action: 'add', show: true, title: 'Add Test' }) }} className="fa-solid fa-plus"></i>
+                                                                </div>
+                                                                    
                                                                 </div>
                                                             </Card.Body>
                                                         </Accordion.Collapse>
@@ -627,13 +633,14 @@ const SideBar = ({ mainCourseData, setMainCourseData,
                                                             }}
                                                             onMouseEnter={() => { setIsHovering(q.id) }}
                                                             onMouseLeave={() => { setIsHovering(null) }}
+                                                            title={q.name}
                                                         >
-                                                            <label onClick={() => { handleSlectedIds(semester.id, null, null, q.id, 'semesterTest'); }} style={{ cursor: 'pointer' }}>{q.name}</label>
+                                                            <label onClick={() => { handleSlectedIds(semester.id, null, null, q.id, 'semesterTest'); }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap'  }}>{q.name}</label>
                                                             <span>
-                                                                {isHovering === q.id && <i className="fa-solid fa-pen"
+                                                                {isHovering === q.id && <i className="fa-solid fa-pen me-2"
                                                                     onClick={() => setShowModal((showModal) => { return { ...showModal, type: 'semTest', action: 'edit', semId: semester.id, semTestId: q.id, show: true, title: 'Edit Test' } })}
                                                                     style={{ cursor: 'pointer' }}></i>}
-                                                                {isHovering === q.id && <i className="fa-regular fa-circle-xmark"
+                                                                {isHovering === q.id && <i className="fa-regular fa-circle-xmark me-2"
                                                                     onClick={() => setShowModal((showModal) => { return { ...showModal, type: 'semTest', action: 'delete', semId: semester.id, semTestId: q.id, show: true, title: 'Delete Test' } })}
                                                                     style={{ cursor: 'pointer', marginRight: "3px" }}></i>
                                                                 }
@@ -671,5 +678,3 @@ const SideBar = ({ mainCourseData, setMainCourseData,
 }
 
 export default SideBar;
-
-<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0px 10px' }}></div>

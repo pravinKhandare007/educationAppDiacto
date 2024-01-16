@@ -1,98 +1,82 @@
 import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { v4 as uuidv4 } from "uuid";
+import Accordion from 'react-bootstrap/Accordion';
+import { useAccordionButton } from 'react-bootstrap/AccordionButton';
+import Card from 'react-bootstrap/Card';
 
-const SideBar = ({ mainCourseData , handleSelectedPreviewSemester ,handleSelectedPreviewChapter,
-    handleSelectedPreviewSection,handleSelectedPreviewQuiz,handleSelectedPreviewQuizOnChapterLevel,
-    semesterDropdownInfo,chapterDropdownInfo
-
-}) => {
+const SideBarPreview = ({ mainCourseData , handleSlectedPreviewIds}) => {
+   
     console.log("maincourseData : ", mainCourseData);
     
     const [currentSection , setCurrentSection] = useState("");
-    const [semesterDropdown, setSemesterDropdown] = useState('');
-    const [chapterDropdown, setChapterDropdown] = useState('');
 
-    useEffect(()=>{
-        setSemesterDropdown(semesterDropdownInfo);
-        setChapterDropdown(chapterDropdownInfo);
-    },[])
+    function CustomToggle({ children, eventKey }) {
+        const decoratedOnClick = useAccordionButton(eventKey, () =>
+            console.log('totally custom!'),
+        );
 
-
-    const handleSemesterDropdownClick = (semId) => {
-        setSemesterDropdown(semesterDropdown === semId ? null : semId);
-    };
-
-    const handleChapterDropdownClick = (chapId) => {
-        setChapterDropdown(chapterDropdown === chapId ? null : chapId);
-    };
-
+        return (
+            <button
+                type="button"
+                style={{ border: 'none', backgroundColor: '#f8f9fa', padding: '0', }}
+                onClick={decoratedOnClick}
+            >
+                <i className="fa-solid fa-caret-down"></i>
+            </button>
+        );
+    }
     
     return (
         <>
             <div>
-                {
-                    mainCourseData.semesters.map((semester, semIndex) => {
-                        return (
-                            <div key={semIndex} style={{ marginBottom: '10px' }}>
-                                {/* below is the title div */}
-                                <div
-                                    style={{
-                                        border: '1px solid #ccc',
-                                        padding: '10px',
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        backgroundColor: semester.id === semesterDropdown ? '#f0f0f0' : 'white',
-                                    }}
-                                    
-                                >
-                                    <div>
-                                        {
-                                            <label onClick={() => {/*here update selectedSemester */ handleSelectedPreviewSemester(semester.id) }}>{semester.name}</label>
-                                        }
+                <Accordion>
+                    {
+                        mainCourseData.semesters.map((semester, semIndex) => (
+                            <Card>
+                                <Card.Header>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between'
+                                        }}
+                                        title={`${semester.name}`}
+                                    >
+                                        <label onClick={() => { handleSlectedPreviewIds(semester.id, null, null, null, 'semesters') }}
+                                            style={{ cursor: 'pointer', maxWidth: '70%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>
+                                            {semester.name}
+                                        </label>
+                                        <span>
+                                            <CustomToggle eventKey={`${semIndex}`} />
+                                        </span>
+
                                     </div>
-                                    <span>
-                                        <i onClick={() => handleSemesterDropdownClick(semester.id)} className="fa-solid fa-caret-down"
-                                            style={{ cursor: 'pointer', marginRight: "3px" }}></i>
-                                    </span>
-                                </div>
-                                {/* below we are rendering the body of the accordian item */}
-                                {semesterDropdown === semester.id && (
-                                    <div style={{ border: '1px solid #ccc', padding: '10px', transition: 'all 3s ease-in-out' }}>
-                                        {
-                                            semester.chapters.map((chapter, chapIndex) => {
-                                                return (
-                                                    <div key={chapIndex} style={{ marginBottom: '10px' }}>
-                                                        <div
-                                                            style={{
-                                                                border: '1px solid #ccc',
-                                                                padding: '10px',
-                                                                display: "flex",
-                                                                justifyContent: "space-between",
-                                                                alignContent: "center",
-                                                                backgroundColor: chapterDropdown === chapter.id ? '#f0f0f0' : 'white',
-                                                            }}
-                                                            
-                                                        >
-                                                            <div>
-                                                                {
-                                                                    <label onClick={() => { handleSelectedPreviewChapter(semester.id, chapter.id) }}>{chapter.name}</label>
-                                                                }
+                                </Card.Header>
+                                <Accordion.Collapse eventKey={`${semIndex}`}>
+                                    <Card.Body className='testing'>
+                                        <Accordion>
+                                            {
+                                                semester.chapters.map((chapter, chapIndex) => (
+                                                    <Card>
+                                                        <Card.Header>
+                                                            <div
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between'
+                                                                }}
+                                                                title={`${chapter.name}`}
+                                                            >
+                                                                <label onClick={() => { handleSlectedPreviewIds(semester.id, chapter.id, null, null, 'chapters') }} style={{ cursor: 'pointer' ,maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap'}}>{chapter.name}</label>
+                                                                <span>
+                                                                    <CustomToggle eventKey={`${chapIndex}`}>Click me!</CustomToggle>
+                                                                </span>
+
                                                             </div>
-                                                            <span>
-                                                                
-
-                                                                <i onClick={() => handleChapterDropdownClick(chapter.id)} className="fa-solid fa-caret-down"
-                                                                    style={{ cursor: 'pointer' }}></i>
-
-                                                                
-
-                                                            </span>
-                                                        </div>
-                                                        {chapterDropdown === chapter.id && (
-                                                            <div style={{ border: '1px solid #ccc', padding: '10px' }}>
+                                                        </Card.Header>
+                                                        <Accordion.Collapse eventKey={`${chapIndex}`}>
+                                                            <Card.Body className='testing-2'>
                                                                 {
-                                                                    chapter.sections.map((section) => (
+                                                                    chapter.sections.map((section, secIndex) => (
                                                                         <div
                                                                             style={{
                                                                                 display: "flex",
@@ -100,15 +84,11 @@ const SideBar = ({ mainCourseData , handleSelectedPreviewSemester ,handleSelecte
                                                                                 alignContent: "center",
                                                                                 backgroundColor: currentSection === section.id ? '#f0f0f0' : 'white',
                                                                             }}
-                                                                           
+                                                                            className='p-1 border mb-1'
+                                                                            title={section.name}
                                                                         >
-                                                                            <div>
-                                                                                {
-                                                                                    <label onClick={() => { handleSelectedPreviewSection(semester.id, chapter.id, section.id); setCurrentSection(section.id) }}>{section.name}</label>
-                                                                                }
-                                                                            </div>
                                                                             
-                                                                            
+                                                                            <label onClick={() => { handleSlectedPreviewIds(semester.id, chapter.id, section.id, null, 'sections'); setCurrentSection(section.id) }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>{section.name}</label>
                                                                         </div>
                                                                     ))
                                                                 }
@@ -121,151 +101,49 @@ const SideBar = ({ mainCourseData , handleSelectedPreviewSemester ,handleSelecte
                                                                                 alignContent: "center",
                                                                                 backgroundColor: currentSection === q.id ? '#f0f0f0' : 'white',
                                                                             }}
-                                                                            
+                                                                            className='p-1 border mb-1'
+                                                                            title={`${q.name}`}
                                                                         >
-                                                                            <div>
-                                                                                {
-                                                                                    <label onClick={() => { handleSelectedPreviewQuiz(semester.id, chapter.id, q.id); setCurrentSection(q.id) }}>{q.name}</label>
-                                                                                }
-                                                                            </div>
+                                                                            
+                                                                            <label onClick={() => { handleSlectedPreviewIds(semester.id, chapter.id, null, q.id, 'chapterTest'); setCurrentSection(q.id) }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap' }}>{q.name}</label>
                                                                         </div>
                                                                     ))
                                                                 }
-                                                                <div >
-
-                                                                    
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )
-
-                                            })
-                                        }
+                                                            </Card.Body>
+                                                        </Accordion.Collapse>
+                                                    </Card>
+                                                ))
+                                            }
+                                        </Accordion>
                                         {
-                                            semester.semesterTest.map((q) => {
-                                                return (
-                                                    <div
-                                                        style={{
-                                                            border: '1px solid #ccc',
-                                                            padding: '10px',
-                                                            display: "flex",
-                                                            justifyContent: "space-between",
-                                                            alignContent: "center",
-                                                            backgroundColor: chapterDropdown === q.id ? '#f0f0f0' : 'white',
-                                                        }}
-                                                       
-
-                                                    >
-
-                                                        <div>
-                                                            {
-                                                                <label onClick={() => { handleSelectedPreviewQuizOnChapterLevel(semester.id, q.id) }}>{q.name}</label>
-                                                            }
+                                            semester.semesterTest.map((q) => (
+                                                <Card>
+                                                    <Card.Header>
+                                                        <div
+                                                            style={{
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between'
+                                                            }}
+                                                            title={q.name}
+                                                        >
+                                                            <label onClick={() => { handleSlectedPreviewIds(semester.id, null, null, q.id, 'semesterTest'); }} style={{ cursor: 'pointer',maxWidth: '63%',textOverflow: 'ellipsis', overflow: 'hidden' , whiteSpace:'nowrap'  }}>{q.name}</label>
+                                                            <span>
+                                                            </span>
                                                         </div>
-                                                        <span>
-                                                            
-
-                                                        </span>
-                                                    </div>
-
-                                                )
-                                            })
+                                                    </Card.Header>
+                                                </Card>
+                                            ))
                                         }
-                                        <div>
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                        ))
+                    }
+                </Accordion>
 
-                                            
-                                        </div>
-                                    </div>
-
-                                )}
-                            </div>
-                        )
-                    })
-                }
-                
-            </div>
+            </div>   
 
         </>);
 }
 
-export default SideBar;
-
-
-
-
-
-
-// {
-//     semesters?.map((semester, semIndex) => (
-//         <Accordion.Item eventKey={semIndex + 1}>
-//             <Accordion.Header onClick={() => console.log("clicked")}>{semester.name} </Accordion.Header>
-//             <Accordion.Body style={{ padding: "0" }}>
-//                 <Accordion style={{ opacity: "0.9" }} >
-//                     {
-//                         semester.chapters?.map((chapter, chapIndex) => (
-//                             <Accordion.Item eventKey={chapIndex + 1}>
-//                                 <Accordion.Header >{chapter.name}</Accordion.Header>
-//                                 <Accordion.Body style={{ padding: "0" }}>
-//                                     <Accordion >
-
-//                                         {
-//                                             chapter.sections?.map((section, secIndex) => (
-//                                                 <Accordion >
-
-//                                                     {
-//                                                         <li onClick={() => handleSelectedSection(semester.id, chapter.id, section.id)}>{section.name}</li>
-//                                                     }
-//                                                 </Accordion>
-
-
-//                                             )
-
-//                                             )
-//                                         }
-//                                         {
-//                                             chapter.quiz?.map((q, secIndex) => (
-//                                                 <Accordion >
-
-//                                                     {
-//                                                         <li>{q.name}</li>
-//                                                     }
-//                                                 </Accordion>
-
-
-//                                             )
-
-//                                             )
-//                                         }
-//                                         <Accordion.Item eventKey={0}>
-//                                             <input style={{ marginBottom: '5px', marginTop: "5px" }} value={sectionName} onChange={(event) => setSectionName(event.target.value)}></input>
-//                                             <Button variant="primary" onClick={() => addSection(semIndex, chapIndex)}>
-//                                                 Add section
-//                                             </Button>
-//                                             <Button variant="primary" onClick={() => addQuiz(semIndex, chapIndex)}>
-//                                                 Add  Quiz
-//                                             </Button>
-//                                         </Accordion.Item>
-//                                     </Accordion>
-//                                 </Accordion.Body>
-//                             </Accordion.Item>
-
-
-//                         )
-
-//                         )
-//                     }
-//                     <Accordion.Item eventKey={0}>
-//                         <input style={{ marginBottom: '5px', marginTop: "5px" }} value={chapterName} onChange={(event) => setChapterName(event.target.value)}></input>
-//                         <Button variant="primary" onClick={() => addChapter(semIndex)}>
-//                             Add Chapter
-//                         </Button>
-
-
-//                     </Accordion.Item>
-//                 </Accordion>
-//             </Accordion.Body>
-//         </Accordion.Item>
-//     ))
-
-// }
+export default SideBarPreview;

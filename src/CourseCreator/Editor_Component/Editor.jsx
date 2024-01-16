@@ -48,32 +48,7 @@ const Editor = ({ slidesData, setSlidesData, slideId, placeholder, data , conten
   },[editorContent])
 
   const handleChange = (html) => {
-
     setEditorContent(html);
-    // setSlidesData((slidesData)=>{
-    //   const newSlidesData = {...slidesData , slides:[...slidesData.slides.map((slide)=>{
-    //     if(slide.id === slideId ){
-    //       return {
-    //         id:slide.id,
-    //         content:[...slide.content.map((contentObject)=>{
-    //           if(contentObject.id === contentId ){
-    //             return{
-    //               id:contentObject.id,
-    //               type:contentObject.type,
-    //               data:html
-    //             }
-    //           }
-    //           return{
-    //             ...contentObject
-    //           }
-    //         })]
-    //       }
-    //     }else{
-    //       return {...slide}
-    //     }
-    //   })]}
-    //   return newSlidesData;
-    // })
   };
 
   const modules = {

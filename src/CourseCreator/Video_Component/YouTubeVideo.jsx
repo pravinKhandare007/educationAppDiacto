@@ -32,7 +32,7 @@ const YouTubeVideo = ({videoData , setVideoData , reRenderChid}) => {
   },[reRenderChid])
 
   return (
-    <div>
+    <div className='p-5 border'>
       <label>
         Enter YouTube Video URL:
         <input
@@ -42,16 +42,17 @@ const YouTubeVideo = ({videoData , setVideoData , reRenderChid}) => {
           placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
         />
       </label>
-      <button onClick={handleYtURLUpload}>upload</button>
+      <button style={{marginLeft:'1em' }} className='add-slide-button' onClick={handleYtURLUpload}>upload</button>
       {videoId && (
         <div style={{display:"flex" , alignItems:"center" , justifyContent:"center"}}>
           <iframe
-            width="560"
-            height="315"
+            style={{marginTop:'1em'}}
+            width="960"
+            height="415"
             src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube Video"
             frameBorder="0"
-            allowFullScreen
+            allowFullScreen={false}
           ></iframe>
         </div>
       )}

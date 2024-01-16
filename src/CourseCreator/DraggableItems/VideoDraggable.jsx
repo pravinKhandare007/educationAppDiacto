@@ -23,8 +23,5 @@ export default function VideoDraggable(props) {
             </div>
             <Tooltip id="my-tooltip" />
         </NewItem>
-
-
-        // <FaHeading   ref={setNodeRef} style={style}  {...listeners} {...attributes}/>
     )
 } 

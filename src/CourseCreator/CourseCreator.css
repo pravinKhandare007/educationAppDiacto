@@ -42,8 +42,9 @@
 }
 
 .draggables {
+    margin-top: 20px;
     display: flex;
-    gap: 10px;
+    gap: 20px;
     padding: 0.5em;
     justify-content: center;
     align-items: center;
@@ -73,7 +74,6 @@
 
 .heading_form_top {
     background-color: white;
-    border-radius: 8px;
     padding: 10px 10px;
     padding-top: 0px;
     padding-left: 0;
@@ -113,12 +113,12 @@
     border: 1px solid #1F3A5F;
     border-radius: 5px;
     position: relative;
-    color: #1F3A5F;
+    color: white;
     text-decoration: none;
     transition: 0.3s ease all;
     z-index: 1;
     cursor: pointer;
-    background: transparent;
+    background: #1F3A5F;
 }
 
 .add-slide-button:before {

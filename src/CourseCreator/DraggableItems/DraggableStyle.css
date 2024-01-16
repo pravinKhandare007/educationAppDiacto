@@ -33,10 +33,10 @@
      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1); 
     color: #1F3A5F;
     text-decoration: none;
-    transition: 0.3s ease all;
+    transition: 0.3s ease all;  
     z-index: 1;
     cursor: pointer;
-    background: transparent;
+    background: white;
   }
 
   .draggable:hover{
