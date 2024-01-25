@@ -46,8 +46,6 @@
     overflow: scroll;
     background-color:#c8c7c7;
     /* color:whitesmoke */
-    
-    
 }
 
 .pagination_container{
@@ -87,3 +85,12 @@
     width: 100%;
 }
 
+@media screen and (max-width:600px) {
+
+    .slide {
+        height: 100%;
+        overflow: auto;
+        background-color: #f0f5f9;
+        padding: 0.5em;
+    }
+}

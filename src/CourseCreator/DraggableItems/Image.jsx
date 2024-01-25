@@ -17,9 +17,8 @@ export default function Image(props) {
             <div className="draggable" data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled" : "Drag to add info-graphic image"}
                 data-tooltip-place="left-start" style={style}>
                 <i className="fa-regular fa-image image"></i>
-                <p>Info-Graphic</p>
-                
             </div>
+            <p>Info-Graphic</p>
             <Tooltip id="my-tooltip" />
         </NewItem>
 

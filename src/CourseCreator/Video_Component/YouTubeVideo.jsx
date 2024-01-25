@@ -46,10 +46,9 @@ const YouTubeVideo = ({videoData , setVideoData , reRenderChid}) => {
       {videoId && (
         <div style={{display:"flex" , alignItems:"center" , justifyContent:"center"}}>
           <iframe
-            style={{marginTop:'1em'}}
-            width="960"
-            height="415"
-            src={`https://www.youtube.com/embed/${videoId}`}
+            style={{marginTop:'1em' , minHeight:'415px'}}
+            width="100%"
+            src={`https://www.youtube.com/embed/${videoId}?rel=0`}
             title="YouTube Video"
             frameBorder="0"
             allowFullScreen={false}

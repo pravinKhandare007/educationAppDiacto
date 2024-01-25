@@ -6,7 +6,7 @@ import Pagination from '../Pagination/Pagination';
 
 import { v4 as uuidv4 } from 'uuid';
 
-const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedChapterPreviewId, selectedSectionPreviewId, selectedQuizPreviewId, slideId , previewType }) => {
+const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedChapterPreviewId, selectedSectionPreviewId, selectedQuizPreviewId, slideId, previewType }) => {
 
     console.log("rendering course creater");
     const [currentSlideId, setCurrentSlideId] = useState(null); // will contain the id of the current slide
@@ -28,7 +28,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
         if (previewType === 'semesters') {
             if (semester) {
                 setSlidesData(semester?.content ? semester.content : null);
-                setCurrentSlideId(semester.content ? semester.content.slides[0].id :null);
+                setCurrentSlideId(semester.content ? semester.content.slides[0].id : null);
             }
         }
         if (previewType === 'chapters') {
@@ -61,7 +61,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
 
     useEffect(() => {
         console.log("setting slides data from mainCourseData");
-        getDataFromParent(selectedSemPreviewId,selectedChapterPreviewId,selectedSectionPreviewId,selectedQuizPreviewId)
+        getDataFromParent(selectedSemPreviewId, selectedChapterPreviewId, selectedSectionPreviewId, selectedQuizPreviewId)
     }, [selectedSectionPreviewId, selectedSemPreviewId, selectedChapterPreviewId, selectedQuizPreviewId]);
 
     useEffect(() => {
@@ -81,11 +81,12 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
             slidesData ? (
                 <div className='course_creator_container'>
                     <div className='slides_container' style={{ width: "100%", display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <div className='slide' style={{
-                            height: '100%',
-                            overflow: 'auto',
-                            padding: '2em'
-                        }} >
+                        <div className='course-info'>
+                            <span><strong>Course Name:</strong>Trigonometry course</span><br></br>
+                            <span><strong>Subject:</strong> Maths</span><br></br>
+                            <span><strong>Description:</strong>This course will teach about the fundamentals of trigonometry</span>
+                        </div>
+                        <div className='slide'>
                             {
                                 <div style={{ border: "1px solid #b6ccd8", position: 'relative', width: '100%', padding: '1em', minHeight: '100%', display: "flex", flexDirection: "column", gap: "10px", backgroundColor: "#ffffff", borderRadius: '12px' }}>
                                     {
@@ -109,11 +110,11 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                                             }
                                             if (contentObj.type === "Quiz") {
                                                 return (
-                                                    <div className='' style={{fontSize:'1.5em'}}>
+                                                    <div className='' style={{ fontSize: '1.5em' }}>
                                                         <div>
                                                             <span>{`Q) `}</span>
                                                             <span>{contentObj.data.question}</span><br />
-                                                            <div style={{ width: "100%", display: "flex",justifyContent: "start" , paddingLeft:'22px' , justifyContent:'space-between' }}>
+                                                            <div style={{ width: "100%", display: "flex", justifyContent: "start", paddingLeft: '22px', justifyContent: 'space-between' }}>
                                                                 {contentObj.data.imageData.image && (
                                                                     <div style={{ width: contentObj.data.imageData.width ? contentObj.data.imageData.width : 'auto', height: contentObj.data.imageData.height ? contentObj.data.imageData.height : 'auto' }}>
                                                                         <img id={"imgId"} src={URL.createObjectURL(contentObj.data.imageData.image)} style={{ height: "100%", width: "100%" }}></img>
@@ -126,7 +127,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                                                                     contentObj.data.type === 'single' ? (
                                                                         contentObj.data.options.map((option, optIndex) => {
                                                                             return (
-                                                                                <div style={{marginLeft:'22px' , paddingTop: "0.2em" }}>
+                                                                                <div style={{ marginLeft: '22px', paddingTop: "0.2em" }}>
                                                                                     <input type='radio' style={{ marginRight: "3px" }} value={option} id={`option${optIndex}`} name={`reord`}></input><label for={`option${optIndex}`}>{option}</label>
                                                                                 </div>
                                                                             )
@@ -164,13 +165,12 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                                         {contentObj.data.ytData.videoId &&
                                                             <iframe
-                                                                style={{ marginTop: '1em' }}
-                                                                width="960"
-                                                                height="415"
-                                                                src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}`}
+                                                                style={{ marginTop: '1em', minHeight: '415px' }}
+                                                                width="100%"
+                                                                src={`https://www.youtube.com/embed/${contentObj.data.ytData.videoId}?rel=0`}
                                                                 title="YouTube Video"
                                                                 frameBorder="0"
-                                                                allowFullScreen
+                                                                allowFullScreen={true}
                                                             ></iframe>
                                                         }
                                                     </div>
@@ -184,7 +184,7 @@ const CourseCreatorPreview = ({ mainCourseData, selectedSemPreviewId, selectedCh
                                 </div>
                             }
                         </div>
-                        <div style={{borderTop:'1px solid #b6ccd8'}}>
+                        <div style={{ borderTop: '1px solid #b6ccd8' }}>
                             <div className='pagination_container' >
                                 <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                             </div>

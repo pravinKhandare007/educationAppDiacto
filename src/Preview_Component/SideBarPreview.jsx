@@ -29,7 +29,7 @@ const SideBarPreview = ({ mainCourseData , handleSlectedPreviewIds}) => {
     
     return (
         <>
-            <div>
+            <div style={{overflow:'auto', height:'90%'}}>
                 <Accordion>
                     {
                         mainCourseData.semesters.map((semester, semIndex) => (

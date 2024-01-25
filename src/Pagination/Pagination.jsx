@@ -42,7 +42,7 @@ const Pagination = ({ slides, paginate, currentSlideId, setCurrentSlideId }) => 
     }
 
     return (<>
-        <nav className="d-flex justify-content-center">
+        <nav className="d-flex justify-content-center align-items-center">
             <ul className="pagination">
                 <li className={`page-item`} style={disablePrevious()}><a onClick={previousSlide} className="page-link">{"<"}</a></li>
                 {

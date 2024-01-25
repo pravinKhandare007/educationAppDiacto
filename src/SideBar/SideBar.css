@@ -1,3 +1,5 @@
+
+
 .testing{
     border-left: 3px solid var(--primary-color);
     
@@ -10,12 +12,18 @@
 }
 
 .card{
-    border-radius: 0 !important;
-    margin-top: 5px;    
+    /* border-radius: 0 !important; */
+    margin-top: 5px; 
+    /* padding: 1em;    */
 }
 
 .card-header{
-    
+    /* background-color: rgb(240, 32, 240);
+    border-radius: 100px !important; */
+    border: none;
+    font-size: 0.9rem;
+    font-weight: medium;
+    font-family: 'Inter', sans-serif;
 }
 
 .add-semester-button-container{
@@ -29,4 +37,12 @@
 
 .highlight:hover{
     background-color: rgb(194, 194, 194);
+}
+
+.add-buttons{
+    font-size: 0.8rem;
+}
+
+.accordion-collapse{
+    overflow: hidden !important;
 }

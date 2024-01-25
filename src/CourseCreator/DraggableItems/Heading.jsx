@@ -16,8 +16,8 @@ export default function Heading(props) {
         <NewItem ref={setNodeRef} {...listeners} {...attributes}>
             <div data-tooltip-id="my-tooltip" style={style} data-tooltip-content={props.disabled ? "disabled" : "Drag to add heading"} data-tooltip-place="left-start" className="draggable" >
                 <i className="fa-solid fa-heading"></i>
-                <p>Heading</p>
             </div>
+            <p>Heading</p>
             <Tooltip id="my-tooltip" />
         </NewItem>
     )

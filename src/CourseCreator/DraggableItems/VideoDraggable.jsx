@@ -19,8 +19,8 @@ export default function VideoDraggable(props) {
                 data-tooltip-content={props.disabled ? "disabled":"Drag to add video content"}
                 data-tooltip-place="left-start" style={style}>
                 <i className="fa-solid fa-video"></i>
-                <p>Video</p>
             </div>
+            <p>Video</p>
             <Tooltip id="my-tooltip" />
         </NewItem>
     )

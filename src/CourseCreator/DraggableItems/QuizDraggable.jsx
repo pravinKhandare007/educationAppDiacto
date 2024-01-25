@@ -18,9 +18,8 @@ export default function QuizDraggable(props) {
         <NewItem ref={setNodeRef} {...listeners} {...attributes}>
             <div data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled":"Drag to add quiz questions"} data-tooltip-place="left-start" className="draggable" style={style}>
                 <i class="fa-solid fa-q"></i>
-                <p>Quiz</p>
-                
             </div>
+            <p>Quiz</p>
             <Tooltip id="my-tooltip" />
         </NewItem>
 

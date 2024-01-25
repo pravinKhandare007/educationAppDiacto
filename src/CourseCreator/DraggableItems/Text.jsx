@@ -20,9 +20,8 @@ export default function Text(props) {
     <NewItem ref={setNodeRef} {...listeners} {...attributes}>
       <div style={style} data-tooltip-id="my-tooltip" data-tooltip-content={props.disabled ? "disabled":"Drag to add text editor"} data-tooltip-place="left-start" className="draggable">
         <i className="fa-regular fa-pen-to-square" ></i>
-        <p>Text</p>
-        
       </div>
+      <p>Text</p>
       <Tooltip id="my-tooltip" />
     </NewItem>
 

@@ -9,8 +9,9 @@ export function Droppable(props) {
 
 
   return (
-    <div ref={setNodeRef} className={`bg-white d-flex  ${props.content.length ? "justify-content-start": "justify-content-center" } align-items-center flex-column`} style={{border:"1px solid #b6ccd8",position:'relative',width:'100%' , padding:'1em' ,
-     minHeight:'100%' ,  gap:"10px" , borderRadius:'12px',
+    <div ref={setNodeRef} className={`bg-white d-flex  ${props.content.length ? "justify-content-start": "justify-content-center" } align-items-center flex-column`} 
+    style={{border:"1px solid #b6ccd8",position:'relative',width:'100%' , padding:'1em' ,
+     minHeight:'100%' ,  gap:"10px" , borderRadius:'20px', height:'100%' , overflow:'auto',
      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1)' }} >
       {props.children}
       {

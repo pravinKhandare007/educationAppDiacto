@@ -18,7 +18,8 @@ import McqComponent from './MCQ_Component/McqComponent';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { Resizable } from 're-resizable';
 
-const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId, slideId, type, isDeleted }) => {
+const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, mainCourseData, setMainCourseData, selectedQuizId, setSlideId,
+    slideId, type, isDeleted, showPreview, setShowPreview, setPreviewIds }) => {
 
 
     const [activeId, setActiveId] = useState(null);
@@ -285,7 +286,7 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
     function handleDragEnd(event) {
         console.log("drag end", event)
         setIsDragging(null);
-        if (event.over === null) return;    
+        if (event.over === null) return;
         //the droppable component is passed the silde Id i.e which slide we are currenty on 
         //we compare that id with the id's of all the slides in the parent state and update the content when matched
         if (event.over && event.over.id !== null) {
@@ -446,14 +447,18 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                 <div className='course_creator_container'>
                     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
                         <div className='slides_container'>
+                            <div className='course-info'>
+                                <span><strong>Course Name:</strong>Trigonometry course</span><br></br>
+                                <span><strong>Subject:</strong> Maths</span><br></br>
+                                <span><strong>Description:</strong>This course will teach about the fundamentals of trigonometry</span>
+                            </div>
+
                             {
                                 selectedQuizId &&
-                                (<div style={{ display: 'flex', justifyContent: 'center', alignItems:'center',borderBottom: '1px solid #b6ccd8', padding: '4px', gap: '1em' }}>
+                                (<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4px', gap: '1em' }}>
                                     <span>No. of question to display: <input type='number' style={{ width: '50px' }} value={numberOfQuestionToShow} onChange={(e) => { setNumberOfQuestionToShow(e.target.value) }}></input></span>
                                     <span>Time Limit:</span>
                                     <input style={{ width: '50px' }} value={timeLimit ? timeLimit.hours : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, hours: e.target.value } }) }}></input>
-                                        
-                                    
                                     <span>Hr</span><input style={{ width: '50px' }} value={timeLimit ? timeLimit.minutes : 0} type='number' onChange={(e) => { setTimeLimit((timeLimit) => { return { ...timeLimit, minutes: e.target.value } }) }}></input><span>Minutes</span>
                                 </div>)
                             }
@@ -536,47 +541,60 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                 <div style={{ position: 'relative' }} className='pagination_container'>
                                     <Pagination slides={slidesData.slides} paginate={paginate} currentSlideId={currentSlideId} setCurrentSlideId={setCurrentSlideId}></Pagination>
                                     {
-                                        selectedQuizId ? (<button className='add-question-button' style={{ position: 'absolute', top: '5px', right: '20px' }} onClick={() => addQuestion()}>Add Question</button>) :
-                                            (<button className='add-slide-button' style={{ position: 'absolute', top: '5px', right: '30px' }} onClick={() => addSlide()}>Add Slide</button>)
+                                        selectedQuizId ? (<button className='add-question-button' style={{ position: 'absolute', top: '5px', right: '0px' }} onClick={() => addQuestion()}>Add Question</button>) :
+                                            (<button className='add-slide-button' style={{ position: 'absolute', top: '5px', right: '0px' }} onClick={() => addSlide()}>Add Slide</button>)
                                     }
                                 </div>
 
                             </div>
                         </div>
                         <div className='draggables_container'>
-                            <div className='widgets'>WIDGETS</div>
-                            <div className='draggables'>
-                                <>
-                                    <Heading disabled={selectedQuizId ? true : false} />
-                                    <Text disabled={selectedQuizId ? true : false} />
-                                    <Image disabled={selectedQuizId ? true : false} />
-                                    <Video disabled={selectedQuizId ? true : false} />
-                                    <QuizDraggable disabled={selectedQuizId ? true : false} />
-                                </>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1em', marginBottom: '1em', justifyContent: 'center', alignItems: 'center', marginBottom: '2em' }}>
+                                {
+                                    showPreview ? (
+                                        <button className="custom-button" onClick={() => { setShowPreview((showPreview) => !showPreview) }}>Go Back</button>) : (
+                                        <>
+                                            <button className="custom-button">Save Course</button>
+                                            <button onClick={() => { setShowPreview((showPreview) => !showPreview); setPreviewIds() }} className='custom-button'>Preview</button>
+                                        </>
+                                    )
+                                }
                             </div>
+                            <div style={{ border: '1px solid grey', borderRadius: '20px', backgroundColor: 'white', paddingBottom: '1em' }}>
+                                <div className='widgets'>WIDGETS</div>
+                                <div className='draggables'>
+                                    <>
+                                        <Heading disabled={selectedQuizId ? true : false} />
+                                        <Text disabled={selectedQuizId ? true : false} />
+                                        <Image disabled={selectedQuizId ? true : false} />
+                                        <Video disabled={selectedQuizId ? true : false} />
+                                        <QuizDraggable disabled={selectedQuizId ? true : false} />
+                                    </>
+                                </div>
+                            </div>
+
                         </div>
                         <DragOverlay>
                             {
                                 isDragging === "Text" ? (
                                     <div className="draggable">
                                         <i className="fa-regular fa-pen-to-square" ></i>
-                                        <p>Text</p>
                                     </div>
                                 ) : null
                             }
                             {
                                 isDragging === "Heading" ? (
-                                    <div className="draggable" >
-                                        <i className="fa-solid fa-heading"></i>
-                                        <p>Heading</p>
-                                    </div>
+                                    <>
+                                        <div className="draggable">
+                                            <i className="fa-solid fa-heading"></i>
+                                        </div>
+                                    </>
                                 ) : null
                             }
                             {
                                 isDragging === "Image" ? (
                                     <div className="draggable">
                                         <i className="fa-regular fa-image image"></i>
-                                        <p>Info-Graphic</p>
                                     </div>
                                 ) : null
                             }
@@ -584,7 +602,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                 isDragging === "Quiz" ? (
                                     <div className="draggable">
                                         <i class="fa-solid fa-q"></i>
-                                        <p>Quiz</p>
                                     </div>
                                 ) : null
                             }
@@ -592,8 +609,6 @@ const CourseCreator = ({ selectedSectionId, selectedChapterId, selectedSemId, ma
                                 isDragging === "Video" ? (
                                     <div className="draggable">
                                         <i className="fa-solid fa-video"></i>
-                                        <p>Video</p>
-
                                     </div>
                                 ) : null
                             }

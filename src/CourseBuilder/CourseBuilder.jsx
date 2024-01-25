@@ -7,8 +7,7 @@ import SideBarPreview from "../Preview_Component/SideBarPreview";
 import CourseCreatorPreview from "../Preview_Component/CourseCreatorPreview";
 import { v4 as uuidv4 } from "uuid";
 
-
-const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discription = "This course will teach about the fundamentals of trigonometry" }) => {
+const CourseBuilder = () => {
     console.log("rendering parent");
 
     //useParam 
@@ -36,6 +35,9 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
 
     //below state is used to execute the useEffect in course creator component which sets slidesData state when a semster is deleted.
     const [isDeleted, setIsDeleted] = useState(false);
+
+    //to toggle sidebar
+    const [toggle, setToggle] = useState(false);
 
     useEffect(() => {
         setMainCourseData({
@@ -78,10 +80,6 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         });
     }, []);
 
-    useEffect(() => {
-        console.log("last parent render : , ", mainCourseData);
-    })
-
     const handleSlectedIds = (semId, chapId, secId, quizId, type) => {
         setType(type);
         setSelectedSemId(semId);
@@ -119,60 +117,66 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
         setPreviewType(type);
     }
 
+    function handleToggle() {
+        setToggle(!toggle);
+    }
 
     return (<>
-        <div className="builder_container">
-            <div className="title">
 
-                <div>
-                    <span><strong>Course Name:</strong> {name}</span><br></br>
-                    <span><strong>Subject:</strong> {subject}</span><br></br>
-                    <span><strong>Description:</strong> {discription}</span>
-                </div>
-                <div style={{ textAlign: "right", marginBottom: "10px" }}>
-                    {
-                        showPreview ? (<button className="primary_cta_button" onClick={() => { setShowPreview((showPreview) => !showPreview) }}>Go Back</button>) : (
-                            <><button className="primary_cta_button" style={{ marginRight: "5px" }}>Save Course</button>
-                                <button onClick={() => { setShowPreview((showPreview) => !showPreview); setPreviewIds() }} className='primary_cta_button'>Preview</button></>
-                        )
-                    }
-                </div>
-            </div>
-            <div className="course_builder_container">
+        <div className="builder_container">
+            <div className="toggle">
+                <i onClick={handleToggle} className="fa-solid fa-bars"></i>
                 {
-                    showPreview ? (
-                        <>
-                            <div className="sidebar_container">
-                                <SideBarPreview
-                                    handleSlectedPreviewIds={handleSlectedPreviewIds}
-                                    mainCourseData={mainCourseData}
-                                />
-                            </div>
-                            <CourseCreatorPreview
+                    showPreview ? (<div><button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className="all-courses-button"><span><i class="fa-solid fa-chevron-left"></i></span> Back</button></div>)
+                        : (<div><button className="all-courses-button"><span><i class="fa-solid fa-chevron-left"></i></span> All Courses</button></div>)
+                }
+            </div>
+            {
+                showPreview ? (
+                    <>
+                        <div className={toggle ? 'active-sidebar' : 'sidebar_container'}>
+                            <div className="text-end"><i onClick={handleToggle} class="fa-solid fa-xmark close"></i></div>
+                            {
+                                toggle || <div style={{ display: 'flex', justifyContent: 'center', padding: '1em', alignItems: 'center', height: '10%' }}>
+                                    <button onClick={() => { setShowPreview((showPreview) => !showPreview) }} className="all-courses-button"><span><i class="fa-solid fa-chevron-left"></i></span> Back</button>
+                                </div>
+                            }
+                            <SideBarPreview
+                                handleSlectedPreviewIds={handleSlectedPreviewIds}
                                 mainCourseData={mainCourseData}
-                                selectedSemPreviewId={selectedSemPreviewId}
-                                selectedChapterPreviewId={selectedChapterPreviewId}
-                                selectedSectionPreviewId={selectedSectionPreviewId}
-                                selectedQuizPreviewId={selectedQuizPreviewId}
-                                slideId={slideId}
-                                previewType={previewType}
                             />
-                        </>
-                    ) : (
-                        <>
-                            <div className="sidebar_container">
-                                <SideBar
-                                    mainCourseData={mainCourseData}
-                                    setMainCourseData={setMainCourseData}
-                                    resetSelectedIds={resetSelectedIds}
-                                    semesterDropdownInfo={semesterDropdownInfo}
-                                    chapterDropdownInfo={chapterDropdownInfo}
-                                    setSemesterDropdownInfo={setSemesterDropdownInfo}
-                                    setChapterDropdownInfo={setChapterDropdownInfo}
-                                    handleSlectedIds={handleSlectedIds}
-                                    setIsDeleted={setIsDeleted}
-                                />
-                            </div>
+                        </div>
+                        <CourseCreatorPreview
+                            mainCourseData={mainCourseData}
+                            selectedSemPreviewId={selectedSemPreviewId}
+                            selectedChapterPreviewId={selectedChapterPreviewId}
+                            selectedSectionPreviewId={selectedSectionPreviewId}
+                            selectedQuizPreviewId={selectedQuizPreviewId}
+                            slideId={slideId}
+                            previewType={previewType}
+                        />
+                    </>) : (
+                    <>
+                        <div className={toggle ? 'active-sidebar' : 'sidebar_container'}>
+                           <div className="text-end"><i onClick={handleToggle} class="fa-solid fa-xmark close"></i></div>
+                            {
+                                toggle || <div style={{ display: 'flex', justifyContent: 'center', padding: '1em', alignItems: 'center', height: '10%' }}>
+                                    <button className="all-courses-button"><span><i class="fa-solid fa-chevron-left"></i></span> All Courses</button>
+                                </div>
+                            }
+                            <SideBar
+                                mainCourseData={mainCourseData}
+                                setMainCourseData={setMainCourseData}
+                                resetSelectedIds={resetSelectedIds}
+                                semesterDropdownInfo={semesterDropdownInfo}
+                                chapterDropdownInfo={chapterDropdownInfo}
+                                setSemesterDropdownInfo={setSemesterDropdownInfo}
+                                setChapterDropdownInfo={setChapterDropdownInfo}
+                                handleSlectedIds={handleSlectedIds}
+                                setIsDeleted={setIsDeleted}
+                            />
+                        </div >
+                        <div className="slides-container">
                             <CourseCreator
                                 mainCourseData={mainCourseData} setMainCourseData={setMainCourseData}
                                 selectedChapterId={selectedChapterId}
@@ -184,17 +188,17 @@ const CourseBuilder = ({ name = "Trigonometry course", subject = "Maths", discri
                                 slideId={slideId}
                                 type={type}
                                 isDeleted={isDeleted}
+                                showPreview={showPreview}
+                                setShowPreview={setShowPreview}
+                                setPreviewIds={setPreviewIds}
                             />
-
-                        </>
-                    )
-                }
-            </div>
-        </div>
+                        </div>
+                    </>
+                )
+            }
+        </div >
     </>
     );
 }
 
 export default CourseBuilder;
-
-
